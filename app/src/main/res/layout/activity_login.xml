@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".Login"
+    tools:layout_editor_absoluteX="40dp"
+    tools:layout_editor_absoluteY="3dp">
+
+    <EditText
+        android:id="@+id/txt_email2"
+        android:layout_width="300dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginEnd="55dp"
+        android:background="@drawable/edittext_white"
+        android:ems="10"
+        android:hint="Correo electrónico"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.406" />
+
+    <TextView
+        android:id="@+id/appname"
+        android:layout_width="252dp"
+        android:layout_height="82dp"
+        android:layout_marginStart="138dp"
+        android:layout_marginEnd="215dp"
+        android:fontFamily="@font/alegreya"
+        android:text="@string/app_name"
+        android:textColor="@color/wine_1"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.237"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.172" />
+
+    <TextView
+        android:id="@+id/txt_recordar_contraseña"
+        android:layout_width="189dp"
+        android:layout_height="33dp"
+        android:layout_marginStart="180dp"
+        android:layout_marginTop="492dp"
+        android:layout_marginEnd="42dp"
+        android:layout_marginBottom="206dp"
+        android:fontFamily="@font/alegreya"
+        android:text="@string/recordar_contraseña"
+        android:textColor="@color/wine_1"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="119dp"
+        android:layout_height="107dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.095"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.048"
+        app:srcCompat="@drawable/iconohome" />
+
+    <EditText
+        android:id="@+id/txt_password2"
+        android:layout_width="250dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginEnd="128dp"
+        android:background="@drawable/edittext_white"
+        android:ems="10"
+        android:hint="Contraseña"
+        android:inputType="textPassword"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.499" />
+
+    <Button
+        android:id="@+id/btnAcceder"
+        android:layout_width="295dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="147dp"
+        android:layout_marginEnd="176dp"
+        android:background="@drawable/edittext_pink_home"
+        android:fontFamily="@font/alegreya"
+        android:text="@string/acceder"
+        android:textAllCaps="false"
+        android:textColor="@color/wine_1"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.429"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.632" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

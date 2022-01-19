@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "270790232136",
+    "firebase_url": "https://heymama-8e2df-default-rtdb.firebaseio.com",
+    "project_id": "heymama-8e2df",
+    "storage_bucket": "heymama-8e2df.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:270790232136:android:4b671ed5876e84f684307d",
+        "android_client_info": {
+          "package_name": "com.example.heymama"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "270790232136-fkkfibn1703ffp9515be0adelgnr0c5h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCD56qJDG8qYPDAileCVa0o1eSKXGLbmK8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "270790232136-fkkfibn1703ffp9515be0adelgnr0c5h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

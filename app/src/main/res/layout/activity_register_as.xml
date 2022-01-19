@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RegisterAsActivity"
+    tools:layout_editor_absoluteX="24dp"
+    tools:layout_editor_absoluteY="173dp">
+
+    <Button
+        android:id="@+id/btn_usuario"
+        android:layout_width="295dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="135dp"
+        android:layout_marginEnd="188dp"
+        android:background="@drawable/edittext_pink_home"
+        android:fontFamily="@font/alegreya"
+        android:text="@string/usuario"
+        android:textAllCaps="false"
+        android:textColor="@color/wine_1"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.367"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.499" />
+
+    <Button
+        android:id="@+id/btn_profesional"
+        android:layout_width="295dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="135dp"
+        android:layout_marginEnd="188dp"
+        android:background="@drawable/edittext_pink_home"
+        android:fontFamily="@font/alegreya"
+        android:text="@string/profesional"
+        android:textAllCaps="false"
+        android:textColor="@color/wine_1"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.367"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.632" />
+
+    <ImageView
+        android:id="@+id/imageView7"
+        android:layout_width="119dp"
+        android:layout_height="107dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.106"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.062"
+        app:srcCompat="@drawable/iconohome" />
+
+    <TextView
+        android:id="@+id/txt_title2"
+        android:layout_width="252dp"
+        android:layout_height="82dp"
+        android:layout_marginStart="138dp"
+        android:layout_marginTop="116dp"
+        android:layout_marginEnd="215dp"
+        android:fontFamily="@font/alegreya"
+        android:text="Hey, mama!"
+        android:textColor="@color/wine_1"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.134"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txt_registeras"
+        android:layout_width="237dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="138dp"
+        android:layout_marginTop="252dp"
+        android:layout_marginEnd="215dp"
+        android:fontFamily="@font/alegreya"
+        android:text="Registrarse como..."
+        android:textColor="@color/wine_1"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.441"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

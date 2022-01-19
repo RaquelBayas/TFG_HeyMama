@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".RegisterActivity">
+
+    <TextView
+        android:id="@+id/txt_title"
+        android:layout_width="252dp"
+        android:layout_height="82dp"
+        android:layout_marginStart="138dp"
+        android:layout_marginTop="116dp"
+        android:layout_marginEnd="215dp"
+        android:fontFamily="@font/alegreya"
+        android:text="Hey, mama!"
+        android:textColor="@color/wine_1"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.183"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="119dp"
+        android:layout_height="107dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.095"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.07"
+        app:srcCompat="@drawable/iconohome" />
+
+    <EditText
+        android:id="@+id/txt_user"
+        android:layout_width="301dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginEnd="128dp"
+        android:background="@drawable/edittext_white"
+        android:ems="10"
+        android:hint="@string/usuario"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.438" />
+
+    <EditText
+        android:id="@+id/txt_email"
+        android:layout_width="300dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginEnd="55dp"
+        android:background="@drawable/edittext_white"
+        android:ems="10"
+        android:hint="Correo electrónico"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.54" />
+
+    <EditText
+        android:id="@+id/txt_password"
+        android:layout_width="301dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginEnd="128dp"
+        android:background="@drawable/edittext_white"
+        android:ems="10"
+        android:hint="Contraseña"
+        android:inputType="textPassword"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.64" />
+
+    <Button
+        android:id="@+id/btn_crear_cuenta"
+        android:layout_width="295dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="135dp"
+        android:layout_marginEnd="188dp"
+        android:background="@drawable/edittext_pink_home"
+        android:fontFamily="@font/alegreya"
+        android:text="@string/crear_cuenta"
+        android:textAllCaps="false"
+        android:textColor="@color/wine_1"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.352"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.788" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
