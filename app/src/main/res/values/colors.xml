@@ -9,7 +9,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="wine_1">#77045E</color>
     <color name="pink">#FED6E3</color>
+    <color name="rectangle_purple">#DDD1F8</color>
     <color name="rectangle_orange">#F5D9A2</color>
     <color name="rectangle_pink">#FCCDEC</color>
-
+    <color name="fonts">#371B34</color>
 </resources>

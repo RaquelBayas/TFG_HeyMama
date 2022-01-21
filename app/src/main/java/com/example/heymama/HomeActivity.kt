@@ -1,15 +1,16 @@
 package com.example.heymama
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.EditText
+import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
-import org.w3c.dom.Text
 
 class HomeActivity : AppCompatActivity() {
 
@@ -51,6 +52,23 @@ class HomeActivity : AppCompatActivity() {
         checkRol(email,dataBaseReference)
         textView = findViewById(R.id.textView)
         textView.text = email
+
+        var btn_respirar : Button = findViewById(R.id.btn_respirar)
+        btn_respirar.setOnClickListener{
+            onClick(R.id.btn_respirar)
+        }
+
+        var txt_foros : TextView = findViewById(R.id.txt_foros)
+        txt_foros.setOnClickListener{
+            onClick(R.id.txt_foros)
+        }
+
+        var btn_icon_profile : TextView = findViewById(R.id.btn_icon_profile)
+        btn_icon_profile.setOnClickListener{
+            onClick(R.id.btn_icon_profile)
+        }
+
+
     }
 
     private fun checkRol(email:String, databaseReference: DatabaseReference)  {
@@ -73,7 +91,21 @@ class HomeActivity : AppCompatActivity() {
                 TODO("Not yet implemented")
             }
         })
-        //return rol
-        //Toast.makeText(this,rol, Toast.LENGTH_SHORT).show()
     }
+
+    fun onClick(view: Int) {
+        when(view) {
+            R.id.btn_respirar -> goToActivity(this,RespirarActivity::class.java)
+            R.id.txt_foros -> goToActivity(this, ForosActivity::class.java)
+            R.id.btn_icon_profile -> goToActivity(this, PerfilActivity::class.java)
+        }
+    }
+
+    fun Context.goToActivity(activity: Activity, classs: Class<*>?) {
+        val intent = Intent(activity, classs)
+        startActivity(intent)
+        //activity.finish()
+    }
+
+
 }

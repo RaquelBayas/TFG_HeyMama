@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Hey, mama!</string>
+    <string name="empezar">Empezar</string>
     <string name="usuario">Usuario</string>
     <string name="profesional">Profesional</string>
     <string name="crear_cuenta">Crear cuenta</string>
@@ -10,8 +11,25 @@
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome !"</string>
+
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+
+
+    <string name="respirar">Respirar</string>
+
+    <string name="bienvenida">Bienvenida</string>
+    <string name="foros">Foros</string>
+    <string name="informacion">Información</string>
+
+    <string name="depresion">Depresión</string>
+    <string name="posparto">Posparto</string>
+    <string name="embarazo">Embarazo</string>
+
+    <!-- Perfil -->
+    <string name="amigos">Amigos</string>
+    <string name="mensajes">Mensajes</string>
+
+
 </resources>
