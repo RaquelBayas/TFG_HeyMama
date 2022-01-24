@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.PreguntaActivity">
+
+    <EditText
+        android:id="@+id/txt_titulo_foro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="55dp"
+        android:layout_marginTop="92dp"
+        android:layout_marginEnd="48dp"
+        android:fontFamily="@font/alegreya"
+        android:hint="Introduce el título de tu pregunta"
+        android:textColor="@color/fonts"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/txt_descripcion_foro"
+        android:layout_width="305dp"
+        android:layout_height="304dp"
+        android:layout_marginStart="55dp"
+        android:layout_marginTop="208dp"
+        android:layout_marginEnd="48dp"
+        android:autoText="false"
+        android:background="@null"
+        android:cursorVisible="true"
+        android:fontFamily="@font/alegreya"
+        android:gravity="top|left"
+        android:hint="Introduce tu pregunta"
+        android:textColor="@color/fonts"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_enviar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="275dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginBottom="68dp"
+        android:text="@string/enviar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_descripcion_foro" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

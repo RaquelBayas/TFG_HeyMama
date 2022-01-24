@@ -1,4 +1,4 @@
-package com.example.heymama
+package com.example.heymama.activities
 
 import android.app.Activity
 import android.app.ProgressDialog
@@ -8,26 +8,19 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.webkit.URLUtil
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
-import com.bumptech.glide.Glide
-import com.bumptech.glide.Glide.with
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.module.AppGlideModule
+import com.example.heymama.GlideApp
+import com.example.heymama.R
 import com.example.heymama.databinding.ActivityPerfilBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.ktx.storage
-import java.net.URI
-import java.text.SimpleDateFormat
-import java.util.*
 
 class PerfilActivity : AppCompatActivity() {
 
@@ -59,22 +52,18 @@ class PerfilActivity : AppCompatActivity() {
 
         loadPicture()
 
-        binding.btnChangePicture.setOnClickListener {
-            selectImage(100)
-        }
-
+        // Cambiar imagen layout
+        binding.layoutImage.setOnClickListener { selectImage(100) }
 
         // Cambiar imagen de perfil
-        var profile_pic : ImageView = findViewById(R.id.profile_image)
-        profile_pic.setOnClickListener {
-            selectImage(200)
-        }
+        binding.profileImage.setOnClickListener { selectImage(200) }
+
 
 
         // Home button
-        var btn_home: Button = findViewById(R.id.button)
+        var btn_home: Button = findViewById(R.id.btn_home)
         btn_home.setOnClickListener {
-            onClick(R.id.button)
+            onClick(R.id.btn_home)
         }
 
 
@@ -88,8 +77,7 @@ class PerfilActivity : AppCompatActivity() {
         storageReference = firebaseStore.getReference("/Usuarios/"+auth.currentUser?.uid+"/images/perfil")
 
         if(storageReference.downloadUrl.toString() != null) {
-            GlideApp
-                .with(applicationContext)
+            GlideApp.with(applicationContext)
                 .load(storageReference)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
@@ -97,8 +85,7 @@ class PerfilActivity : AppCompatActivity() {
         }
         storageReference = firebaseStore.getReference("/Usuarios/"+auth.currentUser?.uid+"/images/layout")
         if(storageReference.downloadUrl.toString() != null) {
-            GlideApp
-                .with(applicationContext)
+            GlideApp.with(applicationContext)
                 .load(storageReference)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
@@ -110,7 +97,7 @@ class PerfilActivity : AppCompatActivity() {
 
     fun onClick(view: Int) {
         when(view) {
-            R.id.button -> goToActivity(this,HomeActivity::class.java)
+            R.id.btn_home -> goToActivity(this, HomeActivity::class.java)
             R.id.button2 -> goToActivity(this, ForosActivity::class.java)
             R.id.button3 -> goToActivity(this, PerfilActivity::class.java)
             //R.id.button4 -> goToActivity(this, PerfilActivity::class.java)

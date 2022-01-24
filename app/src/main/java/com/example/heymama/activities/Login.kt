@@ -1,4 +1,4 @@
-package com.example.heymama
+package com.example.heymama.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import com.example.heymama.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
@@ -80,7 +81,7 @@ class Login : AppCompatActivity() {
                         dataBaseReference.child(auth.currentUser!!.uid).child("Verified").setValue(mailVerified.toString())
                         auth.currentUser?.reload()
                         if(mailVerified) {
-                            startActivity(Intent(this,HomeActivity::class.java))
+                            startActivity(Intent(this, HomeActivity::class.java))
                         } else {
                             Toast.makeText(this, "Debes registrarte primero.", Toast.LENGTH_LONG).show()
                         }

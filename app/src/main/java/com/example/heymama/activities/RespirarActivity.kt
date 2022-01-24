@@ -1,4 +1,4 @@
-package com.example.heymama
+package com.example.heymama.activities
 
 import android.app.Activity
 import android.content.Context
@@ -6,6 +6,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import com.example.heymama.R
 
 class RespirarActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -13,15 +14,15 @@ class RespirarActivity : AppCompatActivity() {
         setContentView(R.layout.activity_respirar)
 
         // Home button
-        var btn_home: Button = findViewById(R.id.button)
+        var btn_home: Button = findViewById(R.id.btn_home)
         btn_home.setOnClickListener {
-            onClick(R.id.button)
+            onClick(R.id.btn_home)
         }
     }
 
     fun onClick(view: Int) {
         when(view) {
-            R.id.button -> goToActivity(this,HomeActivity::class.java)
+            R.id.btn_home -> goToActivity(this, HomeActivity::class.java)
             R.id.button2 -> goToActivity(this, ForosActivity::class.java)
             R.id.button3 -> goToActivity(this, PerfilActivity::class.java)
             //R.id.button4 -> goToActivity(this, PerfilActivity::class.java)

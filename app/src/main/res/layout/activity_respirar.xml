@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RespirarActivity">
+    tools:context=".activities.RespirarActivity">
 
     <Button
         android:id="@+id/btn_empezar_respirar"
@@ -61,7 +61,7 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btn_home"
         android:layout_width="35dp"
         android:layout_height="34dp"
         android:layout_marginBottom="12dp"

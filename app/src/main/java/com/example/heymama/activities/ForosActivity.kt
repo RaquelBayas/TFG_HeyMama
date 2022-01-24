@@ -1,9 +1,12 @@
-package com.example.heymama
+package com.example.heymama.activities
 
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
+import com.example.heymama.R
 
 class ForosActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -12,7 +15,7 @@ class ForosActivity : AppCompatActivity() {
 
         var txt_depresion : TextView = findViewById(R.id.txt_depresion)
         txt_depresion.setOnClickListener{
-            foro_depresion()
+            onClick(R.id.txt_depresion)
         }
 
         /*
@@ -28,8 +31,16 @@ class ForosActivity : AppCompatActivity() {
 
     }
 
-    private fun foro_depresion() {
-        val intent = Intent(this, SubForoActivity::class.java)
+
+    fun onClick(view: Int) {
+        when(view) {
+            R.id.txt_depresion -> goToActivity(this, SubForoActivity::class.java)
+        }
+    }
+
+    fun Context.goToActivity(activity: Activity, classs: Class<*>?) {
+        val intent = Intent(activity, classs)
         startActivity(intent)
+        //activity.finish()
     }
 }

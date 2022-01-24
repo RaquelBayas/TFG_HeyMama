@@ -1,4 +1,4 @@
-package com.example.heymama
+package com.example.heymama.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -8,18 +8,19 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.ActionBar
+import com.example.heymama.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.ktx.Firebase
 
+class RegisterProfesionalActivity : AppCompatActivity() {
 
-class RegisterActivity : AppCompatActivity() {
-
-    lateinit var txt_email: EditText
-    lateinit var txt_password: EditText
-    lateinit var txt_user: EditText
+    lateinit var txt_email_prof: EditText
+    lateinit var txt_user_prof: EditText
+    lateinit var txt_nombre_prof: EditText
+    lateinit var txt_apellidos_prof: EditText
+    lateinit var txt_password_prof: EditText
     private lateinit var btn_registro: Button
 
     // FirebaseAuth object
@@ -27,13 +28,12 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
+        setContentView(R.layout.activity_register_profesional)
 
         val bundle: Bundle? = intent.extras
-        val rol: String? = intent.getStringExtra("Usuario")
+        val rol: String? = intent.getStringExtra("Profesional")
 
         var actionBar: ActionBar? = supportActionBar
         actionBar?.setTitle("Create account")
@@ -41,10 +41,12 @@ class RegisterActivity : AppCompatActivity() {
         actionBar?.setDisplayHomeAsUpEnabled(true)
         actionBar?.setDisplayShowHomeEnabled(true)
 
-        txt_email = findViewById(R.id.txt_email)
-        txt_password = findViewById(R.id.txt_password)
-        txt_user = findViewById(R.id.txt_user)
-        btn_registro = findViewById(R.id.btn_crear_cuenta)
+        txt_email_prof = findViewById(R.id.txt_email_prof)
+        txt_user_prof = findViewById(R.id.txt_user_prof)
+        txt_nombre_prof = findViewById(R.id.txt_nombre_prof)
+        txt_apellidos_prof = findViewById(R.id.txt_apellidos_prof)
+        txt_password_prof = findViewById(R.id.txt_password_prof)
+        btn_registro = findViewById(R.id.btn_crear_cuenta_prof)
 
         //Instancias para la base de datos y la autenticación
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
@@ -53,29 +55,31 @@ class RegisterActivity : AppCompatActivity() {
         //Dentro de la base de datos habrá un nodo "Usuarios" donde se guardan los usuarios de la aplicación
         dataBaseReference = dataBase.getReference("Usuarios")
 
-        findViewById<Button>(R.id.btn_crear_cuenta).setOnClickListener{
+        findViewById<Button>(R.id.btn_crear_cuenta_prof).setOnClickListener{
             createAccount()
-        }
 
+        }
     }
 
     // Crear cuenta
     private fun createAccount() {
-        val email: String = txt_email.text.toString()
-        val password: String = txt_password.text.toString()
-        val username: String = txt_user.text.toString()
+        val email: String = txt_email_prof.text.toString()
+        val password: String = txt_password_prof.text.toString()
+        val user_prof: String = txt_user_prof.text.toString()
+        val nombre_prof: String = txt_nombre_prof.text.toString()
+        val apellidos_prof: String = txt_apellidos_prof.text.toString()
 
-        Toast.makeText(this,email,Toast.LENGTH_SHORT).show()
-        Toast.makeText(this,password,Toast.LENGTH_SHORT).show()
-        Toast.makeText(this,username,Toast.LENGTH_SHORT).show()
+        Toast.makeText(this,email, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this,password, Toast.LENGTH_SHORT).show()
 
-        if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password) && !TextUtils.isEmpty(username)) {
+        if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password) && !TextUtils.isEmpty(user_prof)
+            && !TextUtils.isEmpty(nombre_prof) && !TextUtils.isEmpty(apellidos_prof)) {
 
             auth.createUserWithEmailAndPassword(email,password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
 
-                        Toast.makeText(this,"Here again",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this,"Here.", Toast.LENGTH_SHORT).show()
 
                         // Usuario
                         val user: FirebaseUser? = auth.currentUser
@@ -84,21 +88,21 @@ class RegisterActivity : AppCompatActivity() {
 
                         verifyEmail(user)
 
-                        Toast.makeText(this,"Here again 2 !",Toast.LENGTH_SHORT).show()
-
-                        userDB.child("User").setValue(username)
                         userDB.child("Email").setValue(email)
-                        userDB.child("Rol").setValue("Usuario")
+                        userDB.child("Rol").setValue("Profesional")
                         userDB.child("Password").setValue(password)
-
+                        userDB.child("User").setValue(user_prof)
+                        userDB.child("Nombre").setValue(nombre_prof)
+                        userDB.child("Apellidos").setValue(apellidos_prof)
 
 
                     } else{
-                        Toast.makeText(this,"Ocurrió un error al enviar el email de verificación.",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this,"Ocurrió un error al enviar el email de verificación.",
+                            Toast.LENGTH_SHORT).show()
                     }
                 }
         } else {
-            Toast.makeText(this, "Rellena los datos por favor.",Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Rellena los datos por favor.", Toast.LENGTH_SHORT).show()
         }
 
     }
@@ -107,16 +111,16 @@ class RegisterActivity : AppCompatActivity() {
         user?.sendEmailVerification()
             ?.addOnCompleteListener(this) { task ->
                 if (task.isComplete) {
-                    Toast.makeText(this, "Comprueba tu email.",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Comprueba tu email.", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "Oh, algo ha ido mal.", Toast.LENGTH_SHORT).show()
                 }
 
                 val intent = Intent(this, MainActivity::class.java)
-                //intent.putExtra("Usuario","Usuario")
+                //intent.putExtra("Profesional","Profesional")
                 startActivity(intent)
             }
-        Toast.makeText(this, "VerifyEmail 2",Toast.LENGTH_SHORT).show()
+
     }
 
     // Comprobar la contraseña

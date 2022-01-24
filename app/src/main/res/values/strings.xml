@@ -17,7 +17,7 @@
     <string name="login_failed">"Login failed"</string>
 
 
-    <string name="respirar">Respirar</string>
+
 
     <string name="bienvenida">Bienvenida</string>
     <string name="foros">Foros</string>
@@ -27,9 +27,25 @@
     <string name="posparto">Posparto</string>
     <string name="embarazo">Embarazo</string>
 
+    <!-- Post foro -->
+    <string name="enviar">Enviar</string>
+
+
     <!-- Perfil -->
     <string name="amigos">Amigos</string>
     <string name="mensajes">Mensajes</string>
 
+    <!-- Contacto -->
+    <string name="contacto">Contacto</string>
+    <string name="consulta">Consulta</string>
+    <string name="unounodos">112</string>
+    <string name="NNE">Número Nacional de Emergencia</string>
+
+    <!-- Respirar -->
+    <string name="respirar">Respirar</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
