@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -19,8 +20,9 @@ class Login : AppCompatActivity() {
 
     }
 
-    lateinit var txt_email: EditText
-    lateinit var txt_password: EditText
+    private lateinit var txt_email: EditText
+    private lateinit var txt_password: EditText
+    private lateinit var rol: String
 
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
@@ -81,7 +83,7 @@ class Login : AppCompatActivity() {
                         dataBaseReference.child(auth.currentUser!!.uid).child("Verified").setValue(mailVerified.toString())
                         auth.currentUser?.reload()
                         if(mailVerified) {
-                            startActivity(Intent(this, HomeActivity::class.java))
+                            checkRol(email,dataBaseReference)
                         } else {
                             Toast.makeText(this, "Debes registrarte primero.", Toast.LENGTH_LONG).show()
                         }
@@ -96,5 +98,34 @@ class Login : AppCompatActivity() {
         } else {
             Toast.makeText(this, "Rellena los datos.", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun checkRol(email:String, databaseReference: DatabaseReference)  {
+
+        databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for(s in snapshot.children) {
+                    if (s.child("Email").value.toString().equals(email)) {
+                        rol = s.child("Rol").value.toString()
+                        if (rol.equals("Profesional")) {
+                            val intent = Intent(applicationContext, HomeActivityProf::class.java)
+                            intent.putExtra("Rol","Profesional")
+                            startActivity(intent)
+                            Log.d("TAG Profesional: ", rol)
+                        } else {
+                            val intent = Intent(applicationContext, HomeActivity::class.java)
+                            intent.putExtra("Rol","Usuario")
+                            startActivity(intent)
+                            Log.d("TAG Usuario: ", rol)
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
+
     }
 }

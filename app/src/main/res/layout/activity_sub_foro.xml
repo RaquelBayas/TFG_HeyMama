@@ -5,31 +5,45 @@
     android:id="@+id/act_subforo"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/pink2"
     tools:context=".activities.SubForoActivity">
 
     <Button
         android:id="@+id/btn_add_question"
         android:layout_width="wrap_content"
         android:layout_height="56dp"
-        android:layout_marginStart="336dp"
-        android:layout_marginTop="577dp"
-        android:layout_marginEnd="25dp"
-        android:layout_marginBottom="25dp"
+        android:layout_marginEnd="44dp"
+        android:layout_marginBottom="30dp"
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_add"
         tools:ignore="SpeakableTextPresentCheck" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/txt_foro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="58dp"
-        android:layout_marginTop="126dp"
-        android:text="TextView"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="40dp"
+        android:fontFamily="@font/alegreya"
+        android:text="@string/foro"
+        android:textColor="@color/fonts"
+        android:textSize="30sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/foro_recyclerView"
+        android:layout_width="413dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="72dp"
+        android:layout_marginEnd="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

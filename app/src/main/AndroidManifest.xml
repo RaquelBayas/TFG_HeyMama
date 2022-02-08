@@ -13,6 +13,18 @@
         android:theme="@style/Theme.MyApp_1"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activities.ArticleActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activities.InfoActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activities.HomeActivityProf"
+            android:exported="true" />
+        <activity
+            android:name=".activities.TemaForoActivity"
+            android:exported="true" />
+        <activity
             android:name=".activities.PreguntaActivity"
             android:exported="true" />
         <activity

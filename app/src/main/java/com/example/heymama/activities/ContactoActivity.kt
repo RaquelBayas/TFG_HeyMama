@@ -7,31 +7,27 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import com.example.heymama.*
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class ContactoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_contacto)
 
-        // Home button
-        var btn_home: Button = findViewById(R.id.btn_home)
-        btn_home.setOnClickListener {
-            onClick(R.id.btn_home)
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
+        bottomNavigationView.setOnNavigationItemReselectedListener { item ->
+            when(item.itemId) {
+                R.id.nav_bottom_item_home -> finish()
+                R.id.nav_bottom_item_respirar -> goToActivity(this,RespirarActivity::class.java)
+            }
         }
+
 
     }
 
-    fun onClick(view: Int) {
-        when(view) {
-            R.id.btn_respirar -> goToActivity(this, RespirarActivity::class.java)
-            R.id.txt_foros -> goToActivity(this, ForosActivity::class.java)
-            R.id.btn_home -> goToActivity(this, HomeActivity::class.java)
-        }
-    }
 
     fun Context.goToActivity(activity: Activity, classs: Class<*>?) {
         val intent = Intent(activity, classs)
         startActivity(intent)
-        //activity.finish()
     }
 }

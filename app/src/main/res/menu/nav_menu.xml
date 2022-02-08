@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group>
+        <item
+            android:id="@+id/nav_item_perfil"
+            android:title="@string/nav_item_perfil"
+            android:icon="@drawable/casa"/>
+
+        <item
+            android:id="@+id/nav_item_messages"
+            android:title="@string/nav_item_messages"
+            android:icon="@drawable/messages"/>
+
+        <item
+            android:id="@+id/nav_item_respirar"
+            android:title="@string/nav_item_respirar"
+            android:icon="@drawable/breath"/>
+
+        <item
+            android:id="@+id/nav_item_consultas"
+            android:title="@string/nav_item_consultas"
+            android:icon="@drawable/phone"/>
+
+        <item
+            android:id="@+id/nav_item_ajustes"
+            android:title="@string/nav_item_ajustes"
+            android:icon="@drawable/settings"/>
+
+    </group>
+</menu>

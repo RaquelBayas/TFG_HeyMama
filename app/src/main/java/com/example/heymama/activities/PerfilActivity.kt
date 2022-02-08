@@ -10,11 +10,13 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.heymama.GlideApp
 import com.example.heymama.R
 import com.example.heymama.databinding.ActivityPerfilBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
@@ -50,6 +52,8 @@ class PerfilActivity : AppCompatActivity() {
         firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
         storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").reference
 
+        val userDB: DatabaseReference = dataBaseReference.child(user!!.uid)
+
         loadPicture()
 
         // Cambiar imagen layout
@@ -58,14 +62,15 @@ class PerfilActivity : AppCompatActivity() {
         // Cambiar imagen de perfil
         binding.profileImage.setOnClickListener { selectImage(200) }
 
+        var txt_user_perfil: TextView = findViewById(R.id.txt_user_perfil)
+        txt_user_perfil.text = userDB.child("User").get().toString()
 
-
-        // Home button
-        var btn_home: Button = findViewById(R.id.btn_home)
-        btn_home.setOnClickListener {
-            onClick(R.id.btn_home)
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
+        bottomNavigationView.setOnNavigationItemReselectedListener { item ->
+            when(item.itemId) {
+                R.id.nav_bottom_item_respirar -> goToActivity(this,RespirarActivity::class.java)
+            }
         }
-
 
     }
 
@@ -97,11 +102,10 @@ class PerfilActivity : AppCompatActivity() {
 
     fun onClick(view: Int) {
         when(view) {
-            R.id.btn_home -> goToActivity(this, HomeActivity::class.java)
-            R.id.button2 -> goToActivity(this, ForosActivity::class.java)
-            R.id.button3 -> goToActivity(this, PerfilActivity::class.java)
+
             //R.id.button4 -> goToActivity(this, PerfilActivity::class.java)
         }
+
     }
 
     fun Context.goToActivity(activity: Activity, classs: Class<*>?) {

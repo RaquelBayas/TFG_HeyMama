@@ -13,6 +13,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 
 
 class RegisterActivity : AppCompatActivity() {
@@ -26,6 +29,9 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
+
+    lateinit var firebaseStore: FirebaseFirestore
+    lateinit var storageReference: StorageReference
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +59,8 @@ class RegisterActivity : AppCompatActivity() {
         //Dentro de la base de datos habrá un nodo "Usuarios" donde se guardan los usuarios de la aplicación
         dataBaseReference = dataBase.getReference("Usuarios")
 
+        storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").reference
+
         findViewById<Button>(R.id.btn_crear_cuenta).setOnClickListener{
             createAccount()
         }
@@ -64,6 +72,8 @@ class RegisterActivity : AppCompatActivity() {
         val email: String = txt_email.text.toString()
         val password: String = txt_password.text.toString()
         val username: String = txt_user.text.toString()
+
+        firebaseStore = FirebaseFirestore.getInstance()
 
         Toast.makeText(this,email,Toast.LENGTH_SHORT).show()
         Toast.makeText(this,password,Toast.LENGTH_SHORT).show()
@@ -91,6 +101,7 @@ class RegisterActivity : AppCompatActivity() {
                         userDB.child("Rol").setValue("Usuario")
                         userDB.child("Password").setValue(password)
 
+                        //firebaseStore.collection("Usuarios")
 
 
                     } else{
