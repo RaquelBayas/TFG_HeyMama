@@ -36,7 +36,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/foro_recyclerView"
-        android:layout_width="413dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="1dp"
         android:layout_marginTop="72dp"

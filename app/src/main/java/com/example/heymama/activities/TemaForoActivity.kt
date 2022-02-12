@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
 import com.example.heymama.adapters.CommentsForoAdapter
-import com.example.heymama.interfaces.ItemForoListener
+import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.interfaces.Utils
 import com.example.heymama.models.Comment
 import com.google.firebase.auth.FirebaseAuth
@@ -28,7 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.StorageReference
 import java.util.*
 
-class TemaForoActivity : AppCompatActivity(), ItemForoListener, Utils {
+class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
 
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
@@ -79,15 +79,6 @@ class TemaForoActivity : AppCompatActivity(), ItemForoListener, Utils {
 
     }
 
-    override fun onClick(view: Int) {
-        when(view) {
-            //R.id.btn_home -> finish()//goToActivity(this, RespirarActivity::class.java)
-            R.id.button2 -> goToActivity(this, ForosActivity::class.java)
-            R.id.button3 -> goToActivity(this, InfoActivity::class.java)
-            R.id.button4 -> goToActivity(this, PerfilActivity::class.java)
-            //R.id.btn_phone -> goToActivity(this, ContactoActivity::class.java)
-        }
-    }
 
     fun showDialog(user: FirebaseUser, foroName: String, urlTema: String) {
         val builder = AlertDialog.Builder(this)

@@ -21,6 +21,7 @@
     <string name="comotesientes">¿Cómo te sientes hoy?</string>
     <string name="foros">Foros</string>
     <string name="informacion">Información</string>
+    <string name="consultas">Consultas</string>
 
     <string name="depresion">Depresión</string>
     <string name="posparto">Posparto</string>
@@ -60,6 +61,9 @@
     <string name="articulo_titulo">Título del artículo</string>
     <string name="articulo_contenido">Artículo</string>
     <string name="btn_articulo">Publicar</string>
+    <string name="editar">Editar</string>
+    <string name="eliminar">Eliminar</string>
+    <string name="alert_eliminar">¿Deseas eliminar el artículo?</string>
 
     <string name="add_comment">Añadir comentario</string>
 

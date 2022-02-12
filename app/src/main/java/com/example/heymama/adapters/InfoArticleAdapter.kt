@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
-import com.example.heymama.interfaces.ItemForoListener
+import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.Article
 import com.example.heymama.models.Post
 
-class InfoArticleAdapter(private val context: Context, private val articleArrayList: ArrayList<Article>, private val articleItemListener: ItemForoListener
+class InfoArticleAdapter(private val context: Context, private val articleArrayList: ArrayList<Article>, private val articleItemListener: ItemRecyclerViewListener
 ) : RecyclerView.Adapter<InfoArticleAdapter.HolderArticle>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderArticle {
@@ -24,7 +24,7 @@ class InfoArticleAdapter(private val context: Context, private val articleArrayL
         val tema_article_info: Article = articleArrayList[position] // get data at specific position
         holder.titulo_article.setText(tema_article_info.title)
         holder.titulo_article.setOnClickListener{
-            articleItemListener.onItemForoClicked(position)
+            articleItemListener.onItemClicked(position)
         }
     }
 

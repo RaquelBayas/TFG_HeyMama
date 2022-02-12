@@ -85,9 +85,10 @@
                 android:text="TextView"
                 android:textAlignment="center"
                 android:textColor="@color/fonts"
-                android:textSize="20sp"
-                app:layout_constraintTop_toBottomOf="@+id/layout_image"
-                tools:layout_editor_absoluteX="164dp" />
+                android:textSize="22sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/layout_image" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"

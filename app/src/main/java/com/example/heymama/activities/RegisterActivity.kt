@@ -23,6 +23,7 @@ class RegisterActivity : AppCompatActivity() {
     lateinit var txt_email: EditText
     lateinit var txt_password: EditText
     lateinit var txt_user: EditText
+    lateinit var txt_name: EditText
     private lateinit var btn_registro: Button
 
     // FirebaseAuth object
@@ -50,6 +51,7 @@ class RegisterActivity : AppCompatActivity() {
         txt_email = findViewById(R.id.txt_email)
         txt_password = findViewById(R.id.txt_password)
         txt_user = findViewById(R.id.txt_user)
+        txt_name = findViewById(R.id.txt_name)
         btn_registro = findViewById(R.id.btn_crear_cuenta)
 
         //Instancias para la base de datos y la autenticación
@@ -70,6 +72,7 @@ class RegisterActivity : AppCompatActivity() {
     // Crear cuenta
     private fun createAccount() {
         val email: String = txt_email.text.toString()
+        val name: String = txt_name.text.toString()
         val password: String = txt_password.text.toString()
         val username: String = txt_user.text.toString()
 
@@ -97,11 +100,20 @@ class RegisterActivity : AppCompatActivity() {
                         Toast.makeText(this,"Here again 2 !",Toast.LENGTH_SHORT).show()
 
                         userDB.child("User").setValue(username)
+                        userDB.child("Name").setValue(name)
                         userDB.child("Email").setValue(email)
                         userDB.child("Rol").setValue("Usuario")
                         userDB.child("Password").setValue(password)
 
-                        //firebaseStore.collection("Usuarios")
+                        val data = hashMapOf(
+                            "User" to username,
+                            "Name" to name,
+                            "Email" to email,
+                            "Rol" to "Usuario",
+                            "Password" to password
+                        )
+
+                        firebaseStore.collection("Usuarios").add(data)
 
 
                     } else{

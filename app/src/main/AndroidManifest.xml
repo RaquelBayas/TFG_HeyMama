@@ -13,6 +13,9 @@
         android:theme="@style/Theme.MyApp_1"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activities.LayoutArticleActivity"
+            android:exported="true" />
+        <activity
             android:name=".activities.ArticleActivity"
             android:exported="true" />
         <activity
@@ -29,9 +32,6 @@
             android:exported="true" />
         <activity
             android:name=".fragments.SubForoFragment"
-            android:exported="true" />
-        <activity
-            android:name=".activities.HomeProfesionalActivity"
             android:exported="true" />
         <activity
             android:name=".activities.ContactoActivity"

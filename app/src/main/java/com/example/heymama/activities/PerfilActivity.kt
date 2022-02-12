@@ -19,8 +19,8 @@ import com.example.heymama.databinding.ActivityPerfilBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
@@ -29,6 +29,7 @@ class PerfilActivity : AppCompatActivity() {
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
     lateinit var firebaseStore: FirebaseStorage
+    lateinit var firestore: FirebaseFirestore
     lateinit var storageReference: StorageReference
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
@@ -62,8 +63,13 @@ class PerfilActivity : AppCompatActivity() {
         // Cambiar imagen de perfil
         binding.profileImage.setOnClickListener { selectImage(200) }
 
+
         var txt_user_perfil: TextView = findViewById(R.id.txt_user_perfil)
-        txt_user_perfil.text = userDB.child("User").get().toString()
+        firestore = FirebaseFirestore.getInstance()
+        firestore.collection("Usuarios").whereEqualTo("Email",user.email).addSnapshotListener { value, error ->
+           txt_user_perfil.text = value!!.documents.get(0).get("Name").toString()
+        }
+
 
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         bottomNavigationView.setOnNavigationItemReselectedListener { item ->

@@ -8,11 +8,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
 import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -21,8 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
 import com.example.heymama.Utils
 import com.example.heymama.adapters.ForoAdapter
-import com.example.heymama.fragments.SubForoFragment
-import com.example.heymama.interfaces.ItemForoListener
+import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.Post
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -30,13 +25,9 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import java.util.*
 
-class SubForoActivity : AppCompatActivity(), ItemForoListener, com.example.heymama.interfaces.Utils{
+class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.example.heymama.interfaces.Utils{
 
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
@@ -118,7 +109,7 @@ class SubForoActivity : AppCompatActivity(), ItemForoListener, com.example.heyma
 
     }
 
-    override fun onItemForoClicked(position: Int) {
+    override fun onItemClicked(position: Int) {
         Toast.makeText(this,"Has seleccionado el tema # ${position+1}",Toast.LENGTH_SHORT).show()
         val intent = Intent(this, TemaForoActivity::class.java)
         //intent.putExtra("ForoName",foroName)
@@ -128,18 +119,5 @@ class SubForoActivity : AppCompatActivity(), ItemForoListener, com.example.heyma
         startActivity(intent)
     }
 
-    override fun onClick(view: Int) {
-        when(view) {
-            R.id.btn_home -> goToActivity(this, HomeActivity::class.java)
-            R.id.button2 -> goToActivity(this, ForosActivity::class.java)
-            R.id.button3 -> goToActivity(this, PerfilActivity::class.java)
-            //R.id.btn_add_question -> goToActivity(this, PreguntaActivity::class.java)
-        }
-    }
 
-    override fun Context.goToActivity(activity: Activity, classs: Class<*>?) {
-        val intent = Intent(activity, classs)
-        startActivity(intent)
-        activity.finish()
-    }
 }

@@ -8,11 +8,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
 import com.example.heymama.activities.TemaForoActivity
-import com.example.heymama.interfaces.ItemForoListener
+import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.Comment
 import com.example.heymama.models.Post
 
-class CommentsForoAdapter(private val context: Context, private val commentsForoArrayList: ArrayList<Comment>, private val foroItemListener: ItemForoListener
+class CommentsForoAdapter(private val context: Context, private val commentsForoArrayList: ArrayList<Comment>, private val foroItemListener: ItemRecyclerViewListener
 ) : RecyclerView.Adapter<CommentsForoAdapter.HolderForo>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentsForoAdapter.HolderForo {
         // inflate layout tema_foro.xml
@@ -25,7 +25,7 @@ class CommentsForoAdapter(private val context: Context, private val commentsForo
         holder.comment_foro.setText(tema_post.post)
         //holder.img_tema_foro.setImageURI(tema_post)
         holder.comment_foro.setOnClickListener{
-            foroItemListener.onItemForoClicked(position)
+            foroItemListener.onItemClicked(position)
         }
     }
 

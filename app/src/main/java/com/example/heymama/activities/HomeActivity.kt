@@ -25,6 +25,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import de.hdodenhof.circleimageview.CircleImageView
@@ -36,6 +37,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
     lateinit var firebaseStore: FirebaseStorage
+    lateinit var firestore: FirebaseFirestore
     lateinit var storageReference: StorageReference
 
     private lateinit var textView: TextView
@@ -78,7 +80,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeButtonEnabled(true)
 
-
         val navigationView: NavigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
 
@@ -103,8 +104,12 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
 
-        //textView = findViewById(R.id.textView)
-        //textView.text = name
+        // NOMBRE
+        textView = findViewById(R.id.textView)
+        firestore = FirebaseFirestore.getInstance()
+        firestore.collection("Usuarios").whereEqualTo("Email",user.email).addSnapshotListener { value, error ->
+            textView.text = "Bienvenida " + value!!.documents.get(0).get("Name").toString()
+        }
 
 
         var txt_foros : TextView = findViewById(R.id.txt_foros)
@@ -186,7 +191,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 startActivity(intent)
                 //goToActivity(this, InfoActivity::class.java)
             }
-            R.id.btn_home -> goToActivity(this,ContactoActivity::class.java)
         }
     }
 

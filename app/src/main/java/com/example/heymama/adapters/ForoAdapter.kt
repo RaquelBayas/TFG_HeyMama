@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
-import com.example.heymama.interfaces.ItemForoListener
+import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.Post
 
-class ForoAdapter(private val context: Context, private val foroArrayList: ArrayList<Post>, private val foroItemListener: ItemForoListener
+class ForoAdapter(private val context: Context, private val foroArrayList: ArrayList<Post>, private val foroItemListener: ItemRecyclerViewListener
     ) : RecyclerView.Adapter<ForoAdapter.HolderForo>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderForo {
@@ -24,7 +24,7 @@ class ForoAdapter(private val context: Context, private val foroArrayList: Array
         holder.titulo_foro.setText(tema_post.title)
         //holder.img_tema_foro.setImageURI(tema_post)
         holder.titulo_foro.setOnClickListener{
-            foroItemListener.onItemForoClicked(position)
+            foroItemListener.onItemClicked(position)
         }
     }
 
