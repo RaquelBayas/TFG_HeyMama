@@ -73,7 +73,6 @@
         android:layout_height="450dp"
         android:layout_marginBottom="10dp"
         android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_bar_home"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.2"
         app:layout_constraintStart_toStartOf="parent"

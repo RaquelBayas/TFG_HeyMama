@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import com.example.heymama.R
+import com.example.heymama.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
@@ -76,6 +77,10 @@ class RegisterActivity : AppCompatActivity() {
         val password: String = txt_password.text.toString()
         val username: String = txt_user.text.toString()
 
+        if (!verifyPassword(password)) {
+            Toast.makeText(this,applicationContext.getString(R.string.ContraseñaInsegura),Toast.LENGTH_SHORT).show()
+        }
+
         firebaseStore = FirebaseFirestore.getInstance()
 
         Toast.makeText(this,email,Toast.LENGTH_SHORT).show()
@@ -92,28 +97,36 @@ class RegisterActivity : AppCompatActivity() {
 
                         // Usuario
                         val user: FirebaseUser? = auth.currentUser
+                        val uid = user?.uid
                         // ID en la BBDD
-                        val userDB: DatabaseReference = dataBaseReference.child(user!!.uid)
+                        val userDB: DatabaseReference = dataBaseReference.child(uid!!)
 
                         verifyEmail(user)
 
                         Toast.makeText(this,"Here again 2 !",Toast.LENGTH_SHORT).show()
 
-                        userDB.child("User").setValue(username)
-                        userDB.child("Name").setValue(name)
+                        userDB.child("id").setValue(uid)
+                        userDB.child("name").setValue(name)
+                        userDB.child("user").setValue(username)
                         userDB.child("Email").setValue(email)
                         userDB.child("Rol").setValue("Usuario")
-                        userDB.child("Password").setValue(password)
+                        userDB.child("bio").setValue("")
+                        userDB.child("profilePhoto").setValue("")
+                        //userDB.child("Password").setValue(password)
 
                         val data = hashMapOf(
-                            "User" to username,
+                            "ID" to uid,
                             "Name" to name,
+                            "Username" to username,
                             "Email" to email,
                             "Rol" to "Usuario",
-                            "Password" to password
+                            "Bio" to "",
+                            "profilePhoto" to ""
                         )
 
-                        firebaseStore.collection("Usuarios").add(data)
+                        //val usuario = User(auth.uid.toString(),name,username,email,"Usuario","","")
+                        firebaseStore.collection("Usuarios").document(uid).set(data)
+                        //firebaseStore.collection("Usuarios").document(auth.uid.toString()).set(usuario)
 
 
                     } else{
@@ -143,6 +156,9 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     // Comprobar la contraseña
+    private fun verifyPassword(password: String) : Boolean{
+        return (password != null && password.length >= 7)
+    }
 
 
     override fun onSupportNavigateUp(): Boolean {

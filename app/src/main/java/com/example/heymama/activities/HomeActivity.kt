@@ -30,7 +30,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import de.hdodenhof.circleimageview.CircleImageView
 
-class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, Utils{
+class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, Utils {
 
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
@@ -53,7 +53,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val intent = intent
         val rol = intent.getStringExtra("Rol")
-        Toast.makeText(this,rol,Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this,rol,Toast.LENGTH_SHORT).show()
 
 
         //Instancias para la base de datos y la autenticación
@@ -65,8 +65,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         // Usuario
         val user: FirebaseUser? = auth.currentUser
-        // ID en la BBDD
-        val userDB: DatabaseReference = dataBaseReference.child(user!!.uid)
 
         firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
         storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").reference
@@ -74,8 +72,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar_main)
         setSupportActionBar(toolbar)
 
-        drawer = findViewById(R.id.drawer_layout)
-        toggle = ActionBarDrawerToggle(this,drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeButtonEnabled(true)
@@ -88,13 +84,27 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             when(item.itemId) {
                 R.id.nav_bottom_item_respirar -> goToActivity(this,RespirarActivity::class.java)
                 R.id.nav_bottom_item_foros -> goToActivity(this,ForosActivity::class.java)
-
             }
         }
 
-        loadPicture(navigationView)
+        drawer = findViewById(R.id.drawer_layout)
+        var viewNav : View = navigationView.getHeaderView(0)
+        toggle = object : ActionBarDrawerToggle(this,drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close){
 
-        user?.let {
+            override fun onDrawerStateChanged(newState: Int) {
+                var profileImage_nav = viewNav.findViewById<ImageView>(R.id.nav_header_icon)
+
+                storageReference = firebaseStore.getReference("/Usuarios/"+auth.currentUser?.uid+"/images/perfil")
+
+                GlideApp.with(applicationContext)
+                    .load(storageReference)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .into(profileImage_nav)
+            }
+        }
+        drawer.addDrawerListener(toggle)
+        /*user?.let {
             for(profile in it.providerData) {
                 val providerId = profile.providerId
                 val uid = profile.uid
@@ -102,61 +112,41 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 //name = profile.displayName.toString()
 
             }
-        }
+        }*/
 
         // NOMBRE
         textView = findViewById(R.id.textView)
         firestore = FirebaseFirestore.getInstance()
-        firestore.collection("Usuarios").whereEqualTo("Email",user.email).addSnapshotListener { value, error ->
+        firestore.collection("Usuarios").whereEqualTo("Email",
+            user!!.email).addSnapshotListener { value, error ->
             textView.text = "Bienvenida " + value!!.documents.get(0).get("Name").toString()
         }
 
 
-        var txt_foros : TextView = findViewById(R.id.txt_foros)
+        val txt_foros : TextView = findViewById(R.id.txt_foros)
         txt_foros.setOnClickListener{
             onClick(R.id.txt_foros)
         }
 
-        var txt_informacion : TextView = findViewById(R.id.txt_informacion)
+        val txt_informacion : TextView = findViewById(R.id.txt_informacion)
         txt_informacion.setOnClickListener{
             onClick(R.id.txt_informacion)
         }
 
-        drawer.addDrawerListener(toggle)
 
 
     }
-
-
-    fun loadPicture(navigationView: NavigationView) {
-        // Comprueba si existe imagen de perfil en la bbdd
-        var viewNav : View = navigationView.getHeaderView(0)
-        var profileImage_nav = viewNav.findViewById<ImageView>(R.id.nav_header_icon)
-
-        storageReference = firebaseStore.getReference("/Usuarios/"+auth.currentUser?.uid+"/images/perfil")
-
-
-        GlideApp.with(applicationContext)
-            .load(storageReference)
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .skipMemoryCache(true)
-            .into(profileImage_nav)
-
-        Toast.makeText(this, "Picture updated", Toast.LENGTH_SHORT).show()
-
-    }
-
 
     override fun onNavigationItemSelected(item: MenuItem) : Boolean {
         when (item.itemId) {
             R.id.nav_item_perfil  -> {
                 val intent = Intent(this, PerfilActivity::class.java)
                 startActivity(intent)
-            }// Toast.makeText(this, "Item 1", Toast.LENGTH_SHORT).show()
+            }
             R.id.nav_item_respirar -> onClick(R.id.nav_item_respirar)
             R.id.nav_bottom_item_respirar -> onClick(R.id.nav_bottom_item_respirar)
             R.id.nav_item_consultas -> goToActivity(this,ContactoActivity::class.java)
-
+            R.id.nav_item_messages -> goToActivity(this,TimelineActivity::class.java)
         }
         drawer.closeDrawer(GravityCompat.START)
         return true
@@ -189,14 +179,10 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val intent = Intent(this, InfoActivity::class.java)
                 intent.putExtra("Rol","Usuario")
                 startActivity(intent)
-                //goToActivity(this, InfoActivity::class.java)
             }
         }
     }
 
 
-}
-/*
-private fun View.setOnClickListener(btnIconProfile: Int) {
 
-}*/
+}

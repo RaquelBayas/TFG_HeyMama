@@ -12,7 +12,6 @@
         android:layout_height="48dp"
         app:civ_border_color="@color/wine_1"
         app:civ_border_width="2dp"
-        app:layout_constraintBottom_toBottomOf="@+id/bottom_bar_home"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.947"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,9 +31,11 @@
 
             <ImageView
                 android:id="@+id/imageView10"
-                android:layout_width="375dp"
+                android:layout_width="match_parent"
                 android:layout_height="125dp"
                 android:layout_marginTop="20dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.444"
                 app:layout_constraintStart_toStartOf="parent"
@@ -43,9 +44,11 @@
 
             <ImageView
                 android:id="@+id/imageView12"
-                android:layout_width="375dp"
+                android:layout_width="match_parent"
                 android:layout_height="125dp"
                 android:layout_marginTop="25dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.555"
                 app:layout_constraintStart_toStartOf="parent"
@@ -54,9 +57,11 @@
 
             <ImageView
                 android:id="@+id/imageView6"
-                android:layout_width="375dp"
+                android:layout_width="match_parent"
                 android:layout_height="125dp"
                 android:layout_marginTop="108dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.444"
                 app:layout_constraintStart_toStartOf="parent"
@@ -65,9 +70,11 @@
 
             <ImageView
                 android:id="@+id/imageView7"
-                android:layout_width="375dp"
+                android:layout_width="match_parent"
                 android:layout_height="125dp"
                 android:layout_marginTop="25dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.527"
                 app:layout_constraintStart_toStartOf="parent"

@@ -59,7 +59,7 @@ class Login : AppCompatActivity() {
                             override fun onCancelled(p1: DatabaseError) {
                             }
                             override fun onDataChange(p1: DataSnapshot) {
-                                var data = p1.child("Email").value
+                                val data = p1.child("Email").value
                                 UserInfo.listaMails.add(data.toString())
                             }
                         })
@@ -111,6 +111,7 @@ class Login : AppCompatActivity() {
                             val intent = Intent(applicationContext, HomeActivityProf::class.java)
                             intent.putExtra("Rol","Profesional")
                             startActivity(intent)
+
                             Log.d("TAG Profesional: ", rol)
                         } else {
                             val intent = Intent(applicationContext, HomeActivity::class.java)

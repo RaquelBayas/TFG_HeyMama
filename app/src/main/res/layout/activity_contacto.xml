@@ -41,16 +41,14 @@
         android:id="@+id/txt_consulta"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
         android:layout_marginTop="30dp"
-        android:layout_marginEnd="279dp"
         android:fontFamily="@font/alegreya"
         android:text="@string/consulta"
         android:textColor="@color/fonts"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -70,7 +68,7 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="411dp"
+        android:layout_width="match_parent"
         android:layout_height="264dp"
         android:layout_marginTop="15dp"
         android:orientation="vertical"
