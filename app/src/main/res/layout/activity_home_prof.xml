@@ -7,11 +7,10 @@
     android:layout_height="match_parent"
     tools:context=".activities.HomeActivityProf">
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/home_prof_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
 
         <ImageView
             android:id="@+id/imageView13"
@@ -97,7 +96,6 @@
             app:layout_constraintTop_toTopOf="@+id/imageView8"
             app:layout_constraintVertical_bias="0.295" />
 
-
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigationView"
             android:layout_width="match_parent"
@@ -112,12 +110,10 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"></FrameLayout>
+
         </com.google.android.material.bottomnavigation.BottomNavigationView>
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
     <include
         layout="@layout/app_bar_home"
@@ -131,7 +127,8 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_menu"
-        app:menu="@menu/nav_menu" >
+        app:menu="@menu/nav_menu">
 
     </com.google.android.material.navigation.NavigationView>
+
 </androidx.drawerlayout.widget.DrawerLayout>

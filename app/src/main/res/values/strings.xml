@@ -36,6 +36,9 @@
     <string name="amigos">Amigos</string>
     <string name="mensajes">Mensajes</string>
 
+    <string name="aceptar">Aceptar</string>
+    <string name="rechazar">Rechazar</string>
+
     <!-- Contacto -->
     <string name="contacto">Contacto</string>
     <string name="consulta">Consulta</string>
@@ -49,6 +52,7 @@
     <!-- Menu nav bar -->
     <string name="nav_item_perfil">Perfil</string>
     <string name="nav_item_messages">Mensajes</string>
+    <string name="nav_item_solicitudes">Solicitudes</string>
     <string name="nav_item_respirar">Respirar</string>
     <string name="nav_item_consultas">Consultas</string>
     <string name="nav_item_ajustes">Ajustes</string>

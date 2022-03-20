@@ -47,7 +47,6 @@ class ForosActivity : AppCompatActivity(), Utils{
 
         firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
 
-        loadPicture()
 
         var txt_depresion : TextView = findViewById(R.id.txt_depresion)
         txt_depresion.setOnClickListener{
@@ -75,18 +74,7 @@ class ForosActivity : AppCompatActivity(), Utils{
         }
     }
 
-    fun loadPicture() {
-        // Comprueba si existe imagen de perfil en la bbdd
-        var profileImage : ImageView = findViewById(R.id.profile_image_foros)
 
-        storageReference = firebaseStore.getReference("/Usuarios/"+auth.currentUser?.uid+"/images/perfil")
-
-        GlideApp.with(applicationContext)
-            .load(storageReference)
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .skipMemoryCache(true)
-            .into(profileImage)
-    }
 
      fun Context.goToActivity(activity: Activity, classs: Class<*>?, foroName: String) {
         val intent = Intent(activity, classs)

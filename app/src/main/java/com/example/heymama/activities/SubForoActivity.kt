@@ -10,12 +10,9 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.Toast
-import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
-import com.example.heymama.Utils
 import com.example.heymama.adapters.ForoAdapter
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.Post
@@ -101,8 +98,8 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
                     }
 
                 }
+                Collections.sort(temasArraylist)
                 adapter = ForoAdapter(this,temasArraylist,this)
-
                 recyclerView.adapter = adapter
 
             }

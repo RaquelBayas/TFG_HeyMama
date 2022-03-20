@@ -9,10 +9,12 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import com.example.heymama.R
+import com.example.heymama.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 
 class RegisterProfesionalActivity : AppCompatActivity() {
 
@@ -25,6 +27,7 @@ class RegisterProfesionalActivity : AppCompatActivity() {
 
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
+    lateinit var firebaseStore: FirebaseFirestore
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
 
@@ -69,6 +72,8 @@ class RegisterProfesionalActivity : AppCompatActivity() {
         val nombre_prof: String = txt_nombre_prof.text.toString()
         val apellidos_prof: String = txt_apellidos_prof.text.toString()
 
+        firebaseStore = FirebaseFirestore.getInstance()
+
         Toast.makeText(this,email, Toast.LENGTH_SHORT).show()
         Toast.makeText(this,password, Toast.LENGTH_SHORT).show()
 
@@ -83,18 +88,35 @@ class RegisterProfesionalActivity : AppCompatActivity() {
 
                         // Usuario
                         val user: FirebaseUser? = auth.currentUser
+                        val uid = user?.uid
                         // ID en la BBDD
                         val userDB: DatabaseReference = dataBaseReference.child(user!!.uid)
 
                         verifyEmail(user)
 
+                        userDB.child("id").setValue(uid)
+                        userDB.child("name").setValue(nombre_prof)
+                        userDB.child("apellidos").setValue(apellidos_prof)
+                        userDB.child("user").setValue(user_prof)
                         userDB.child("Email").setValue(email)
                         userDB.child("Rol").setValue("Profesional")
-                        userDB.child("Password").setValue(password)
-                        userDB.child("User").setValue(user_prof)
-                        userDB.child("Nombre").setValue(nombre_prof)
-                        userDB.child("Apellidos").setValue(apellidos_prof)
+                        userDB.child("bio").setValue("")
+                        userDB.child("profilePhoto").setValue("")
 
+                        val data = hashMapOf(
+                            "ID" to uid,
+                            "Name" to nombre_prof,
+                            "Surname" to apellidos_prof,
+                            "Username" to user_prof,
+                            "Email" to email,
+                            "Rol" to "Profesional",
+                            "Bio" to "",
+                            "profilePhoto" to ""
+                        )
+
+                        val usuario = User(uid,nombre_prof,user_prof,email,"Profesional","","")
+                        firebaseStore.collection("Usuarios").document(uid!!).set(data)
+                        firebaseStore.collection("Usuarios").document(uid!!).set(usuario)
 
                     } else{
                         Toast.makeText(this,"Ocurrió un error al enviar el email de verificación.",

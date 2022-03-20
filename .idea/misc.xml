@@ -7,8 +7,18 @@
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/circle_home.xml" value="0.2703125" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/edittext_pink_home.xml" value="0.2703125" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/edittext_white.xml" value="0.2703125" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_arrow_back.xml" value="0.1707236842105263" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_attachment.xml" value="0.22179487179487178" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_corazon.xml" value="0.22179487179487178" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_corazon_rojo.xml" value="0.22179487179487178" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2703125" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_more.xml" value="0.22763157894736843" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_send.xml" value="0.22179487179487178" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_send_tl.xml" value="0.24027777777777778" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/item_chat_left.xml" value="0.22179487179487178" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/item_left.xml" value="0.22179487179487178" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/item_right.xml" value="0.22179487179487178" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/menu.xml" value="0.1707236842105263" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/posts_timeline.xml" value="0.22763157894736843" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/rectangle_consulta.xml" value="0.1707236842105263" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/rectangle_edit_article.xml" value="0.10400000000000001" />
@@ -17,11 +27,14 @@
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/rectangle_pink.xml" value="0.2703125" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/rectangle_purple.xml" value="0.2703125" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/square_info.xml" value="0.202734375" />
-        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_article.xml" value="0.2" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_article.xml" value="0.14583333333333334" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_chat.xml" value="0.264" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_comment_post_tlactivity.xml" value="0.264" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_contacto.xml" value="0.136" />
-        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_foros.xml" value="0.1" />
-        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_home.xml" value="0.1" />
-        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_home_prof.xml" value="0.2" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_foros.xml" value="0.16" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_friends.xml" value="0.1" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_home.xml" value="0.264" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_home_prof.xml" value="0.1" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_home_profesional.xml" value="0.16944444444444445" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_info.xml" value="0.152" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_layout_article.xml" value="0.12280701754385964" />
@@ -34,15 +47,20 @@
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_register_profesional.xml" value="0.264" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_remember_password.xml" value="0.25226449275362317" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_respirar.xml" value="0.264" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_solicitudes.xml" value="0.2" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_sub_foro.xml" value="0.2" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_sub_foro_fragment.xml" value="0.264" />
-        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_tema_foro.xml" value="0.1" />
-        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_timeline.xml" value="0.21403508771929824" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_tema_foro.xml" value="0.176" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_timeline.xml" value="0.264" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/add_comment_foro_layout.xml" value="0.264" />
-        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/add_post.xml" value="0.4" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/add_post.xml" value="0.72" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/add_post_comment.xml" value="0.72" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/add_post_foro_layout.xml" value="0.2" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/app_bar_home.xml" value="0.14651639344262296" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/fragment_solicitudes.xml" value="0.1287568306010929" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/fragment_sub_foro.xml" value="0.2" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/item_chat_left.xml" value="0.72" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/item_chat_right.xml" value="0.41688654353562005" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/nav_header_menu.xml" value="0.1" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/nav_menu.xml" value="0.2" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/posts_timeline.xml" value="0.21403508771929824" />
@@ -51,6 +69,8 @@
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/square_info.xml" value="0.1" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/subforofragment.xml" value="0.264" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/tema_foro.xml" value="0.4" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/tema_friend.xml" value="0.2" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/tema_friendrequests.xml" value="0.1" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/tema_info.xml" value="0.264" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/menu/article_menu.xml" value="0.21403508771929824" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/menu/nav_bar_bottom_menu.xml" value="0.16486486486486487" />

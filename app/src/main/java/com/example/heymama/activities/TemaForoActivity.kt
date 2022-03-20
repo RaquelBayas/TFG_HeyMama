@@ -85,12 +85,11 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
         val inflater: LayoutInflater = layoutInflater
         val dialogLayout: View  =inflater.inflate(R.layout.add_comment_foro_layout,null)
         val editText: EditText = dialogLayout.findViewById(R.id.edt_add_comment)
-        val textView3: TextView = findViewById(R.id.textView3)
+
         //val btn_add_comment_foro: Button = findViewById(R.id.btn_add_comment_foro)
         with(builder){
             setTitle("Introduce un comentario")
             setPositiveButton("Añadir") {dialog, which ->
-                textView3.text = editText.text.toString()
                 add_comment(editText.text.toString(),user,foroName,urlTema)
             }
             setNegativeButton("Cancelar"){dialog, which ->
@@ -138,6 +137,7 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
                     }
 
                 }
+                Collections.sort(commentsArraylist)
                 adapterComments = CommentsForoAdapter(this,commentsArraylist,this)
 
                 recyclerViewComments.adapter = adapterComments

@@ -13,6 +13,11 @@
             android:icon="@drawable/messages"/>
 
         <item
+            android:id="@+id/nav_item_solicitudes"
+            android:title="@string/nav_item_solicitudes"
+            android:icon="@drawable/ic_solicitudes"/>
+
+        <item
             android:id="@+id/nav_item_respirar"
             android:title="@string/nav_item_respirar"
             android:icon="@drawable/breath"/>

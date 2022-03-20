@@ -112,7 +112,6 @@ class RegisterActivity : AppCompatActivity() {
                         userDB.child("Rol").setValue("Usuario")
                         userDB.child("bio").setValue("")
                         userDB.child("profilePhoto").setValue("")
-                        //userDB.child("Password").setValue(password)
 
                         val data = hashMapOf(
                             "ID" to uid,
@@ -127,7 +126,6 @@ class RegisterActivity : AppCompatActivity() {
                         //val usuario = User(auth.uid.toString(),name,username,email,"Usuario","","")
                         firebaseStore.collection("Usuarios").document(uid).set(data)
                         //firebaseStore.collection("Usuarios").document(auth.uid.toString()).set(usuario)
-
 
                     } else{
                         Toast.makeText(this,"Ocurrió un error al enviar el email de verificación.",Toast.LENGTH_SHORT).show()

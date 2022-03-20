@@ -20,12 +20,14 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.heymama.GlideApp
 import com.example.heymama.R
 import com.example.heymama.interfaces.Utils
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import de.hdodenhof.circleimageview.CircleImageView
@@ -74,6 +76,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu_bar);
         supportActionBar?.setHomeButtonEnabled(true)
 
         val navigationView: NavigationView = findViewById(R.id.nav_view)
@@ -123,18 +126,34 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
 
-        val txt_foros : TextView = findViewById(R.id.txt_foros)
-        txt_foros.setOnClickListener{
-            onClick(R.id.txt_foros)
+        val btn_foros_home : TextView = findViewById(R.id.btn_foros_home)
+        btn_foros_home.setOnClickListener{
+            onClick(R.id.btn_foros_home)
         }
 
-        val txt_informacion : TextView = findViewById(R.id.txt_informacion)
-        txt_informacion.setOnClickListener{
-            onClick(R.id.txt_informacion)
+        val btn_info_home : TextView = findViewById(R.id.btn_info_home)
+        btn_info_home.setOnClickListener{
+            onClick(R.id.btn_info_home)
         }
 
+        notification()
+
+    }
+
+    private fun notification() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("TOKEN", "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
 
 
+            Log.d("TOKEN2", token)
+
+        })
     }
 
     override fun onNavigationItemSelected(item: MenuItem) : Boolean {
@@ -147,6 +166,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_bottom_item_respirar -> onClick(R.id.nav_bottom_item_respirar)
             R.id.nav_item_consultas -> goToActivity(this,ContactoActivity::class.java)
             R.id.nav_item_messages -> goToActivity(this,TimelineActivity::class.java)
+            R.id.nav_item_solicitudes -> goToActivity(this,SolicitudesActivity::class.java)
         }
         drawer.closeDrawer(GravityCompat.START)
         return true
@@ -174,8 +194,8 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when(view) {
             R.id.nav_item_respirar -> goToActivity(this, RespirarActivity::class.java)
             R.id.nav_bottom_item_respirar -> goToActivity(this, RespirarActivity::class.java)
-            R.id.txt_foros -> goToActivity(this, ForosActivity::class.java)
-            R.id.txt_informacion -> {
+            R.id.btn_foros_home -> goToActivity(this, ForosActivity::class.java)
+            R.id.btn_info_home -> {
                 val intent = Intent(this, InfoActivity::class.java)
                 intent.putExtra("Rol","Usuario")
                 startActivity(intent)

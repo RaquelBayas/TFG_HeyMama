@@ -3,71 +3,95 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginTop="5dp"
+    android:background="@drawable/posts_timeline">
 
 
-    <ImageButton
-        android:id="@+id/imageButtonComment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="112dp"
-        android:layout_marginTop="24dp"
-        android:contentDescription="Comentario"
+    <ToggleButton
+        android:id="@+id/imageButtonLike"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="136dp"
+        android:background="@drawable/ic_corazon"
+        android:checked="false"
         android:padding="10dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_tweet" />
-
-    <TextView
-        android:id="@+id/txt_tweet_commentCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:padding="10dp"
-        android:text="0"
-        android:textSize="17sp"
-        app:layout_constraintStart_toEndOf="@+id/imageButtonComment"
-        app:layout_constraintTop_toBottomOf="@+id/txt_tweet" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_tweet"
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/txt_tweet_LikeCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:padding="10dp"
         android:text="0"
-        android:textSize="17sp"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.144"
         app:layout_constraintStart_toEndOf="@+id/imageButtonLike"
+        app:layout_constraintTop_toBottomOf="@+id/txt_tweet"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/txt_tweet_commentCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="17dp"
+        android:layout_marginBottom="8dp"
+        android:text="0"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imageButtonLike"
+        app:layout_constraintHorizontal_bias="0.051"
+        app:layout_constraintStart_toEndOf="@+id/imageButtonComment"
         app:layout_constraintTop_toBottomOf="@+id/txt_tweet" />
 
     <ImageButton
-        android:id="@+id/imageButtonLike"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="116dp"
+        android:id="@+id/imageButtonComment"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="128dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/ic_comment"
+        android:contentDescription="Comentario"
         android:padding="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_tweet" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_tweet"
+        app:layout_constraintVertical_bias="0.333" />
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/tweet_picture"
-        android:layout_width="52dp"
-        android:layout_height="52dp"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="28dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.100000024"
         app:srcCompat="@drawable/profile_picture" />
 
     <TextView
         android:id="@+id/txt_tweet"
-        android:layout_width="271dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="26dp"
-        android:layout_marginTop="12dp"
+        android:layout_width="279dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:fontFamily="@font/montserrat"
+        android:maxLength="300"
         android:text="Tweet"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/txt_tweet_commentCount"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tweet_picture"
         app:layout_constraintTop_toBottomOf="@+id/txt_tweet_name" />
 
@@ -76,18 +100,47 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="15dp"
+        android:fontFamily="@font/montserrat"
         android:text="Username"
+        android:textColor="@color/black"
+        android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/tweet_picture"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/txt_tweet_user"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
+        android:layout_height="21dp"
+        android:layout_marginStart="10dp"
+        android:fontFamily="@font/montserrat"
         android:text="User"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/txt_tweet"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/txt_tweet_name"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.6" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:background="@drawable/ic_more"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txt_tweet_hora"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/montserrat_bold"
+        android:textSize="10sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tweet_picture" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

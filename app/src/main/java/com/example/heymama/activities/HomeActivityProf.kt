@@ -7,10 +7,14 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.view.MenuItem
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import com.example.heymama.R
+import com.example.heymama.fragments.SolicitudesFragment
 import com.example.heymama.interfaces.Utils
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
@@ -20,6 +24,7 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
 
     private lateinit var drawer: DrawerLayout
     private lateinit var toggle: ActionBarDrawerToggle
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,10 +71,19 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
             R.id.nav_item_respirar -> onClick(R.id.nav_item_respirar)
             R.id.nav_bottom_item_respirar -> onClick(R.id.nav_bottom_item_respirar)
             R.id.nav_item_consultas -> goToActivity(this,ContactoActivity::class.java)
-
+            R.id.nav_item_messages -> goToActivity(this,TimelineActivity::class.java)
+            R.id.nav_item_solicitudes -> goToActivity(this,SolicitudesActivity::class.java)
         }
         drawer.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    fun goToFragment() {
+        val fragment = SolicitudesFragment()
+        val fragmentManager = supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.home_prof_layout,fragment)
+        fragmentTransaction.commit()
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {

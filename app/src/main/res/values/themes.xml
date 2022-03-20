@@ -16,6 +16,17 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+    <!-- Nav Bar color -->
+    <style name="ThemeNavBar" parent="android:Theme">
+        <item name="colorPrimary">@color/white</item>
+        <item name="android:homeAsUpIndicator">@color/rectangle_orange</item>
+    </style>
+
+    <!-- Menu bar -->
+    <style name="ThemeMenuBar" parent="android:Theme">
+        <item name="colorPrimary">@color/white</item>
+    </style>
+
     <style name="noAnimTheme" parent="android:Theme">
         <item name="android:windowAnimationStyle">@null</item>
     </style>

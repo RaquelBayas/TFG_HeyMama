@@ -8,4 +8,6 @@ data class User(
     val rol: String? = "",
     val bio: String? = "",
     val profilePhoto: String? = ""
-)
+)  {
+
+}

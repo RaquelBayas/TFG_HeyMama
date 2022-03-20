@@ -8,5 +8,7 @@
         <item>@font/baloo</item>
         <item>@font/montserrat</item>
         <item>@font/montserrat_bold</item>
+        <item>@font/poppins_medium</item>
+        <item>@font/poppins_thin</item>
     </array>
 </resources>
