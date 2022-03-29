@@ -7,6 +7,15 @@
     android:layout_marginTop="5dp"
     android:background="@drawable/posts_timeline">
 
+    <Button
+        android:id="@+id/btn_comment_menu_post_tl"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:visibility="invisible"
+        android:background="@drawable/ic_more"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/txt_comment_posttl"
         android:layout_width="wrap_content"

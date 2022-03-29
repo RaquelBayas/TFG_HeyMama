@@ -44,7 +44,15 @@ class FriendsActivity : AppCompatActivity() {
         // Usuario
         auth = FirebaseAuth.getInstance()
         val user: FirebaseUser? = auth.currentUser
-        uid = auth.currentUser?.uid!!
+
+        val intent = intent
+        if(intent.getStringExtra("UID") != null) {
+            uid = intent.getStringExtra("UID").toString()
+            Log.i("UID-FRIENDS",uid)
+        } else {
+            uid = auth.currentUser?.uid!!
+            Log.i("UID-FRIENDS-2",uid)
+        }
 
         // Firebase
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")

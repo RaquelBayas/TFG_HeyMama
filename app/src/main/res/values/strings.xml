@@ -45,6 +45,13 @@
     <string name="unounodos">112</string>
     <string name="NNE">Número Nacional de Emergencia</string>
     <string name="hint_edt_consulta">Introduce tu consulta</string>
+    <string-array name="temasConsultas">
+        <item>Embarazo</item>
+        <item>Parto</item>
+        <item>Posparto</item>
+        <item>Familia</item>
+        <item>Otros</item>
+    </string-array>
 
     <!-- Respirar -->
     <string name="respirar">Respirar</string>
@@ -53,6 +60,7 @@
     <string name="nav_item_perfil">Perfil</string>
     <string name="nav_item_messages">Mensajes</string>
     <string name="nav_item_solicitudes">Solicitudes</string>
+    <string name="nav_item_mood">Registro de emociones</string>
     <string name="nav_item_respirar">Respirar</string>
     <string name="nav_item_consultas">Consultas</string>
     <string name="nav_item_ajustes">Ajustes</string>
@@ -62,6 +70,23 @@
     <string name="nav_item_foros">Foros</string>
     <string name="nav_item_friends">Amigos</string>
 
+    <!-- Settings -->
+    <string name="settings_username">Cambiar nombre de usuario</string>
+    <string name="change_password">Cambiar contraseña</string>
+    <string name="change_email">Cambiar correo electrónico</string>
+    <string name="delete_account">Eliminar cuenta</string>
+    <string name="settings_old_username">Nombre de usuario actual</string>
+    <string name="settings_new_username">Nuevo nombre de usuario</string>
+    <string name="settings_old_email">Correo electrónico actual</string>
+    <string name="settings_new_email">Nuevo correo electrónico</string>
+    <string name="email_updated">Correo electrónico actualizado</string>
+    <string name="settings_empty_input_password">Introduce la contraseña</string>
+    <string name="txt_settings_current_password">Introduce la contraseña actual</string>
+    <string name="txt_settings_new_password">Introduce la nueva contraseña</string>
+    <string name="txt_settings_confirm_new_password">Confirma la nueva contraseña</string>
+
+    <!-- Mood -->
+    <string name="mood_register">Registro de emociones</string>
     <!-- Artículos -->
     <string name="articulo_titulo">Título del artículo</string>
     <string name="articulo_contenido">Artículo</string>

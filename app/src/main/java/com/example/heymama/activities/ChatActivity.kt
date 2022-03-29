@@ -138,7 +138,7 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private fun updateFriendName(){
         var txt_chat_friend_name = findViewById<TextView>(R.id.txt_chat_friend_name)
         firestore.collection("Usuarios").document(friendUID).get().addOnSuccessListener {
-            txt_chat_friend_name.text = it.get("Name").toString()
+            txt_chat_friend_name.text = it.get("name").toString()
         }
     }
 

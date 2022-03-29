@@ -10,6 +10,12 @@
     <color name="wine_1">#77045E</color>
     <color name="pink">#FED6E3</color>
     <color name="pink2">#FBDDE7</color>
+    <color name="spinner">#C6C6C6</color>
+    <color name="mood_feliz">#FFFF8D</color>
+    <color name="mood_bien">#FF80AB</color>
+    <color name="mood_regular">#FFD180</color>
+    <color name="mood_mal">#64FFDA</color>
+    <color name="mood_triste">#448AFF</color>
     <color name="rectangle_purple">#DDD1F8</color>
     <color name="rectangle_orange">#F5D9A2</color>
     <color name="rectangle_pink">#FCCDEC</color>

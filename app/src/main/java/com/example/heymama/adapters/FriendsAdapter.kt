@@ -55,8 +55,8 @@ class FriendsAdapter(private val context: Context, private val friendsList: Arra
 
         var uid = friendsList[position].friend_send_uid
         firestore.collection("Usuarios").document(uid).addSnapshotListener { value, error ->
-            holder.txt_nombre_amigo.text = value?.data?.get("Name").toString()
-            holder.txt_user_amigo.text = value?.data?.get("Username").toString()
+            holder.txt_nombre_amigo.text = value?.data?.get("name").toString() // MAYUSCULA?
+            holder.txt_user_amigo.text = value?.data?.get("username").toString()
 
             storageReference = firebaseStore.getReference("/Usuarios/"+uid+"/images/perfil")
             val ONE_MEGABYTE: Long = 1024 * 1024

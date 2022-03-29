@@ -34,7 +34,6 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
-    private lateinit var dataBaseReference: DatabaseReference
     lateinit var firestore: FirebaseFirestore
 
     private lateinit var recyclerView: RecyclerView

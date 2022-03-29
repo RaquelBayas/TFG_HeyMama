@@ -24,10 +24,8 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatAdapter.HolderForo {
         // inflate layout
-
         return if (viewType == MESSAGE_RIGHT_SENDER) {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_chat_right,parent,false)
-            Log.i("CHAT_ADAPTER_3","here")
             HolderForo(view)
         } else {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_chat_left,parent,false)
@@ -37,7 +35,6 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
 
     override fun onBindViewHolder(holder: ChatAdapter.HolderForo, position: Int) {
         val message = chatArrayList[position]
-        Log.i("CHAT_ADAPTER",message.toString())
         holder.msg_chat.text = message.message
 
     }
@@ -46,7 +43,6 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
         firebaseUser = FirebaseAuth.getInstance().currentUser
         return if (chatArrayList[position].senderUID == firebaseUser!!.uid) {
             MESSAGE_RIGHT_SENDER
-            Log.i("CHAT_ADAPTER_2","here")
         } else {
             MESSAGE_LEFT_RECEIVER
         }

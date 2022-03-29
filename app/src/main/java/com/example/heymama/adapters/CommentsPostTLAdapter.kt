@@ -15,15 +15,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.PostTimeline
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class CommentsPostTLAdapter(private val context: Context, private val commentsPostsList: ArrayList<PostTimeline>, private val commentsPostsListener: ItemRecyclerViewListener
+class CommentsPostTLAdapter(private val context: Context, private val idpost_origin: String, private val commentsPostsList: ArrayList<PostTimeline>, private val commentsPostsListener: ItemRecyclerViewListener
 ) : RecyclerView.Adapter<CommentsPostTLAdapter.HolderForo>() {
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
@@ -49,6 +52,8 @@ class CommentsPostTLAdapter(private val context: Context, private val commentsPo
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: CommentsPostTLAdapter.HolderForo, position: Int) {
+        var idpost_origin = idpost_origin
+
         auth = FirebaseAuth.getInstance()
         firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
         storageReference = firebaseStore.reference
@@ -56,9 +61,9 @@ class CommentsPostTLAdapter(private val context: Context, private val commentsPo
         firestore = FirebaseFirestore.getInstance()
 
         val post_tl: PostTimeline = commentsPostsList[position] // get data at specific position
-        val refPhoto = post_tl.user?.profilePhoto
-        Log.i("URI: ", "parse profile photo1: " + post_tl.user.toString());
-        storageReference = storageReference.child(refPhoto.toString())
+        val refPhoto = storageReference.child("Usuarios/"+post_tl.userId+"/images/perfil").toString()//post_tl.user?.profilePhoto
+        //Log.i("URI: ", "parse profile photo1: " + post_tl.user.toString());
+        storageReference = storageReference.child("Usuarios/"+post_tl.userId+"/images/perfil")
 
         val ONE_MEGABYTE: Long = 1024 * 1024
         var uri : Uri = Uri.parse(refPhoto)
@@ -68,13 +73,45 @@ class CommentsPostTLAdapter(private val context: Context, private val commentsPo
         Log.i("URI: ", "parse profile photo3: " + storageReference);
 
         with(holder) {
-            user_post.text = post_tl.user?.username
-            name_post.text = post_tl.user?.name
-            id_user = post_tl.user?.id.toString()
-            comment_post.text = post_tl.comment
+            firestore.collection("Usuarios").document(post_tl.userId!!).addSnapshotListener { value, error ->
+                if(error != null) {
+                    return@addSnapshotListener
+                }
+                val docs = value!!.data
+                name_post.text = docs!!["name"].toString()
+                user_post.text = docs["username"].toString()
+                id_user = docs["id"].toString()
+                comment_post.text = post_tl.comment
+            }
         }
 
-        with(holder) {
+        if(post_tl.userId!!.equals(auth.uid)) {
+            holder.btn_comment_menu_post_tl.visibility = View.VISIBLE
+            holder.btn_comment_menu_post_tl.setOnClickListener {
+                val popupMenu: PopupMenu = PopupMenu(context, holder.btn_comment_menu_post_tl)
+                popupMenu.menuInflater.inflate(R.menu.post_tl_menu, popupMenu.menu)
+                popupMenu.show()
+
+                popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
+                    when(it.itemId) {
+                        R.id.eliminar_post_tl -> {
+                            /*firestore.collection("Timeline").document(idpost_origin).collection("Replies").get().addOnCompleteListener(object:
+                                OnCompleteListener<QuerySnapshot> {
+                                override fun onComplete(p0: Task<QuerySnapshot>) {
+                                    for(doc in p0.result) {
+                                        firestore.collection("Timeline").document(idpost_origin).collection("Replies").document(doc.id).delete()
+                                    }
+                                }
+                            })*/
+                            firestore.collection("Timeline").document(idpost_origin).collection("Replies").document(post_tl.postId.toString()).delete()
+                        }
+                    }
+                    true
+                })
+            }
+        }
+        //DESCOMENTAR
+       /* with(holder) {
             name_post.setText(post_tl.user?.name)
             storageReference
                 .getBytes(8 * ONE_MEGABYTE).
@@ -93,7 +130,7 @@ class CommentsPostTLAdapter(private val context: Context, private val commentsPo
             id_post = post_tl.postId.toString()
 
 
-        }
+        }*/
 
     }
 
@@ -108,7 +145,7 @@ class CommentsPostTLAdapter(private val context: Context, private val commentsPo
         var photo_post: ImageView = itemView.findViewById(R.id.img_comment_posttl)
         //var time_post: TextView = itemView.findViewById(R.id.txt_tweet_hora)
         var comment_post: TextView = itemView.findViewById(R.id.txt_comment_posttl)
-
+        var btn_comment_menu_post_tl : Button = itemView.findViewById(R.id.btn_comment_menu_post_tl)
     }
 
 

@@ -32,9 +32,9 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
-    lateinit var firebaseStore: FirebaseStorage
-    lateinit var firestore: FirebaseFirestore
-    lateinit var storageReference: StorageReference
+    private lateinit var firebaseStore: FirebaseStorage
+    private lateinit var firestore: FirebaseFirestore
+    private lateinit var storageReference: StorageReference
 
     private lateinit var recyclerViewTimeline: RecyclerView
     private lateinit var postsTLArraylist: ArrayList<PostTimeline>
@@ -72,9 +72,7 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
         //layoutManager.stackFromEnd = true
         //layoutManager.reverseLayout = true
 
-
         recyclerViewTimeline.setHasFixedSize(true)
-
         postsTLArraylist = arrayListOf()
 
 
@@ -84,17 +82,28 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
             if(!findViewById<EditText>(R.id.edt_post_tl).text.isEmpty()) {
                 edt_post_tl = findViewById<EditText>(R.id.edt_post_tl).text.toString()
             }
-            getUserData(edt_post_tl,dataBaseReference,user!!.uid,)
+            getUserData(edt_post_tl,user!!.uid,)
             Toast.makeText(this, "Post add", Toast.LENGTH_SHORT).show()
         }
         getCommentsTL()
-
     }
 
 
-    private fun getUserData(edt_comment:String,databaseReference: DatabaseReference,uid: String) {
+    //Método para obtener datos del usuario
+    private fun getUserData(edt_comment:String,uid: String) {
         // REALTIME DATABASE
-        databaseReference.child(uid).get().addOnSuccessListener {
+        firestore.collection("Usuarios").document(uid).addSnapshotListener { value, error ->
+            val name = value?.data?.get("name").toString()
+            val username = value?.data?.get("username").toString()
+            val bio = value?.data?.get("bio").toString()
+            val rol = value?.data?.get("rol").toString()
+            val email = value?.data?.get("email").toString()
+            val profilePhoto = "Usuarios/"+auth.currentUser?.uid+"/images/perfil"//value?.data?.get("")
+
+            val userdata: User? = User(uid,name,username,email,rol,bio,profilePhoto)
+            add_comment_tl(edt_comment,uid)
+        }
+        /*databaseReference.child(uid).get().addOnSuccessListener {
             if (it.exists()) {
                 val name = it.child("name").value.toString()
                 val username = it.child("user").value.toString()
@@ -110,67 +119,19 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
                add_comment_tl(edt_comment, userdata!!,uid)
             }
         }
-        /* FIRESTORE
-        val userData= firestore.collection("Usuarios").document(user.uid).get().addOnSuccessListener { document ->
-
-            if (document.exists()) {
-                val name = document.data!!.get("name").toString()
-                val username = document.data!!.get("username").toString()
-                val id = document.data!!.get("id").toString()
-                val bio = document.data!!.get("bio").toString()
-                val profilePhoto = document.data!!.get("profilePhoto").toString()
-                val userdata = User(id,name,username,bio,
-                    profilePhoto
-                )
-                userdata
-                this.adapterPostsTL.onCreateViewHolder()
-            }
-
-        }*/
-        /*val name = userDataRef.get().result.data!!["name"].toString()
-        val username = userDataRef.get().result.data!!.get("username").toString()
-        val id = userDataRef.get().result.data!!.get("id").toString()
-        val bio = userDataRef.get().result.data!!.get("bio").toString()
-        val profilePhoto = userDataRef.get().result.data!!.get("profilePhoto").toString()
-        val userdata = User(id,name,username,bio,
-            profilePhoto
-        )*/
+        */
     }
 
-    fun add_comment_tl(edt_comment:String, userdata: User, uid:String) {
+    fun add_comment_tl(edt_comment:String, uid:String) {
         var doctlfb = firestore.collection("Timeline").document()
         var doc_id = doctlfb.id
-        Log.i("CommentButton0", "position: $doc_id")
-        val comment = PostTimeline(doc_id,uid,userdata, Date(),edt_comment,0,0,0)
+        val comment = PostTimeline(doc_id,uid,/*userdata,*/Date(),edt_comment,0,0,0)
         doctlfb.set(comment)
     }
 
-
     // Obtiene los comentarios de Firebase
     fun getCommentsTL() {
-        /*FirebaseFirestore.getInstance().collection("Timeline").orderBy("date",Query.Direction.DESCENDING
-            ).get().addOnSuccessListener {
-                for(dc in it.documentChanges) {
-                    when(dc.type) {
-                        DocumentChange.Type.ADDED -> {
-                            //val timeline = firestore.collection("Timeline").orderBy("date", Query.Direction.ASCENDING)
-                            postsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
-                            //postsTLArraylist.sort()
-                        }
-                        DocumentChange.Type.MODIFIED -> postsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
-                        DocumentChange.Type.REMOVED -> postsTLArraylist.remove(dc.document.toObject(
-                            PostTimeline::class.java))
-                    }
-                }
-            //postsTLArraylist.sort()
-            adapterPostsTL = PostTimelineAdapter(this,postsTLArraylist,this)
-            adapterPostsTL.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
-                override fun onItemClicked(position: Int) {
-                    Toast.makeText(this@TimelineActivity,"Item number: $position",Toast.LENGTH_SHORT).show()
-                }
-            })
-            recyclerViewTimeline.adapter = adapterPostsTL
-        }*/
+        postsTLArraylist.clear()
         firestore.collection("Timeline").addSnapshotListener { snapshots, e ->
             if (e!= null) {
                 return@addSnapshotListener
@@ -187,7 +148,7 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
             }
             postsTLArraylist.sort()
             adapterPostsTL = PostTimelineAdapter(this,postsTLArraylist,this)
-
+            adapterPostsTL.notifyDataSetChanged()
             adapterPostsTL.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
                 override fun onItemClicked(position: Int) {
                     Toast.makeText(this@TimelineActivity,"Item number: $position",Toast.LENGTH_SHORT).show()
@@ -195,10 +156,7 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
             })
             recyclerViewTimeline.adapter = adapterPostsTL
             recyclerViewTimeline.setHasFixedSize(true)
-
         }
-
-
     }
 
     // Método para seleccionar los tweets, está ligado al Interface, y a PostTimeAdapter

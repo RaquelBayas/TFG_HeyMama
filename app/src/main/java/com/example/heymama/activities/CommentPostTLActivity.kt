@@ -128,7 +128,7 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
         var doctlfb = firestore.collection("Timeline").document(idpost).collection("Replies").document()
         var doc_id = doctlfb.id
 
-        val comment = PostTimeline(doc_id, uid, user, Date(), edt_comment,0,0,0)
+        val comment = PostTimeline(doc_id, uid, Date(), edt_comment,0,0,0)
         doctlfb.set(comment)
 
         /*
@@ -175,7 +175,7 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 }
             }
             //commentsPostsTLArraylist.sort()
-            adapterCommentsPostsTL = CommentsPostTLAdapter(this, commentsPostsTLArraylist, this)
+            adapterCommentsPostsTL = CommentsPostTLAdapter(this, idpost, commentsPostsTLArraylist, this)
 
             Log.i("COMMENTS_TL: ", "$idpost - $adapterCommentsPostsTL")
             recyclerViewCommentsTimeline.adapter = adapterCommentsPostsTL

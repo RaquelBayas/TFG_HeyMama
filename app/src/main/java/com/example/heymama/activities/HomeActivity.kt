@@ -1,15 +1,11 @@
 package com.example.heymama.activities
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
-import android.media.Image
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
-import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
@@ -19,7 +15,10 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.heymama.GlideApp
 import com.example.heymama.R
+import com.example.heymama.fragments.MoodFragment
 import com.example.heymama.interfaces.Utils
+import com.example.heymama.models.Mood
+import com.example.heymama.models.MoodType
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
@@ -30,7 +29,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import de.hdodenhof.circleimageview.CircleImageView
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.contains as contains
+
 
 class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, Utils {
 
@@ -52,6 +54,9 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
+
+        auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
 
         val intent = intent
         val rol = intent.getStringExtra("Rol")
@@ -83,11 +88,21 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navigationView.setNavigationItemSelectedListener(this)
 
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
-        bottomNavigationView.setOnNavigationItemReselectedListener { item ->
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when(item.itemId) {
-                R.id.nav_bottom_item_respirar -> goToActivity(this,RespirarActivity::class.java)
-                R.id.nav_bottom_item_foros -> goToActivity(this,ForosActivity::class.java)
+                R.id.nav_bottom_item_respirar -> {
+                    goToActivity(this,RespirarActivity::class.java)
+                    return@setOnNavigationItemSelectedListener true
+                }
+                R.id.nav_bottom_item_foros -> {goToActivity(this,ForosActivity::class.java)
+                    return@setOnNavigationItemSelectedListener true
+                }
+                R.id.nav_bottom_item_ajustes -> {
+                    goToActivity(this,SettingsActivity::class.java)
+                    return@setOnNavigationItemSelectedListener true
+                }
             }
+            return@setOnNavigationItemSelectedListener false
         }
 
         drawer = findViewById(R.id.drawer_layout)
@@ -107,6 +122,8 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
         drawer.addDrawerListener(toggle)
+
+
         /*user?.let {
             for(profile in it.providerData) {
                 val providerId = profile.providerId
@@ -116,15 +133,8 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             }
         }*/
-
-        // NOMBRE
-        textView = findViewById(R.id.textView)
-        firestore = FirebaseFirestore.getInstance()
-        firestore.collection("Usuarios").whereEqualTo("Email",
-            user!!.email).addSnapshotListener { value, error ->
-            textView.text = "Bienvenida " + value!!.documents.get(0).get("Name").toString()
-        }
-
+        getMoodStatus()
+        getUserName(user!!)
 
         val btn_foros_home : TextView = findViewById(R.id.btn_foros_home)
         btn_foros_home.setOnClickListener{
@@ -137,22 +147,48 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         notification()
+    }
+
+    private fun getMoodStatus() {
+        var btn_mood_status : Button = findViewById(R.id.btn_mood_status)
+        var date = Date().time
+        var simpleDateFormat = SimpleDateFormat("dd MM yyyy")
+        var dateString = simpleDateFormat.format(date)
+        firestore.collection("Mood").document(auth.uid.toString()).collection("Historial").addSnapshotListener { value, error ->
+            if(error != null) {
+                return@addSnapshotListener
+            }
+            var docs = value!!.documents
+            for(doc in docs) {
+                if (doc.id == dateString) {
+                    btn_mood_status.setOnClickListener {
+                        Toast.makeText(this,"Ya has registrado cómo te sientes hoy.",Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+        btn_mood_status.setOnClickListener {
+            var moodfragment = MoodFragment()
+            moodfragment.show(supportFragmentManager,"moodDialog")
+        }
+    }
+    private fun getUserName(user:FirebaseUser) {
+        // NOMBRE
+        textView = findViewById(R.id.textView)
+        firestore.collection("Usuarios").whereEqualTo("email",
+            user!!.email).addSnapshotListener { value, error ->
+            textView.text = "Bienvenida " + value!!.documents.get(0).get("name").toString()
+        }
 
     }
 
     private fun notification() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
-                Log.w("TOKEN", "Fetching FCM registration token failed", task.exception)
                 return@OnCompleteListener
             }
-
             // Get new FCM registration token
-            val token = task.result
-
-
-            Log.d("TOKEN2", token)
-
+            //val token = task.result
         })
     }
 
@@ -164,9 +200,11 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.nav_item_respirar -> onClick(R.id.nav_item_respirar)
             R.id.nav_bottom_item_respirar -> onClick(R.id.nav_bottom_item_respirar)
+            R.id.nav_item_moodregister -> goToActivity(this,MoodActivity::class.java)
             R.id.nav_item_consultas -> goToActivity(this,ContactoActivity::class.java)
             R.id.nav_item_messages -> goToActivity(this,TimelineActivity::class.java)
             R.id.nav_item_solicitudes -> goToActivity(this,SolicitudesActivity::class.java)
+            R.id.nav_item_ajustes -> goToActivity(this,SettingsActivity::class.java)
         }
         drawer.closeDrawer(GravityCompat.START)
         return true
@@ -194,6 +232,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when(view) {
             R.id.nav_item_respirar -> goToActivity(this, RespirarActivity::class.java)
             R.id.nav_bottom_item_respirar -> goToActivity(this, RespirarActivity::class.java)
+            R.id.nav_bottom_item_ajustes -> goToActivity(this,SettingsActivity::class.java)
             R.id.btn_foros_home -> goToActivity(this, ForosActivity::class.java)
             R.id.btn_info_home -> {
                 val intent = Intent(this, InfoActivity::class.java)

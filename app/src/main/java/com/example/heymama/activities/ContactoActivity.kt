@@ -5,15 +5,26 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
+import android.util.Log
+import android.widget.*
 import com.example.heymama.*
+import com.example.heymama.models.Consulta
+import com.example.heymama.models.User
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import java.util.*
 
 class ContactoActivity : AppCompatActivity() {
+    private lateinit var auth: FirebaseAuth
+    lateinit var firestore: FirebaseFirestore
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_contacto)
 
+        auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance() //CLOUD STORAGE
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         bottomNavigationView.setOnNavigationItemReselectedListener { item ->
             when(item.itemId) {
@@ -22,9 +33,41 @@ class ContactoActivity : AppCompatActivity() {
             }
         }
 
+        val spinnerConsultas : Spinner = findViewById(R.id.spinnerConsultas)
+        val temas = resources.getStringArray(R.array.temasConsultas)
+        val adapter = ArrayAdapter(this,R.layout.spinner_item,temas)
+        spinnerConsultas.adapter = adapter
+
+        var btn_send_consulta : Button = findViewById(R.id.btn_send_consulta)
+        btn_send_consulta.setOnClickListener {
+            sendConsulta()
+        }
 
     }
 
+    private fun sendConsulta() {
+        val spinnerConsultas : Spinner = findViewById(R.id.spinnerConsultas)
+        var txt_consulta : EditText = findViewById(R.id.editText_consulta)
+        var txt_tema : String = spinnerConsultas.selectedItem.toString()
+        var user : User? = null
+        var ref = firestore.collection("Consultas").document(txt_tema)
+            .collection(auth.uid.toString())
+        var refUser = firestore.collection("Usuarios").document(auth.uid.toString()).get()
+        refUser.addOnSuccessListener { document ->
+            if (document != null) {
+                user = document.toObject(User::class.java)
+            }
+        }
+
+        var consulta = Consulta(ref.id,user,txt_tema,"",txt_consulta.text.toString(),Date())
+
+        if(txt_consulta.text.isNotEmpty()) {
+            ref.add(consulta)
+            Toast.makeText(this,"Consulta enviada correctamente",Toast.LENGTH_SHORT).show()
+            txt_consulta.setText("")
+        }
+
+    }
 
     fun Context.goToActivity(activity: Activity, classs: Class<*>?) {
         val intent = Intent(activity, classs)

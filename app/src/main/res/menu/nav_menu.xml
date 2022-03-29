@@ -18,6 +18,11 @@
             android:icon="@drawable/ic_solicitudes"/>
 
         <item
+            android:id="@+id/nav_item_moodregister"
+            android:title="@string/nav_item_mood"
+            android:icon="@drawable/ic_face"/>
+
+        <item
             android:id="@+id/nav_item_respirar"
             android:title="@string/nav_item_respirar"
             android:icon="@drawable/breath"/>

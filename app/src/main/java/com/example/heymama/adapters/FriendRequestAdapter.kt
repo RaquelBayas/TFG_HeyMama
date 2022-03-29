@@ -156,7 +156,7 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
                 var documents = value.documents
                 documents.forEach { d ->
                     //NO FUNCIONA CON SOLICITUD DE PROFESIONAL PORQUE LOS ATRIBUTOS DEL REGISTRO ESTAN CON MINUSCULAS
-                    if(d.data?.get("Username").toString().equals(holder_username)) {
+                    if(d.data?.get("username").toString().equals(holder_username)) {
                         var id = d.data?.get("ID").toString()
                         searchFriendRequest(id,"aceptar")
                     }

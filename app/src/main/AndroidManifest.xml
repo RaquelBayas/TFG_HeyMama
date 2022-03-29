@@ -14,6 +14,12 @@
         android:theme="@style/Theme.MyApp_1"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activities.SettingsActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activities.MoodActivity"
+            android:exported="true" />
+        <activity
             android:name=".activities.CommentPostTLActivity"
             android:exported="true" />
         <activity
@@ -92,6 +98,9 @@
             </intent-filter>
         </activity>
 
+        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat"/>
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
@@ -117,6 +126,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
     </application>
 
 </manifest>

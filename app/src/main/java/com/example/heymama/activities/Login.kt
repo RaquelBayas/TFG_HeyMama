@@ -11,6 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.example.heymama.R
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 
 class Login : AppCompatActivity() {
@@ -85,8 +86,10 @@ class Login : AppCompatActivity() {
                         if(mailVerified) {
                             checkRol(email,dataBaseReference)
                         } else {
+                            checkRegister(emailFireBase,mailVerified)
                             Toast.makeText(this, "Debes registrarte primero.", Toast.LENGTH_LONG).show()
                         }
+                        //checkRol(email,dataBaseReference)
                     }else {
                         if(mutableList!!.contains(email)) {
                             Toast.makeText(this, "La contraseña es incorrecta.", Toast.LENGTH_LONG).show()
@@ -97,6 +100,21 @@ class Login : AppCompatActivity() {
                 }
         } else {
             Toast.makeText(this, "Rellena los datos.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun checkRegister(email: FirebaseUser,mailVerified:Boolean) {
+        dataBaseReference.get().addOnSuccessListener { value ->
+            if(value.child(email.uid).exists() && !mailVerified) {
+                email?.sendEmailVerification().addOnCompleteListener(this) { task ->
+                    if (task.isComplete) {
+                        task.exception?.printStackTrace()
+                        Toast.makeText(this, "Comprueba tu email.",Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this, "Oh, algo ha ido mal.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
         }
     }
 
