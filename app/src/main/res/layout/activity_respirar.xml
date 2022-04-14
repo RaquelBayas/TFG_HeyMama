@@ -10,7 +10,6 @@
         android:id="@+id/btn_empezar_respirar"
         android:layout_width="222dp"
         android:layout_height="61dp"
-        android:layout_marginBottom="84dp"
         android:background="@drawable/rectangle_orange"
         android:fontFamily="@font/alegreya_sans_thin"
         android:text="@string/empezar"
@@ -19,31 +18,20 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/txt_respirar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
-        android:fontFamily="@font/alegreya"
-        android:text="@string/respirar"
-        android:textColor="@color/fonts"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.152"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/img_respirar"
+        app:layout_constraintVertical_bias="0.467" />
 
     <ImageView
-        android:id="@+id/imageView11"
+        android:id="@+id/img_respirar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.367"
         app:srcCompat="@drawable/circle_breath" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -61,5 +49,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"></FrameLayout>
     </com.google.android.material.bottomnavigation.BottomNavigationView>
+
+    <TextView
+        android:id="@+id/txt_exhalar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/baloo"
+        android:text="TextView"
+        android:textColor="@color/fonts"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/img_respirar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

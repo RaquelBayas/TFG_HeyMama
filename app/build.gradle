@@ -38,6 +38,7 @@ android {
 
 dependencies {
 
+    implementation 'com.github.florent37:viewanimator:1.1.0'
     implementation 'com.firebaseui:firebase-ui-storage:8.0.0'
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
