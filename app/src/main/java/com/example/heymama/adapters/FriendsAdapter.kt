@@ -20,6 +20,7 @@ import com.example.heymama.models.FriendRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -53,7 +54,14 @@ class FriendsAdapter(private val context: Context, private val friendsList: Arra
 
         dataBaseReference = dataBase.getReference("Usuarios")
 
+        getFriends(holder,position)
+
+    }
+
+    private fun getFriends(holder:HolderForo,position:Int) {
+
         var uid = friendsList[position].friend_send_uid
+
         firestore.collection("Usuarios").document(uid).addSnapshotListener { value, error ->
             holder.txt_nombre_amigo.text = value?.data?.get("name").toString() // MAYUSCULA?
             holder.txt_user_amigo.text = value?.data?.get("username").toString()
@@ -69,7 +77,6 @@ class FriendsAdapter(private val context: Context, private val friendsList: Arra
                     Log.e(ContentValues.TAG, "Se produjo un error al descargar la imagen.", it)
                 }
         }
-
         holder.img_amigos.setOnClickListener {
             visitFriend(uid)
         }

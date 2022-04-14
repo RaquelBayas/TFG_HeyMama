@@ -30,7 +30,7 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
-    lateinit var firestore: FirebaseFirestore
+    private lateinit var firestore: FirebaseFirestore
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var temasArraylist: ArrayList<Post>

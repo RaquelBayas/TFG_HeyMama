@@ -199,7 +199,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 startActivity(intent)
             }
             R.id.nav_item_respirar -> onClick(R.id.nav_item_respirar)
-            R.id.nav_bottom_item_respirar -> onClick(R.id.nav_bottom_item_respirar)
             R.id.nav_item_moodregister -> goToActivity(this,MoodActivity::class.java)
             R.id.nav_item_consultas -> goToActivity(this,ContactoActivity::class.java)
             R.id.nav_item_messages -> goToActivity(this,TimelineActivity::class.java)

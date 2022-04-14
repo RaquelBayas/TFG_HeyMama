@@ -2,6 +2,7 @@ package com.example.heymama.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -12,6 +13,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
 
@@ -20,7 +22,16 @@ class LayoutArticleActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
-    lateinit var firestore: FirebaseFirestore
+    private lateinit var firestore: FirebaseFirestore
+
+    private lateinit var title_article: String
+    private lateinit var description_article: String
+    private lateinit var id_article: String
+    private lateinit var edt_titulo_articulo : EditText
+    private lateinit var edt_contenido_articulo : EditText
+    private lateinit var btn_publicar_articulo: Button
+    private lateinit var type: String
+    private lateinit var bundle: Bundle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,31 +44,69 @@ class LayoutArticleActivity : AppCompatActivity() {
         val user: FirebaseUser? = auth.currentUser
         firestore = FirebaseFirestore.getInstance()
 
-        var btn_publicar_articulo: Button = findViewById(R.id.btn_publicar_articulo)
+        edt_titulo_articulo = findViewById(R.id.edt_titulo_articulo)
+        edt_contenido_articulo = findViewById(R.id.edt_contenido_articulo)
+
+
+        val intent = intent
+        if(intent.hasExtra("type")) {
+            type = intent.getStringExtra("type").toString()
+            Log.i("type", intent.getStringExtra("type").toString())
+        }
+
+        if (type.equals("1") && intent.hasExtra("edit_title_article") && intent.hasExtra("edit_description_article") && intent.hasExtra("edit_id_article")) {
+            //    publicar_articulo(user!!,1) // 1 EDITAR
+            title_article = intent.getStringExtra("edit_title_article")!!.toString()
+            description_article = intent.getStringExtra("edit_description_article")!!.toString()
+            id_article = intent.getStringExtra("edit_id_article").toString()
+
+            edt_titulo_articulo.setText(title_article)
+            edt_contenido_articulo.setText(description_article)
+        }
+        btn_publicar_articulo = findViewById(R.id.btn_publicar_articulo)
         btn_publicar_articulo.setOnClickListener {
-            publicar_articulo(user!!)
+            Log.i("type_btn",intent.getStringExtra("type").toString())
+            if(type.equals("0")) {
+
+                publicar_articulo(user!!)
+            } else {
+                editar_articulo()
+                Toast.makeText(this, "Correcto.", Toast.LENGTH_SHORT).show()
+                finish()
+            }
         }
     }
 
-    fun publicar_articulo(user: FirebaseUser){
-        var edt_titulo_articulo : EditText = findViewById(R.id.edt_titulo_articulo)
-        var edt_contenido_articulo : EditText = findViewById(R.id.edt_contenido_articulo)
+    private fun editar_articulo()  {
+        val reference_article = firestore.collection("Artículos").document(id_article)
+        Log.i("reference_art",reference_article.path)
+        reference_article.update("article",edt_contenido_articulo.text.toString())
+        reference_article.update("title",edt_titulo_articulo.text.toString())
+
+    }
+
+    private fun publicar_articulo(user: FirebaseUser){
+
+        val article_ref = firestore.collection("Artículos").document()
 
         if(!edt_titulo_articulo.text.isEmpty() && !edt_contenido_articulo.text.isEmpty()) {
-            var articulo = Article(edt_titulo_articulo.text.toString(),edt_contenido_articulo.text.toString(),user.uid,
+            var articulo = Article(article_ref.id,
+                edt_titulo_articulo.text.toString(),
+                edt_contenido_articulo.text.toString(),
+                user.uid,
                 Date()
             )
-            addArticle(articulo, user)
-            Toast.makeText(this,"Correcto.", Toast.LENGTH_SHORT).show()
+            addArticle(articulo, user, article_ref)
+            Toast.makeText(this, "Correcto.", Toast.LENGTH_SHORT).show()
             finish()
-
-        } else {
+        }else {
             Utils.showError(this,"Rellena la información.")
         }
-
     }
 
-    fun addArticle(articulo: Article, user: FirebaseUser) {
-        firestore.collection("Artículos").add(articulo)
+    private fun addArticle(articulo: Article, user: FirebaseUser, article_ref: DocumentReference) {
+        article_ref.set(articulo)
     }
+
+
 }

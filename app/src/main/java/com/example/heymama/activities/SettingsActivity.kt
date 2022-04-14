@@ -1,6 +1,9 @@
 package com.example.heymama.activities
 
+import android.app.Activity
+import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +13,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.example.heymama.R
+import com.example.heymama.Utils
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.*
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -64,6 +69,31 @@ class SettingsActivity : AppCompatActivity() {
             change_password()
         }
 
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when(item.itemId) {
+                R.id.nav_bottom_item_respirar -> {
+                    goToActivity(this,RespirarActivity::class.java)
+                    return@setOnNavigationItemSelectedListener true
+                }
+                R.id.nav_bottom_item_foros -> {goToActivity(this,ForosActivity::class.java)
+                    return@setOnNavigationItemSelectedListener true
+                }
+                R.id.nav_bottom_item_home -> {
+                    finish()
+                    goToActivity(this,HomeActivity::class.java)
+                    return@setOnNavigationItemSelectedListener true
+                }
+            }
+            return@setOnNavigationItemSelectedListener false
+        }
+
+    }
+
+    fun Context.goToActivity(activity: Activity, classs: Class<*>?) {
+        val intent = Intent(activity, classs)
+        startActivity(intent)
+        //activity.finish()
     }
 
     private fun change_password() {

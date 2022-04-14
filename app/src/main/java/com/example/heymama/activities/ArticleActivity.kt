@@ -1,5 +1,6 @@
 package com.example.heymama.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -30,28 +31,40 @@ class ArticleActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
-    lateinit var firestore: FirebaseFirestore
+    private lateinit var firestore: FirebaseFirestore
 
-    lateinit var articlesArraylist: ArrayList<Article>
-    lateinit var title_article: String
-    lateinit var professional_article: String
+    private lateinit var articlesArraylist: ArrayList<Article>
+    private lateinit var title_article: String
+    private lateinit var id_article: String
+    private lateinit var description_article: String
+    private lateinit var professional_article: String
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    private lateinit var txt_title_article : TextView
+    private lateinit var txt_description_article: TextView
+
+        override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_article)
 
         val intent = intent
         val bundle: Bundle? = intent.extras
-        val id_article: String? = intent.getStringExtra("ID_Article")
+        id_article = intent.getStringExtra("ID_Article")!!
+        Log.i("id-article",id_article)
+
+
+        firestore = FirebaseFirestore.getInstance()
+
+        getData()
+
         title_article = intent.getStringExtra("Title_Article")!!
-        val description_article: String? = intent.getStringExtra("Description_Article")
+        description_article = intent.getStringExtra("Description_Article")!!
         professional_article = intent.getStringExtra("Professional_Article")!!
         articlesArraylist = intent.getParcelableArrayListExtra<Article>("ArticlesArraylist")!!
 
 
-        val txt_title_article : TextView = findViewById(R.id.txt_title_article)
-        txt_title_article.text = title_article
-        val txt_description_article: TextView = findViewById(R.id.txt_description_article)
+        txt_title_article = findViewById(R.id.txt_title_article)
+
+        txt_description_article = findViewById(R.id.txt_description_article)
         txt_description_article.text = description_article
 
 
@@ -73,9 +86,20 @@ class ArticleActivity : AppCompatActivity() {
 
     }
 
-    fun deleteArticle(articlesArraylist: ArrayList<Article>) {
+    private fun getData() {
+        firestore.collection("Artículos").document(id_article).addSnapshotListener { value, error ->
+            if(error!=null)  {
+                Log.w("TAG", "listen:error", error)
+                return@addSnapshotListener
+            }
+            var data = value!!.data
+            txt_title_article.text = data!!.get("title").toString()
+            txt_description_article.text = data.get("article").toString()
+        }
+    }
 
-        firestore = FirebaseFirestore.getInstance()
+    private fun deleteArticle(firestore: FirebaseFirestore, earticlesArraylist: ArrayList<Article>) {
+
         firestore.collection("Artículos").whereEqualTo("title",title_article).whereEqualTo("professionalID",professional_article).get().addOnSuccessListener {
             for (document in it.documents) {
                 firestore.collection("Artículos").document(document.id).delete()
@@ -87,7 +111,7 @@ class ArticleActivity : AppCompatActivity() {
         }
     }
 
-    fun alertDialog() {
+    private fun delete_alertDialog() {
         val dialog = AlertDialog.Builder(this)
             .setTitle(R.string.eliminar)
             .setMessage(R.string.alert_eliminar)
@@ -96,7 +120,7 @@ class ArticleActivity : AppCompatActivity() {
                 view.dismiss()
             }
             .setPositiveButton("Eliminar") { view, _ ->
-                deleteArticle(articlesArraylist)
+                deleteArticle(firestore,articlesArraylist)
                 Toast.makeText(this,"Artículo eliminado",Toast.LENGTH_SHORT).show()
                 view.dismiss()
                 finish()
@@ -115,9 +139,17 @@ class ArticleActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.editar ->  Toast.makeText(this,"Editar", Toast.LENGTH_SHORT).show()
+            R.id.editar -> {
+                val intent = Intent(this,LayoutArticleActivity::class.java)
+                intent.putExtra("type","1") // 1 EDITAR ARTÍCULO
+                intent.putExtra("edit_title_article",title_article)
+                intent.putExtra("edit_description_article",description_article)
+                intent.putExtra("edit_id_article",id_article)
+                Toast.makeText(this, "Editar", Toast.LENGTH_SHORT).show()
+                this.startActivity(intent)
+            }
             R.id.eliminar -> {
-                alertDialog()
+                delete_alertDialog()
             }
         }
         return super.onOptionsItemSelected(item)

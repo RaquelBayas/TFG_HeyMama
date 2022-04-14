@@ -1,24 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:background="@color/white">
 
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="5dp"
+        android:background="@color/rectangle_orange"
+        app:cardElevation="10dp">
+
+        <ImageView
+            android:id="@+id/imageView15"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/square_info" />
+
+        <LinearLayout
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:id="@+id/titulo_article"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:fontFamily="@font/alegreya_black"
+                android:text="TextView"
+                android:textColor="#795548"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:autoSizeTextType="uniform" />
+
+            <TextView
+                android:id="@+id/autor_article"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="bottom"
+                android:fontFamily="@font/alegreya"
+                android:gravity="bottom"
+                android:text="TextView"
+                android:textColor="#795548"
+                android:textSize="14sp"
+                app:autoSizeTextType="uniform" />
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+    <!--
     <ImageView
         android:id="@+id/imageView15"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/square_info" />
+        app:srcCompat="@drawable/square_info"
+        tools:layout_editor_absoluteY="168dp" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="127dp"
-        android:layout_height="130dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@+id/imageView15"
         app:layout_constraintEnd_toEndOf="@+id/imageView15"
         app:layout_constraintStart_toStartOf="@+id/imageView15"
@@ -26,24 +86,37 @@
 
         <TextView
             android:id="@+id/titulo_article"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginStart="15dp"
+            android:layout_width="109dp"
+            android:layout_height="78dp"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
             android:fontFamily="@font/alegreya_black"
             android:text="TextView"
             android:textAlignment="textStart"
             android:textColor="#795548"
             android:textSize="18sp"
             android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="109dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:text="TextView"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.135" />
+            app:layout_constraintTop_toBottomOf="@+id/titulo_article"
+            app:layout_constraintVertical_bias="0.304" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+-->
+</RelativeLayout>

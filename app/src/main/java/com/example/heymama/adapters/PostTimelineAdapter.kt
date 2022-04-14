@@ -40,9 +40,9 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
 ) : RecyclerView.Adapter<PostTimelineAdapter.Holder>() {
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
-    lateinit var firebaseStore: FirebaseStorage
-    lateinit var firestore: FirebaseFirestore
-    lateinit var storageReference: StorageReference
+    private lateinit var firebaseStore: FirebaseStorage
+    private lateinit var firestore: FirebaseFirestore
+    private lateinit var storageReference: StorageReference
 
     private lateinit var id_post: String
     private lateinit var id_user: String
@@ -146,7 +146,7 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
                     postTimelineListener.onItemClicked(position)
                 }
                 user_post.text = docs["username"].toString()
-                id_user = docs["id"].toString()
+                id_user = docs["ID"].toString()
                 comment_post.text = post_tl.comment
                 commentCount_post.text = post_tl.commentCount.toString() //likeCounter(holder,position).toString()
                 likeCount_post.text = post_tl.likeCount.toString()

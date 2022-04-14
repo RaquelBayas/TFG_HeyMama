@@ -66,7 +66,7 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         // RECYCLERVIEW TIMELINE
         recyclerViewTimeline = findViewById(R.id.recyclerView_posts)
-        //recyclerViewTimeline.layoutManager = LinearLayoutManager(this)
+
         var layoutManager = LinearLayoutManager(this)
         recyclerViewTimeline.layoutManager = layoutManager
         //layoutManager.stackFromEnd = true

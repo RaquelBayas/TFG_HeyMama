@@ -32,9 +32,9 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
-    lateinit var firebaseStore: FirebaseStorage
-    lateinit var firestore: FirebaseFirestore
-    lateinit var storageReference: StorageReference
+    private lateinit var firebaseStore: FirebaseStorage
+    private lateinit var firestore: FirebaseFirestore
+    private lateinit var storageReference: StorageReference
     private lateinit var dataBaseReference: DatabaseReference
 
     private lateinit var recyclerViewCommentsTimeline: RecyclerView
@@ -43,6 +43,7 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     private lateinit var idpost: String
     private lateinit var iduser: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_comment_post_tlactivity)
@@ -50,7 +51,7 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
         val intent = intent
         idpost = intent.getStringExtra("idpost").toString()
         iduser = intent.getStringExtra("iduser").toString()
-
+        Log.i("iduser-0: ",iduser + " - idpost: "+idpost)
         //Log.i("POSTTL",posttl)
         //Instancias para la base de datos y la autenticación
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
@@ -74,10 +75,12 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
 
         storageReference = firebaseStore.getReference("/Usuarios/$iduser/images/perfil")
+        Log.i("iduser_photo",storageReference.toString())
         val photo_comment_0 : CircleImageView = findViewById(R.id.img_comment_posttl_0)
         getPictures(photo_comment_0,storageReference)
 
         storageReference = firebaseStore.getReference("/Usuarios/"+auth.uid+"/images/perfil")
+        Log.i("iduser_photo-2",storageReference.toString())
         val photo_comment : CircleImageView = findViewById(R.id.img_comment_posttl_1)
         getPictures(photo_comment,storageReference)
 
@@ -92,7 +95,11 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
         getCommentsPostTL()
     }
 
-    fun getPictures(image: CircleImageView, storageReference: StorageReference){
+    /**
+     * @param image CircleImageView
+     * @param storageReference StorageReference
+     */
+    private fun getPictures(image: CircleImageView, storageReference: StorageReference){
         GlideApp.with(applicationContext)
             .load(storageReference)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
@@ -100,6 +107,10 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
             .into(image)
     }
 
+    /**
+     * @param databaseReference DatabaseReference
+     * @param uid String
+     */
     private fun getUserData(databaseReference: DatabaseReference, uid: String) {
         // REALTIME DATABASE
         val edt_comment : TextView = findViewById(R.id.edt_comment_posttl)
@@ -123,7 +134,12 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     }
 
-    fun add_comment_to_posttl(uid:String, edt_comment:String, user:User/*iduser:String*/) {
+    /**
+     * @param uid String
+     * @param edt_comment String
+     * @param user User
+     */
+    private fun add_comment_to_posttl(uid:String, edt_comment:String, user:User/*iduser:String*/) {
 
         var doctlfb = firestore.collection("Timeline").document(idpost).collection("Replies").document()
         var doc_id = doctlfb.id
@@ -151,6 +167,9 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
         */
     }
 
+    /**
+     * @param input
+     */
     fun getCommentsPostTL() {
         firestore.collection("Timeline").document(idpost).collection("Replies").addSnapshotListener { snapshots, e ->
             if (e != null) {
@@ -182,6 +201,10 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
         }
     }
 
+    /**
+     * @param intent Intent
+     *
+     */
     private fun getPostTLInfo(intent: Intent) {
         var name : TextView = findViewById(R.id.txt_name_comment_posttl)
         name.text = intent.getStringExtra("name")

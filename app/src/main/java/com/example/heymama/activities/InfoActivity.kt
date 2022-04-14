@@ -72,16 +72,36 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         // Barra de navegación inferior
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
-        bottomNavigationView.setOnNavigationItemReselectedListener { item ->
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when(item.itemId) {
-                R.id.nav_bottom_item_home -> finish()
-                R.id.nav_bottom_item_respirar -> goToActivity(this,RespirarActivity::class.java)
+                R.id.nav_bottom_item_home -> {
+                    finish()
+                    return@setOnNavigationItemSelectedListener true
+                }
+                R.id.nav_bottom_item_foros -> {
+                    goToActivity(this,ForosActivity::class.java)
+                    return@setOnNavigationItemSelectedListener true
+                }
+                R.id.nav_bottom_item_respirar -> {
+                    goToActivity(this, RespirarActivity::class.java)
+                    return@setOnNavigationItemSelectedListener true
+                }
+                R.id.nav_bottom_item_ajustes -> {
+                    goToActivity(this,SettingsActivity::class.java)
+                    return@setOnNavigationItemSelectedListener true
+                }
             }
+            return@setOnNavigationItemSelectedListener false
         }
+        
 
         var btn_add_article : Button = findViewById(R.id.btn_add_article)
         btn_add_article.setOnClickListener {
-            goToActivity(this,LayoutArticleActivity::class.java)
+            //goToActivity(this,LayoutArticleActivity::class.java)
+            val intent = Intent(this,LayoutArticleActivity::class.java)
+            intent.putExtra("type","0") //0 PUBLICAR NUEVO ARTÍCULO
+            startActivity(intent)
+
         }
     }
 
@@ -100,15 +120,16 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
                         DocumentChange.Type.ADDED ->
                         {
                             articlesArraylist.add(dc.document.toObject(Article::class.java))
-                            idArticlesArrayList.add(dc.document.reference.path)
+                            idArticlesArrayList.add(dc.document.reference.id)
+
                         }
-                        DocumentChange.Type.MODIFIED -> articlesArraylist.add(dc.document.toObject(Article::class.java))
+                        //DocumentChange.Type.MODIFIED -> articlesArraylist.add(dc.document.toObject(Article::class.java))
                         DocumentChange.Type.REMOVED -> articlesArraylist.remove(dc.document.toObject(Article::class.java))
                     }
 
                 }
                 adapter = InfoArticleAdapter(this,articlesArraylist,this)
-
+                adapter.notifyDataSetChanged()
                 recyclerView.adapter = adapter
 
             }

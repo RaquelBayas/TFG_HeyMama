@@ -42,13 +42,19 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
         val navigationView: NavigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
 
+        //BARRA DE NAVEGACIÓN INFERIOR
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         bottomNavigationView.setOnNavigationItemReselectedListener { item ->
             when(item.itemId) {
-                R.id.nav_bottom_item_respirar -> goToActivity(this,RespirarActivity::class.java)
                 R.id.nav_bottom_item_foros -> goToActivity(this,ForosActivity::class.java)
-
+                R.id.nav_bottom_item_respirar -> goToActivity(this, RespirarActivity::class.java)
+                R.id.nav_bottom_item_ajustes -> goToActivity(this,SettingsActivity::class.java)
             }
+        }
+
+        var txt_consultas : TextView = findViewById(R.id.txt_consultas)
+        txt_consultas.setOnClickListener{
+            onClick(R.id.txt_consultas)
         }
 
         var txt_foros : TextView = findViewById(R.id.txt_foros)
@@ -62,17 +68,17 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
         }
     }
 
+    // MENÚ LATERAL
     override fun onNavigationItemSelected(item: MenuItem) : Boolean {
         when (item.itemId) {
-            R.id.nav_item_perfil  -> {
+            R.id.nav_bottom_item_home  -> {
                 val intent = Intent(this, PerfilActivity::class.java)
                 startActivity(intent)
-            }// Toast.makeText(this, "Item 1", Toast.LENGTH_SHORT).show()
+            }
             R.id.nav_item_respirar -> onClick(R.id.nav_item_respirar)
-            R.id.nav_bottom_item_respirar -> onClick(R.id.nav_bottom_item_respirar)
             R.id.nav_item_consultas -> goToActivity(this,ContactoActivity::class.java)
             R.id.nav_item_messages -> goToActivity(this,TimelineActivity::class.java)
-            R.id.nav_item_solicitudes -> goToActivity(this,SolicitudesActivity::class.java)
+            R.id.nav_item_ajustes -> goToActivity(this,SettingsActivity::class.java)
         }
         drawer.closeDrawer(GravityCompat.START)
         return true
@@ -107,6 +113,7 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
         when(view) {
             R.id.nav_item_respirar -> goToActivity(this, RespirarActivity::class.java)
             R.id.nav_bottom_item_respirar -> goToActivity(this, RespirarActivity::class.java)
+            R.id.txt_consultas -> goToActivity(this,ConsultasActivity::class.java)
             R.id.txt_foros -> goToActivity(this, ForosActivity::class.java)
             R.id.txt_informacion -> {
                 val intent = Intent(this, InfoActivity::class.java)

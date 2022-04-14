@@ -82,6 +82,14 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
                 user_post.text = docs["username"].toString()
                 id_user = docs["id"].toString()
                 comment_post.text = post_tl.comment
+                storageReference
+                    .getBytes(8 * ONE_MEGABYTE).
+                    addOnSuccessListener { bytes ->
+                        val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                        holder.photo_post.setImageBitmap(bmp)
+                    }.addOnFailureListener {
+                        Log.e(ContentValues.TAG, "Se produjo un error al descargar la imagen.", it)
+                    }
             }
         }
 

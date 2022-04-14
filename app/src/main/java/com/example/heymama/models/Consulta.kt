@@ -7,15 +7,18 @@ import java.util.*
 
 data class Consulta(
     var id: String? = null,
-    var user: User? = null,
+    var userID: String? = null, //USER
     var tema: String? = null,
     var titulo: String? = null,
     var consulta: String? = null,
     @ServerTimestamp
-    var timestamp: Date? = null): Parcelable {
+    var timestamp: Date? = null): Parcelable,  Comparable<Consulta> {
+
+
     constructor(parcel: Parcel) : this(
         parcel.readString(),
-        parcel.readValue(User::class.java.classLoader) as User,
+        //parcel.readValue(User::class.java.classLoader) as User,
+        parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -24,7 +27,7 @@ data class Consulta(
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(id)
-
+        parcel.writeString(userID)
         parcel.writeString(tema)
         parcel.writeString(titulo)
         parcel.writeString(consulta)
@@ -43,5 +46,10 @@ data class Consulta(
         override fun newArray(size: Int): Array<Consulta?> {
             return arrayOfNulls(size)
         }
+    }
+
+    // Método sort
+    override fun compareTo(other: Consulta): Int {
+        return other.timestamp?.compareTo(this.timestamp!!)!!
     }
 }

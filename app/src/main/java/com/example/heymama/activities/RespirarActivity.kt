@@ -16,17 +16,22 @@ class RespirarActivity : AppCompatActivity(), Utils {
         setContentView(R.layout.activity_respirar)
 
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
-        bottomNavigationView.setOnNavigationItemReselectedListener { item ->
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when(item.itemId) {
-                R.id.nav_bottom_item_home -> onClick(R.id.nav_bottom_item_home)
-                R.id.nav_bottom_item_respirar -> onClick(R.id.nav_bottom_item_respirar)
+                R.id.nav_bottom_item_home -> {
+                    finish()
+                    goToActivity(this,HomeActivity::class.java)
+                    return@setOnNavigationItemSelectedListener true
+                }
+                R.id.nav_bottom_item_foros -> {goToActivity(this,ForosActivity::class.java)
+                    return@setOnNavigationItemSelectedListener true
+                }
+                R.id.nav_bottom_item_ajustes -> {
+                    goToActivity(this,SettingsActivity::class.java)
+                    return@setOnNavigationItemSelectedListener true
+                }
             }
-        }
-    }
-
-    override fun onClick(view: Int) {
-        when(view) {
-            R.id.nav_bottom_item_home -> finish()
+            return@setOnNavigationItemSelectedListener false
         }
     }
 

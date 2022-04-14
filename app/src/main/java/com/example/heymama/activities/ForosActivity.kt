@@ -67,10 +67,23 @@ class ForosActivity : AppCompatActivity(), Utils{
         }
 
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
-        bottomNavigationView.setOnNavigationItemReselectedListener { item ->
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when(item.itemId) {
-                R.id.nav_bottom_item_respirar -> goToActivity(this,RespirarActivity::class.java)
+                R.id.nav_bottom_item_respirar -> {
+                    goToActivity(this,RespirarActivity::class.java)
+                    return@setOnNavigationItemSelectedListener true
+                }
+                R.id.nav_bottom_item_home -> {
+                    finish()
+                    goToActivity(this,HomeActivity::class.java)
+                    return@setOnNavigationItemSelectedListener true
+                }
+                R.id.nav_bottom_item_ajustes -> {
+                    goToActivity(this,SettingsActivity::class.java)
+                    return@setOnNavigationItemSelectedListener true
+                }
             }
+            return@setOnNavigationItemSelectedListener false
         }
     }
 
