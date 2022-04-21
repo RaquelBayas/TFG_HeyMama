@@ -8,9 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,14 +31,23 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
-    private lateinit var dbReference: StorageReference
-    private lateinit var dataBaseReference: DatabaseReference
-    lateinit var firestore: FirebaseFirestore
+    private lateinit var firestore: FirebaseFirestore
 
     private lateinit var recyclerViewComments: RecyclerView
     private lateinit var commentsArraylist: ArrayList<Comment>
     private lateinit var adapterComments: CommentsForoAdapter
 
+    private lateinit var id_tema: String
+    private lateinit var title_tema: String
+    private lateinit var description_tema: String
+    private lateinit var foroName: String
+
+    private lateinit var id: String
+
+    /**
+     *
+     * @param savedInstanceState Bundle
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tema_foro)
@@ -53,10 +60,11 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
 
         val intent = intent
         val bundle: Bundle? = intent.extras
-        val id_tema: String? = intent.getStringExtra("ID_Tema")
-        val title_tema: String? = intent.getStringExtra("Title_Tema")
-        val description_tema: String? = intent.getStringExtra("Description_Tema")
-        val foroName = intent.getStringExtra("ForoName")
+        id_tema = intent.getStringExtra("ID_Tema").toString()
+        id = intent.getStringExtra("ID").toString()
+        title_tema = intent.getStringExtra("Title_Tema").toString()
+        description_tema = intent.getStringExtra("Description_Tema").toString()
+        foroName = intent.getStringExtra("ForoName").toString()
 
         val txt_sub_tema : TextView = findViewById(R.id.txt_sub_tema)
         txt_sub_tema.text = title_tema
@@ -71,55 +79,108 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
 
         val button9: Button = findViewById(R.id.button9)
         button9.setOnClickListener {
-            showDialog(user!!, foroName.toString(), id_tema!!)
-            Log.d("ID TEMA",id_tema)
+            showDialog(user!!, foroName, id_tema)
         }
 
-        getComments(foroName.toString(), id_tema!!)
+        getComments(foroName.toString(),id)
+
+        var btn_menu_foro: Button = findViewById(R.id.btn_menu_foro)
+        btn_menu_foro.visibility = View.VISIBLE
+        btn_menu_foro.setOnClickListener {
+            val popupMenu: PopupMenu = PopupMenu(this,btn_menu_foro)
+            popupMenu.menuInflater.inflate(R.menu.article_menu,popupMenu.menu)
+            popupMenu.show()
+
+            popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
+                when(it.itemId) {
+                    R.id.editar -> {
+                        ""
+                    }
+                    R.id.eliminar -> {
+                        ""
+                        firestore.collection("Foros").document("SubForos")
+                            .collection(foroName.toString()).document(id).delete()
+                        firestore.collection("Foros").document("SubForos")
+                            .collection(foroName.toString()).document(id).collection("Comentarios")
+                            .addSnapshotListener { value, error ->
+                                val data = value?.documents
+                                for(i in data!!.iterator()) {
+                                    i.reference.delete()
+                                }
+                                Toast.makeText(this,"Deleted successfully",Toast.LENGTH_SHORT).show()
+                            }
+                        finish()
+                    }
+                }
+                true
+            })
+        }
 
     }
 
-
-    fun showDialog(user: FirebaseUser, foroName: String, urlTema: String) {
+    /**
+     * Muestra un diálogo que sirve para escribir el comentario que se desea añadir.
+     *
+     * @param user FirebaseUser
+     * @param foroName String
+     * @param urlTema String
+     *
+     */
+    private fun showDialog(user: FirebaseUser, foroName: String, urlTema: String) {
         val builder = AlertDialog.Builder(this)
         val inflater: LayoutInflater = layoutInflater
-        val dialogLayout: View  =inflater.inflate(R.layout.add_comment_foro_layout,null)
+        val dialogLayout: View = inflater.inflate(R.layout.add_comment_foro_layout,null)
         val editText: EditText = dialogLayout.findViewById(R.id.edt_add_comment)
 
-        //val btn_add_comment_foro: Button = findViewById(R.id.btn_add_comment_foro)
         with(builder){
             setTitle("Introduce un comentario")
             setPositiveButton("Añadir") {dialog, which ->
-                add_comment(editText.text.toString(),user,foroName,urlTema)
+                add_comment(editText.text.toString(),user,foroName,urlTema,id)
             }
             setNegativeButton("Cancelar"){dialog, which ->
                 Log.d("Cancelar","Negative button selected")
             }
-
             setView(dialogLayout)
             show()
         }
-
     }
 
-    fun add_comment(edt_comment:String, user: FirebaseUser, foroName: String, idTema: String) {
+    /**
+     *
+     *
+     * @param edt_comment String
+     * @param user FirebaseUser
+     * @param foroName String
+     * @param id String
+     */
+    private fun add_comment(edt_comment:String, user:FirebaseUser, foroName:String, idTema:String, id:String) {
         var comment = Comment(edt_comment,user.uid, Date())
-        addCommentFB(comment,foroName,idTema)
+        addCommentFB(comment,foroName,id)
     }
 
-    // Añade comentarios en Firebase
-    fun addCommentFB(comment: Comment, foroName: String, idTema: String) {
-        firestore.collection("$idTema/Comentarios").add(comment)
-        //firestore.collection("Foros").document("SubForos").collection(foroName).document(idTema).
-        //collection("Comentarios").add(comment) //.document("1").set(comment)
+    /**
+     * Añade los comentarios en la base de datos
+     *
+     * @param comment Comment
+     * @param foroName String
+     * @param idTema String
+     * @param id String
+     */
+     private fun addCommentFB(comment: Comment, foroName: String, id: String) {
+        firestore.collection("Foros").document("SubForos").collection(foroName)
+            .document(id).collection("Comentarios").add(comment)
     }
 
-    // Obtiene los comentarios de Firebase /
-    fun getComments(foroName: String, idTema: String?) {
+    /**
+     * Obtiene los comentarios de la base de datos
+     *
+     * @param foroName String
+     *
+     */
+    private fun getComments(foroName: String, id: String) {
         firestore = FirebaseFirestore.getInstance()
 
-        //firestore.collection("Foros").document("SubForos").collection(foroName).document(idTema.toString()).collection("Comentarios")
-        firestore.collection("$idTema/Comentarios")
+        firestore.collection("Foros").document("SubForos").collection(foroName).document(id).collection("Comentarios")
             .addSnapshotListener { snapshots, e ->
                 if (e!= null) {
 

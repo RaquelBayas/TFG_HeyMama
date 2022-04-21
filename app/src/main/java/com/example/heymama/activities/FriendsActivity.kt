@@ -3,6 +3,7 @@ package com.example.heymama.activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
@@ -25,9 +26,9 @@ class FriendsActivity : AppCompatActivity() {
 
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
-    lateinit var firebaseStore: FirebaseStorage
-    lateinit var firestore: FirebaseFirestore
-    lateinit var storageReference: StorageReference
+    private lateinit var firebaseStore: FirebaseStorage
+    private lateinit var firestore: FirebaseFirestore
+    private lateinit var storageReference: StorageReference
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
 
@@ -37,6 +38,11 @@ class FriendsActivity : AppCompatActivity() {
 
     private lateinit var uid: String
 
+    /**
+     * @constructor
+     * @param savedInstanceState Bundle
+     *
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R .layout.activity_friends)
@@ -71,16 +77,35 @@ class FriendsActivity : AppCompatActivity() {
 
     }
 
+    /**
+     *
+     *  Método para obtener los amigos agregados.
+     *
+     * @param input
+     *
+     */
     fun getFriends() {
         var friend = FriendRequest()
-        firestore.collection("Friendship").document(uid).collection("Friends").get().addOnSuccessListener { documents ->
-            for (document in documents) {
-                friend = document.toObject(FriendRequest::class.java)
-                Log.i("GETFRIENDS",document.data.toString())
+
+        var friendsRef = firestore.collection("Friendship").document(uid).collection("Friends")
+        friendsRef.addSnapshotListener { value, error ->
+            if (error != null) {
+                return@addSnapshotListener
             }
-            friendsArraylist.add(friend)
-            adapterFriends = FriendsAdapter(applicationContext,friendsArraylist)
-            recyclerViewFriends.adapter = adapterFriends
+            val docs = value!!.documents
+            if (docs.isEmpty()) {
+                Toast.makeText(this, "No has agregado a nadie...", Toast.LENGTH_SHORT).show()
+            } else {
+                friendsRef.get().addOnSuccessListener { documents ->
+                    for (document in documents) {
+                        friend = document.toObject(FriendRequest::class.java)
+                        Log.i("GETFRIENDS", document.data.toString())
+                    }
+                    friendsArraylist.add(friend)
+                    adapterFriends = FriendsAdapter(applicationContext, friendsArraylist)
+                    recyclerViewFriends.adapter = adapterFriends
+                }
+            }
         }
     }
 

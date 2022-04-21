@@ -3,7 +3,6 @@ package com.example.heymama.adapters
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,18 +10,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.example.heymama.GlideApp
 import com.example.heymama.R
-import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.FriendRequest
-import com.example.heymama.models.PostTimeline
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -33,21 +26,31 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
-    lateinit var firebaseStore: FirebaseStorage
-    lateinit var firestore: FirebaseFirestore
-    lateinit var storageReference: StorageReference
+    private lateinit var firebaseStore: FirebaseStorage
+    private lateinit var firestore: FirebaseFirestore
+    private lateinit var storageReference: StorageReference
 
+    /**
+     *
+     * @param parent ViewGroup
+     * @param viewType Int
+     *
+     */
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): FriendRequestAdapter.HolderForo {
 
-        // inflate layout tema_foro.xml
         val view = LayoutInflater.from(parent.context).inflate(R.layout.tema_friendrequests, parent, false)
-        Log.i("Adapter-0","here")
         return HolderForo(view)
     }
 
+    /**
+     *
+     * @param holder FriendRequestAdapter.HolderForo
+     * @param position Int
+     *
+     */
     override fun onBindViewHolder(holder: FriendRequestAdapter.HolderForo, position: Int) {
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance() //CLOUD STORAGE
@@ -95,7 +98,13 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
         }
     }
 
-    fun updateFriendRequest(id:String,request:String){
+    /**
+     *
+     * @param id String
+     * @param request String
+     *
+     */
+    private fun updateFriendRequest(id:String,request:String){
         var friendship_reference = firestore.collection("Friendship")
 
         // ACEPTAR -> ESTABLECE LA AMISTAD
@@ -113,7 +122,13 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
 
     }
 
-    fun deleteFriendRequest(reference:CollectionReference,id:String) {
+    /**
+     *
+     * @param reference CollectionReference
+     * @param id String
+     *
+     */
+    private fun deleteFriendRequest(reference: CollectionReference, id: String) {
         reference.document(auth.currentUser?.uid.toString()).collection("FriendRequest")
             .document(id).delete()
 
@@ -121,7 +136,13 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
             .document(auth.currentUser?.uid.toString()).delete()
     }
 
-    fun searchFriendRequest(id:String,request:String) {
+    /**
+     *
+     * @param id String
+     * @param request String
+     *
+     */
+    private fun searchFriendRequest(id: String, request: String) {
         firestore.collection("Friendship").document(auth.currentUser?.uid.toString()).collection("FriendRequest")
             .document(id).addSnapshotListener { value, error ->
                 if(value != null) {
@@ -147,7 +168,12 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
             }
     }
 
-    fun acceptFriendRequest(holder: FriendRequestAdapter.HolderForo) {
+    /**
+     *
+     * @param holder FriendRequestAdapter.HolderForo
+     *
+     */
+    private fun acceptFriendRequest(holder: FriendRequestAdapter.HolderForo) {
         Log.i("ACCESS1",holder.txt_user_solicitud.text.toString())
         var holder_username = holder.txt_user_solicitud.text.toString()
         //BUSCA EL ID DEL USERNAME CAPTURADO EN EL HOLDER
@@ -171,7 +197,12 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
           */
     }
 
-    fun denyFriendRequest(holder:FriendRequestAdapter.HolderForo) {
+    /**
+     *
+     * @param holder FriendRequesAdapter.HolderForo
+     *
+     */
+    private fun denyFriendRequest(holder:FriendRequestAdapter.HolderForo) {
         var holder_username = holder.txt_user_solicitud.text.toString()
         //BUSCA EL ID DEL USERNAME CAPTURADO EN EL HOLDER
         firestore.collection("Usuarios").addSnapshotListener { value, error ->
@@ -187,10 +218,21 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
             }
         }
     }
+
+    /**
+     *
+     * @param input
+     *
+     */
     override fun getItemCount(): Int {
         return friendRequestList.size
     }
 
+    /**
+     *
+     * @param itemView View
+     *
+     */
     inner class HolderForo(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var txt_nombre_solicitud: TextView = itemView.findViewById(R.id.txt_nombre_solicitud)
         var txt_user_solicitud: TextView = itemView.findViewById(R.id.txt_user_solicitud)

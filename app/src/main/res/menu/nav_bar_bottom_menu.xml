@@ -12,6 +12,13 @@
             android:id="@+id/nav_bottom_item_foros"
             android:icon="@drawable/menu"/>
 
+        <!--
+        <item
+            android:title=""
+            android:id="@+id/nav_bottom_item_timeline"
+            android:icon="@drawable/menu"/>
+
+        -->
         <item
             android:title="@string/nav_item_respirar"
             android:id="@+id/nav_bottom_item_respirar"

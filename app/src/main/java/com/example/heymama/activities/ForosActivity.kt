@@ -5,28 +5,25 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.ImageView
 import android.widget.TextView
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.example.heymama.GlideApp
 import com.example.heymama.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.example.heymama.interfaces.Utils
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 
 class ForosActivity : AppCompatActivity(), Utils{
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
-    private lateinit var dataBaseReference: DatabaseReference
-    lateinit var firebaseStore: FirebaseStorage
-    lateinit var storageReference: StorageReference
+    private lateinit var firebaseStore: FirebaseStorage
 
+    /**
+     *
+     * @param savedInstanceState Bundle
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_foros)
@@ -35,15 +32,8 @@ class ForosActivity : AppCompatActivity(), Utils{
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         auth = FirebaseAuth.getInstance()
 
-        storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").reference
-
-        //Dentro de la base de datos habrá un nodo "Usuarios" donde se guardan los usuarios de la aplicación
-        dataBaseReference = dataBase.getReference("Usuarios")
-
         // Usuario
         val user: FirebaseUser? = auth.currentUser
-        // ID en la BBDD
-        val userDB: DatabaseReference = dataBaseReference.child(user!!.uid)
 
         firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
 
@@ -88,7 +78,13 @@ class ForosActivity : AppCompatActivity(), Utils{
     }
 
 
-
+    /**
+     *
+     * @param activity Activity
+     * @param class Class<*>
+     * @param foroName String
+     *
+     */
      fun Context.goToActivity(activity: Activity, classs: Class<*>?, foroName: String) {
         val intent = Intent(activity, classs)
         intent.putExtra("ForoName",foroName)

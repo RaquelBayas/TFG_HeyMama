@@ -30,7 +30,6 @@ class ArticleActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
-    private lateinit var dataBaseReference: DatabaseReference
     private lateinit var firestore: FirebaseFirestore
 
     private lateinit var articlesArraylist: ArrayList<Article>
@@ -42,15 +41,18 @@ class ArticleActivity : AppCompatActivity() {
     private lateinit var txt_title_article : TextView
     private lateinit var txt_description_article: TextView
 
-        override fun onCreate(savedInstanceState: Bundle?) {
+    /**
+     *
+     * @param savedInstanceState Bundle
+     *
+     */
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_article)
 
         val intent = intent
         val bundle: Bundle? = intent.extras
         id_article = intent.getStringExtra("ID_Article")!!
-        Log.i("id-article",id_article)
-
 
         firestore = FirebaseFirestore.getInstance()
 
@@ -86,6 +88,11 @@ class ArticleActivity : AppCompatActivity() {
 
     }
 
+    /**
+     *
+     * @param input
+     *
+     */
     private fun getData() {
         firestore.collection("Artículos").document(id_article).addSnapshotListener { value, error ->
             if(error!=null)  {
@@ -93,24 +100,33 @@ class ArticleActivity : AppCompatActivity() {
                 return@addSnapshotListener
             }
             var data = value!!.data
-            txt_title_article.text = data!!.get("title").toString()
-            txt_description_article.text = data.get("article").toString()
+            txt_title_article.text = data!!["title"].toString()
+            txt_description_article.text = data["article"].toString()
         }
     }
 
-    private fun deleteArticle(firestore: FirebaseFirestore, earticlesArraylist: ArrayList<Article>) {
-
+    /**
+     *
+     * @param firestore FirebaseFirestore
+     * @param articlesArraylist ArrayList<Article>
+     *
+     */
+    private fun deleteArticle(firestore: FirebaseFirestore, articlesArraylist: ArrayList<Article>) {
         firestore.collection("Artículos").whereEqualTo("title",title_article).whereEqualTo("professionalID",professional_article).get().addOnSuccessListener {
             for (document in it.documents) {
                 firestore.collection("Artículos").document(document.id).delete()
             }
-
         }
-        if (!articlesArraylist.isEmpty()) {
+        if (articlesArraylist.isNotEmpty()) {
             Toast.makeText(this,articlesArraylist.size.toString(),Toast.LENGTH_SHORT).show()
         }
     }
 
+    /**
+     *
+     * @param input
+     *
+     */
     private fun delete_alertDialog() {
         val dialog = AlertDialog.Builder(this)
             .setTitle(R.string.eliminar)
@@ -127,16 +143,25 @@ class ArticleActivity : AppCompatActivity() {
             }
             .setCancelable(false)
             .create()
-
         dialog.show()
     }
     // Menú: editar, eliminar
+    /**
+     *
+     * @param menu Menu
+     *
+     */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.article_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
+    /**
+     *
+     * @param item MenuItem
+     *
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.editar -> {

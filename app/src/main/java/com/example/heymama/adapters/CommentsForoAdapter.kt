@@ -4,6 +4,8 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
@@ -11,9 +13,13 @@ import com.example.heymama.activities.TemaForoActivity
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.Comment
 import com.example.heymama.models.Post
+import com.google.firebase.auth.FirebaseAuth
 
 class CommentsForoAdapter(private val context: Context, private val commentsForoArrayList: ArrayList<Comment>, private val foroItemListener: ItemRecyclerViewListener
 ) : RecyclerView.Adapter<CommentsForoAdapter.HolderForo>() {
+
+    private lateinit var auth : FirebaseAuth
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentsForoAdapter.HolderForo {
         // inflate layout tema_foro.xml
         val view = LayoutInflater.from(parent.context).inflate(R.layout.tema_foro,parent,false)
@@ -21,12 +27,15 @@ class CommentsForoAdapter(private val context: Context, private val commentsForo
     }
 
     override fun onBindViewHolder(holder: CommentsForoAdapter.HolderForo, position: Int) {
+        auth = FirebaseAuth.getInstance()
+
         val tema_post: Comment = commentsForoArrayList[position] // get data at specific position
         holder.comment_foro.setText(tema_post.post)
         //holder.img_tema_foro.setImageURI(tema_post)
         holder.comment_foro.setOnClickListener{
             foroItemListener.onItemClicked(position)
         }
+
     }
 
     override fun getItemCount(): Int {

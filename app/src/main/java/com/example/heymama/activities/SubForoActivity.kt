@@ -29,7 +29,6 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
-    private lateinit var dataBaseReference: DatabaseReference
     private lateinit var firestore: FirebaseFirestore
 
     private lateinit var recyclerView: RecyclerView
@@ -37,13 +36,20 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
     private lateinit var idTemasArrayList: ArrayList<String>
     private lateinit var adapter: ForoAdapter
 
+    private lateinit var foroName: String
+
+    /**
+     *
+     * @constructor
+     * @param savedInstanceState Bundle
+     *
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sub_foro)
 
         val intent = intent
-        val foroName = intent.getStringExtra("ForoName")
-        Toast.makeText(this,foroName,Toast.LENGTH_SHORT).show()
+        foroName = intent.getStringExtra("ForoName").toString()
 
         //Instancias para la base de datos y la autenticación
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
@@ -76,6 +82,12 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
     }
 
 
+    /**
+     * Este método sirve para obtener los datos del respectivo tema seleccionado.
+     *
+     * @param foroName String
+     *
+     */
     private fun getTemasData(foroName: String?) {
         firestore = FirebaseFirestore.getInstance()
 
@@ -106,11 +118,17 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
 
     }
 
+    /**
+     *
+     * @param position Int
+     */
     override fun onItemClicked(position: Int) {
         Toast.makeText(this,"Has seleccionado el tema # ${position+1}",Toast.LENGTH_SHORT).show()
         val intent = Intent(this, TemaForoActivity::class.java)
         //intent.putExtra("ForoName",foroName)
         intent.putExtra("ID_Tema",idTemasArrayList.get(position))
+        intent.putExtra("ID",temasArraylist.get(position).id)
+        intent.putExtra("ForoName",foroName)
         intent.putExtra("Title_Tema",temasArraylist.get(position).title)
         intent.putExtra("Description_Tema",temasArraylist.get(position).post)
         startActivity(intent)

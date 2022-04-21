@@ -16,6 +16,11 @@ class MoodActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
 
+    /**
+     *
+     * @param savedInstanceState Bundle
+     *
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mood)
@@ -49,7 +54,12 @@ class MoodActivity : AppCompatActivity() {
         setPieChartData()
     }
 
-    fun setPieChartData() {
+    /**
+     *
+     * @param input
+     *
+     */
+    private fun setPieChartData() {
         var pieEntries = arrayListOf<PieEntry>()
         var count_feliz : Float = 0.0f
         var count_bien : Float = 0.0f

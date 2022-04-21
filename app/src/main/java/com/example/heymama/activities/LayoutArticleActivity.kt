@@ -33,6 +33,11 @@ class LayoutArticleActivity : AppCompatActivity() {
     private lateinit var type: String
     private lateinit var bundle: Bundle
 
+    /**
+     *
+     * @param savedInstanceState Bundle
+     *
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_layout_article)
@@ -77,6 +82,11 @@ class LayoutArticleActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Este método permite editar el artículo publicado
+     *
+     * @param input
+     */
     private fun editar_articulo()  {
         val reference_article = firestore.collection("Artículos").document(id_article)
         Log.i("reference_art",reference_article.path)
@@ -85,6 +95,12 @@ class LayoutArticleActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * Este método permite publicar un artículo
+     *
+     * @param user FirebaseUser
+     *
+     */
     private fun publicar_articulo(user: FirebaseUser){
 
         val article_ref = firestore.collection("Artículos").document()
@@ -96,7 +112,7 @@ class LayoutArticleActivity : AppCompatActivity() {
                 user.uid,
                 Date()
             )
-            addArticle(articulo, user, article_ref)
+            addArticle(articulo, article_ref)
             Toast.makeText(this, "Correcto.", Toast.LENGTH_SHORT).show()
             finish()
         }else {
@@ -104,7 +120,14 @@ class LayoutArticleActivity : AppCompatActivity() {
         }
     }
 
-    private fun addArticle(articulo: Article, user: FirebaseUser, article_ref: DocumentReference) {
+    /**
+     * Este método permite añadir el artículo en la base de datos
+     *
+     * @param articulo Article
+     * @param article_ref DocumentReference
+     *
+     */
+    private fun addArticle(articulo: Article, article_ref: DocumentReference) {
         article_ref.set(articulo)
     }
 

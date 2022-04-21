@@ -2,16 +2,10 @@ package com.example.heymama.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.View.VISIBLE
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.example.heymama.GlideApp
+
 import com.example.heymama.R
 import com.example.heymama.adapters.FriendRequestAdapter
 import com.example.heymama.interfaces.ItemRecyclerViewListener
@@ -27,19 +21,24 @@ class SolicitudesActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
-    lateinit var firebaseStore: FirebaseStorage
-    lateinit var firestore: FirebaseFirestore
-    lateinit var storageReference: StorageReference
+    private lateinit var firebaseStore: FirebaseStorage
+    private lateinit var firestore: FirebaseFirestore
+    private lateinit var storageReference: StorageReference
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
 
-    lateinit var uid: String
+    private lateinit var uid: String
 
     private lateinit var recyclerViewRequests: RecyclerView
     private lateinit var requestsArraylist: ArrayList<FriendRequest>
     private lateinit var adapterRequests: FriendRequestAdapter
 
 
+    /**
+     *
+     * @param savedInstanceState Bundle
+     *
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_solicitudes)
@@ -67,7 +66,12 @@ class SolicitudesActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     }
 
-    fun getFriendRequest() {
+    /**
+     *
+     * @param input
+     *
+     */
+    private fun getFriendRequest() {
 
         firestore.collection("Friendship").document(auth.currentUser!!.uid).collection("FriendRequest")
             .addSnapshotListener { value, error ->
@@ -90,7 +94,6 @@ class SolicitudesActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     }
                 }
             }
-
     }
 
 }

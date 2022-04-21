@@ -105,6 +105,12 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
         }
     }
 
+    /**
+     * Este método permite obtener los artículos publicados
+     *
+     * @param input
+     *
+     */
     private fun getArticlesData() {
         firestore = FirebaseFirestore.getInstance()
 
@@ -136,7 +142,14 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     }
 
-    fun deleteArticle(articlessArrayList: ArrayList<Article>, index: Int) {
+    /**
+     * Este método permite eliminar un artículo
+     *
+     * @param articlessArrayList ArrayList<Article>
+     * @param index Int
+     *
+     */
+    private fun deleteArticle(articlessArrayList: ArrayList<Article>, index: Int) {
         if(!articlessArrayList.isEmpty()) {
             articlessArrayList.removeAt(index)
             this.adapter = InfoArticleAdapter(this,articlesArraylist,this)
@@ -144,11 +157,22 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
         }
     }
 
-    fun Context.goToActivity(activity: Activity, classs: Class<*>?) {
+    /**
+     *
+     * @param activity Activity
+     * @param class Class<*>
+     *
+     */
+    private fun Context.goToActivity(activity: Activity, classs: Class<*>?) {
         val intent = Intent(activity, classs)
         startActivity(intent)
     }
 
+    /**
+     *
+     * @param position Int
+     *
+     */
     override fun onItemClicked(position: Int) {
         Toast.makeText(this,"Has seleccionado el artículo # ${position+1}",Toast.LENGTH_SHORT).show()
         val intent = Intent(this, ArticleActivity::class.java)

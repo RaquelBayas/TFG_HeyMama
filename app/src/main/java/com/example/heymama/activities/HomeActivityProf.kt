@@ -26,6 +26,11 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
     private lateinit var toggle: ActionBarDrawerToggle
 
 
+    /**
+     *
+     * @param savedInstanceState Bundle
+     *
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_prof)
@@ -69,6 +74,11 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
     }
 
     // MENÚ LATERAL
+    /**
+     *
+     * @param item MenuItem
+     *
+     */
     override fun onNavigationItemSelected(item: MenuItem) : Boolean {
         when (item.itemId) {
             R.id.nav_bottom_item_home  -> {
@@ -77,14 +87,15 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
             }
             R.id.nav_item_respirar -> onClick(R.id.nav_item_respirar)
             R.id.nav_item_consultas -> goToActivity(this,ContactoActivity::class.java)
-            R.id.nav_item_messages -> goToActivity(this,TimelineActivity::class.java)
+            //R.id.nav_bottom_item_timeline -> goToActivity(this,TimelineActivity::class.java)
             R.id.nav_item_ajustes -> goToActivity(this,SettingsActivity::class.java)
         }
         drawer.closeDrawer(GravityCompat.START)
         return true
     }
 
-    fun goToFragment() {
+
+    private fun goToFragment() {
         val fragment = SolicitudesFragment()
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
@@ -92,16 +103,31 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
         fragmentTransaction.commit()
     }
 
+    /**
+     *
+     * @param savedInstanceState Bundle
+     * @param persistentState PersistableBundle
+     */
     override fun onPostCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
         super.onPostCreate(savedInstanceState, persistentState)
         toggle.syncState()
     }
 
+    /**
+     *
+     * @param newConfig Configuration
+     *
+     */
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         toggle.onConfigurationChanged(newConfig)
     }
 
+    /**
+     *
+     * @param item MenuItem
+     *
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(toggle.onOptionsItemSelected(item)){
             return true
@@ -109,6 +135,11 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
         return super.onOptionsItemSelected(item)
     }
 
+    /**
+     *
+     * @param view Int
+     *
+     */
     override fun onClick(view: Int) {
         when(view) {
             R.id.nav_item_respirar -> goToActivity(this, RespirarActivity::class.java)

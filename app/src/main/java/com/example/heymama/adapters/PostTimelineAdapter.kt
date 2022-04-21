@@ -53,10 +53,16 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
         TYPE_TIMELINE, TYPE_PERFIL
     }
 
+    /**
+     *
+     */
     fun setOnItemRecyclerViewListener(listener: ItemRecyclerViewListener) {
         this.listener = listener
     }
 
+    /**
+     *
+     */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder{
         /*return when(viewType) {
             ViewHolderType.TYPE_TIMELINE.ordinal -> {
@@ -69,7 +75,6 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
             }
 
         }*/
-        // inflate layout tema_foro.xml
         val view = LayoutInflater.from(parent.context).inflate(R.layout.add_post,parent,false)
         return Holder(view,listener)
     }
@@ -81,6 +86,10 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
         }
     }*/
 
+    /**
+     *
+     *
+     */
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: PostTimelineAdapter.Holder, position: Int) {
         auth = FirebaseAuth.getInstance()
@@ -151,6 +160,11 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
                 commentCount_post.text = post_tl.commentCount.toString() //likeCounter(holder,position).toString()
                 likeCount_post.text = post_tl.likeCount.toString()
                 id_post = post_tl.postId.toString()
+
+                commentButton.setOnClickListener {
+                    commentPostTL(name_post.text.toString(),user_post.text.toString(),comment_post.text.toString(), postsTimelineList[Integer.parseInt(adapterPosition.toString())].postId.toString(), id_user
+                    )
+                }
             }
         }
         /*with(holder) {
@@ -196,9 +210,9 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
                     }
             }
         }
-        //CONTADOR DE LIKES
+
         likeCounter(holder,position)
-        //CONTADOR DE COMENTARIOS
+
         commentsCounter(holder,position)
 
         // CAMBIAR COLOR DE LOS BOTONES
@@ -220,17 +234,17 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
                     }
             }
         }
-        with(holder) {
-            commentButton.setOnClickListener {
-                commentPostTL(name_post.text.toString(),user_post.text.toString(),comment_post.text.toString(), postsTimelineList[Integer.parseInt(adapterPosition.toString())].postId.toString(), id_user
-                )
-            }
-        }
-
     }
 
 
-
+    /**
+     *
+     * @param name_post String
+     * @param user_post String
+     * @param comment_post String
+     * @param id_post String
+     * @param id_user String
+     */
     private fun commentPostTL(name_post:String, user_post:String, comment_post:String, id_post:String, id_user:String) {
         val intent = Intent(context,CommentPostTLActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -242,6 +256,11 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
         this.context.startActivity(intent)
     }
 
+    /**
+     *
+     * @param holder PostTimelineAdapter
+     * @param position Int
+     */
     private fun commentsCounter(holder: PostTimelineAdapter.Holder, position: Int) {
         firestore.collection("Timeline").document(postsTimelineList[position].postId.toString())
             .collection("Replies").addSnapshotListener { value, error ->
@@ -256,6 +275,13 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
                 }
             }
     }
+
+    /**
+     *
+     * @param holder PostTimelineAdapter
+     * @param position Int
+     *
+     */
     private fun likeCounter(holder:PostTimelineAdapter.Holder, position:Int) {
         firestore.collection("Timeline").document(postsTimelineList[position].postId.toString())
             .collection("Likes").addSnapshotListener { value, error ->
@@ -271,10 +297,18 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
             }
     }
 
+    /**
+     *
+     * @param input
+     *
+     */
     override fun getItemCount(): Int {
         return postsTimelineList.size
     }
 
+    /**
+     *
+     */
     class Holder(itemView: View, listener:ItemRecyclerViewListener) : RecyclerView.ViewHolder(itemView){
         var user_post: TextView = itemView.findViewById(R.id.txt_tweet_user)
         var name_post: TextView = itemView.findViewById(R.id.txt_tweet_name)

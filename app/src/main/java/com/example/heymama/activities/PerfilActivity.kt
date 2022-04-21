@@ -8,10 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -40,9 +37,10 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
 
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
-    lateinit var firebaseStore: FirebaseStorage
-    lateinit var firestore: FirebaseFirestore
-    lateinit var storageReference: StorageReference
+    private lateinit var currentUserUID: String
+    private lateinit var firebaseStore: FirebaseStorage
+    private lateinit var firestore: FirebaseFirestore
+    private lateinit var storageReference: StorageReference
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
     private lateinit var binding : ActivityPerfilBinding
@@ -56,6 +54,11 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
     private lateinit var postsTLArraylist: ArrayList<PostTimeline>
     private lateinit var adapterPostsTL: PostTimelineAdapter
 
+    /**
+     * @constructor
+     * @param savedInstanceState Bundle
+     *
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPerfilBinding.inflate(layoutInflater)
@@ -63,33 +66,22 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
 
         // Usuario
         auth = FirebaseAuth.getInstance()
-        val user: FirebaseUser? = auth.currentUser
+        currentUserUID = auth.currentUser!!.uid
 
         // Firebase
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         dataBaseReference = dataBase.getReference("Usuarios")
         firestore = FirebaseFirestore.getInstance() //CLOUD STORAGE
         firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
-        storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").reference
-        firestore = FirebaseFirestore.getInstance()
+        storageReference = firebaseStore.reference
 
         btn_amigos = findViewById(R.id.btn_amigos)
+
         // Cambiar de perfil
         val intent = intent
-        if (!intent.getStringExtra("UserUID").isNullOrEmpty()) {
-            uid = intent.getStringExtra("UserUID")!!
-            changeButtons()
-        } else {
-            uid = auth.currentUser?.uid!!
-            // Cambiar imagen layout
-            binding.layoutImage.setOnClickListener { selectImage(100) }
 
-            // Cambiar imagen de perfil
-            binding.profileImage.setOnClickListener { selectImage(200) }
-
-        }
-        Toast.makeText(this,uid,Toast.LENGTH_SHORT).show()
-
+        checkUserProfile()
+        existsRequest()
 
         var txt_user_perfil = findViewById<TextView>(R.id.txt_user_perfil)
 
@@ -98,25 +90,32 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
             loadPicture(uid!!)
         }
 
-
         firestore.collection("Usuarios").document(uid).addSnapshotListener { value, error ->
             txt_user_perfil.text = value?.data?.get("name").toString()
             Log.i("NAME_PERFIL", value?.data?.get("name").toString())
         }
         // BOTÓN MENSAJES
         btn_mensajes = findViewById(R.id.btn_mensajes)
-        Log.i("btn_mensajes",btn_mensajes.text.toString())
-
-        btn_mensajes.setOnClickListener {
-            val intent = Intent(this, ChatActivity::class.java)
-            intent.putExtra("friendUID",uid)
-            startActivity(intent)
+        if(btn_mensajes.text == "Mensajes") {
+            btn_mensajes.setOnClickListener {
+                val intent = Intent(this, ListChatsActivity::class.java)
+                intent.putExtra("friendUID", uid)
+                startActivity(intent)
+            }
+        } else {
+            btn_mensajes.setOnClickListener {
+                val intent = Intent(this, ChatActivity::class.java)
+                intent.putExtra("friendUID", uid)
+                startActivity(intent)
+            }
         }
 
-        btn_amigos.setOnClickListener {
-            val intent = Intent(this, FriendsActivity::class.java)
-            intent.putExtra("UID",uid)
-            startActivity(intent)
+        if(currentUserUID == uid || btn_amigos.text == "Amiga") {
+            btn_amigos.setOnClickListener {
+                val intent = Intent(this, FriendsActivity::class.java)
+                intent.putExtra("UID", uid)
+                startActivity(intent)
+            }
         }
 
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
@@ -125,18 +124,38 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
                 R.id.nav_bottom_item_respirar -> goToActivity(this,RespirarActivity::class.java)
             }
         }
-
         //RECYCLER VIEW
         loadPostsTL()
     }
 
+    /**
+     *
+     * Comprueba el uid del perfil que visitamos.
+     * @param input
+     *
+     */
+    private fun checkUserProfile() {
+        if (!intent.getStringExtra("UserUID").isNullOrEmpty()) {
+            uid = intent.getStringExtra("UserUID")!!
+        } else {
+            uid = auth.currentUser?.uid!!
+
+            binding.layoutImage.setOnClickListener { selectImage(100) } // Cambiar imagen layout
+            binding.profileImage.setOnClickListener { selectImage(200) } // Cambiar imagen de perfil
+        }
+    }
+
+    /**
+     *
+     * @param input
+     *
+     */
     private fun loadPostsTL() {
         recyclerViewTimeline = findViewById(R.id.recyclerView_perfil)
         var layoutManager = LinearLayoutManager(this)
         recyclerViewTimeline.layoutManager = layoutManager
         recyclerViewTimeline.setHasFixedSize(true)
         postsTLArraylist = arrayListOf()
-
 
         firestore.collection("Timeline").whereEqualTo("userId",uid).addSnapshotListener { snapshots, e ->
             if (e!= null) {
@@ -165,62 +184,126 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
         }
     }
 
-    private fun changeButtons() {
-        var docFriends = firestore.collection("Friendship").document(auth.uid.toString()).collection("Friends").document(uid)
-        docFriends.get().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val document = task.result
-                if (document.exists()){
-                    btn_amigos.text = "Amiga"
-                    btn_mensajes.text = "Enviar mensaje"
-                } else {
-                    btn_amigos.text = "Añadir"
-                }
-            }
-        }
-        if(btn_amigos.text == "Añadir") {
-            Log.i("UID-FRIENDS-btn-0",btn_amigos.text.toString())
-            var docFriends = firestore.collection("Friendship").document(auth.uid.toString()).collection("Friends").document(uid)
-            docFriends.get().addOnCompleteListener { task ->
+    /**
+     *
+     */
+    private fun existsRequest() {
+        if(!auth.uid.equals(uid)) {
+            var docRequest = firestore.collection("Friendship").document(currentUserUID).collection("FriendRequest").document(uid)
+            docRequest.get().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val document = task.result
-                    if (!document.exists()) {
-                        btn_amigos.setOnClickListener {
-                            Toast.makeText(this, "Solicitud enviada.", Toast.LENGTH_SHORT).show()
+                    if (document.exists()) {
+                        if (document["state"]!!.equals("send")!!) {
                             btn_amigos.text = "Solicitud enviada"
-                            sendFriendRequest()
+                            btn_amigos.setOnClickListener {
+                                Toast.makeText(this, "SOLICITUD ENVIADA", Toast.LENGTH_SHORT).show()
+                            }
+                        } else if (document["state"]!!.equals("receive")) {
+                            btn_amigos.text = "Responder solicitud"
+                            Toast.makeText(this, "SOLICITUD RECEIVE", Toast.LENGTH_SHORT).show()
+                            btn_amigos.setOnClickListener {
+                                val popupmenu: PopupMenu = PopupMenu(this, btn_amigos)
+                                popupmenu.menuInflater.inflate(R.menu.request_friends_menu, popupmenu.menu)
+                                popupmenu.show()
+                                popupmenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
+                                    when (it.itemId) {
+                                        R.id.request_friends_menu_aceptar -> {
+                                            aceptar_solicitud(uid)
+                                        }
+                                        R.id.request_friends_menu_rechazar -> {
+                                            rechazar_solicitud(uid)
+                                        }
+                                    }
+                                    true
+                                })
+                            }
+                        }
+                    } else {
+                        var docFriends = firestore.collection("Friendship").document(currentUserUID)
+                            .collection("Friends").document(uid)
+                        docFriends.get().addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                val document = task.result
+                                if (document.exists()) {
+                                    btn_amigos.text = "Amiga"
+                                    btn_mensajes.text = "Enviar mensaje"
+                                    btn_amigos.setOnClickListener {
+                                        val intent = Intent(this, FriendsActivity::class.java)
+                                        intent.putExtra("UID", uid)
+                                        startActivity(intent)
+                                    }
+                                } else {
+                                    btn_amigos.text = "Añadir"
+                                    btn_amigos.setOnClickListener { Toast.makeText(this, "Solicitud enviada.", Toast.LENGTH_SHORT).show()
+                                        btn_amigos.text = "Solicitud enviada"
+                                        sendFriendRequest()
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
+        } else {
+            btn_amigos.text == "Amigos"
         }
-        else {
-            Log.i("UID-FRIENDS-btn",btn_amigos.text.toString())
-            btn_amigos.setOnClickListener {
-                val intent = Intent(this, FriendsActivity::class.java)
-                intent.putExtra("UID",uid)
-                startActivity(intent)
-            }
-        }
-
-
     }
 
+    private fun aceptar_solicitud(uid: String) {
+        var friendship_reference = firestore.collection("Friendship")
+        var friends = FriendRequest(currentUserUID, uid, "friends")
 
+        friendship_reference.document(currentUserUID).collection("Friends").document(uid).set(friends)
+
+        friends = FriendRequest(uid, currentUserUID, "friends")
+        friendship_reference.document(uid).collection("Friends")
+            .document(currentUserUID).set(friends)
+        Toast.makeText(this, "¡Has aceptado la solicitud de amistad!", Toast.LENGTH_SHORT).show()
+
+        friendship_reference.document(currentUserUID).collection("FriendRequest").document(uid).delete()
+
+        friendship_reference.document(uid).collection("FriendRequest")
+            .document(currentUserUID).delete()
+
+        btn_amigos.text = "Amiga"
+        btn_mensajes.text = "Enviar mensaje"
+    }
+
+    private fun rechazar_solicitud(uid: String) {
+        var friendship_reference = firestore.collection("Friendship")
+        friendship_reference.document(currentUserUID).collection("FriendRequest")
+            .document(uid).delete()
+
+        friendship_reference.document(uid).collection("FriendRequest")
+            .document(currentUserUID).delete()
+        Toast.makeText(this, "Solicitud rechazada.", Toast.LENGTH_SHORT).show()
+    }
+
+    /**
+     *
+     * @param input
+     *
+     */
     fun sendFriendRequest() {
         // Comprobar si el user actual y el user del perfil visitado son amigos, sino enviar peticion
 
-        var friendRequest_send = FriendRequest(uid,auth.currentUser?.uid.toString(),"send")
-        var friendRequest_receive = FriendRequest(uid,auth.currentUser?.uid.toString(),"receive")
+        var friendRequest_send = FriendRequest(uid,currentUserUID,"send")
+        var friendRequest_receive = FriendRequest(uid,currentUserUID,"receive")
 
-        firestore.collection("Friendship").document(auth.currentUser?.uid.toString()).collection("FriendRequest")
+        firestore.collection("Friendship").document(currentUserUID).collection("FriendRequest")
             .document(uid).set(friendRequest_send)
         firestore.collection("Friendship").document(uid).collection("FriendRequest")
-            .document(auth.currentUser?.uid.toString()).set(friendRequest_receive)
+            .document(currentUserUID).set(friendRequest_receive)
 
     }
 
-    fun loadPicture(uid: String) {
+    /**
+     *
+     * @param uid String
+     *
+     */
+    private fun loadPicture(uid: String) {
         // Comprueba si existe imagen de perfil en la bbdd
         var profileImage : ImageView = findViewById(R.id.profile_image)
         var layoutImage : ImageView = findViewById(R.id.layout_image)
@@ -229,7 +312,13 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
         glidePicture(uid,"layout",layoutImage)
     }
 
-    fun glidePicture(uid: String, path:String, image:ImageView) {
+    /**
+     *
+     * @param uid String
+     * @param path String
+     * @param image ImageView
+     */
+    private fun glidePicture(uid: String, path:String, image:ImageView) {
         storageReference = firebaseStore.getReference("/Usuarios/"+uid+"/images/"+path)
 
         GlideApp.with(applicationContext)
@@ -245,7 +334,12 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
         activity.finish()
     }*/
 
-    private fun uploadImage(storageReference: StorageReference,uri:Uri){
+    /**
+     *
+     * @param storageReference StorageReference
+     * @param uri Uri
+     */
+    private fun uploadImage(storageReference: StorageReference, uri: Uri){
         val progressDialog = ProgressDialog(this)
         progressDialog.setMessage("Subiendo foto...")
         progressDialog.setCancelable(false)
@@ -262,6 +356,11 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
         }
     }
 
+    /**
+     *
+     * @param code Int
+     *
+     */
     private fun selectImage(code: Int) {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         intent.type = "image/*"
@@ -270,6 +369,12 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
         startActivityForResult(intent,code)
     }
 
+    /**
+     *
+     * @param requestCode Int
+     * @param resultCode Int
+     * @param data Intent
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 

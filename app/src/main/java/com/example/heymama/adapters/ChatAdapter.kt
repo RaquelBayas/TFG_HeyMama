@@ -14,8 +14,7 @@ import com.example.heymama.models.Message
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
-class ChatAdapter(private val context: Context, private val chatArrayList: ArrayList<Message>, private val chatItemListener: ItemRecyclerViewListener
-) : RecyclerView.Adapter<ChatAdapter.HolderForo>() {
+class ChatAdapter(private val context: Context, private val chatArrayList: ArrayList<Message>) : RecyclerView.Adapter<ChatAdapter.HolderForo>() {
 
     private var firebaseUser: FirebaseUser ? = null
 

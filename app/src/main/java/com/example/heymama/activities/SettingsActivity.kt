@@ -31,6 +31,10 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var user: FirebaseUser
     private lateinit var uid: String
 
+    /**
+     *
+     * @param savedInstanceState Bundle
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
@@ -90,7 +94,7 @@ class SettingsActivity : AppCompatActivity() {
 
     }
 
-    fun Context.goToActivity(activity: Activity, classs: Class<*>?) {
+    private fun Context.goToActivity(activity: Activity, classs: Class<*>?) {
         val intent = Intent(activity, classs)
         startActivity(intent)
         //activity.finish()
@@ -136,6 +140,11 @@ class SettingsActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    /**
+     *
+     * @param input
+     *
+     */
     private fun change_email() {
         val builder = AlertDialog.Builder(this)
         val view = layoutInflater.inflate(R.layout.dialog_change_username,null)
@@ -184,6 +193,11 @@ class SettingsActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    /**
+     *
+     * @param input
+     *
+     */
     private fun change_username() {
         val builder = AlertDialog.Builder(this)
         val view = layoutInflater.inflate(R.layout.dialog_change_username,null)
@@ -223,6 +237,11 @@ class SettingsActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    /**
+     *
+     * @param input
+     *
+     */
     private fun delete_account() {
 
     }

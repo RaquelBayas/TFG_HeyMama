@@ -30,6 +30,11 @@ class Login : AppCompatActivity() {
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
 
+    /**
+     * @constructor
+     * @param savedInstanceState Bundle
+     *
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -44,6 +49,8 @@ class Login : AppCompatActivity() {
         //Instancias para la base de datos y la autenticación
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         auth = FirebaseAuth.getInstance()
+        var currentUser = auth.currentUser
+
 
         //Dentro de la base de datos habrá un nodo "Usuarios" donde se guardan los usuarios de la aplicación
         dataBaseReference = dataBase.reference.child("Usuarios")
@@ -67,10 +74,21 @@ class Login : AppCompatActivity() {
                     }
                 }
             })
+             /*if (currentUser != null ) {
+                val intent = Intent(applicationContext, HomeActivity::class.java)
+                intent.putExtra("Rol","Usuario")
+                startActivity(intent)
+            }*/
             logIn(UserInfo.listaMails)
         }
     }
 
+    /**
+     * Este método permite iniciar sesión en la aplicación
+     *
+     * @param mutableList MutableList<String>
+     *
+     */
     private fun logIn(mutableList: MutableList<String>?) {
         val email: String = txt_email.text.toString()
         val password: String = txt_password.text.toString()
@@ -103,6 +121,12 @@ class Login : AppCompatActivity() {
         }
     }
 
+    /**
+     *
+     * @param email FirebaseUser
+     * @param mailVerified Boolean
+     *
+     */
     private fun checkRegister(email: FirebaseUser,mailVerified:Boolean) {
         dataBaseReference.get().addOnSuccessListener { value ->
             if(value.child(email.uid).exists() && !mailVerified) {
@@ -118,7 +142,14 @@ class Login : AppCompatActivity() {
         }
     }
 
-    private fun checkRol(email:String, databaseReference: DatabaseReference)  {
+    /**
+     * Este método permite comprobar el rol del usuario logueado
+     *
+     * @param email String
+     * @param databaseReference DatabaseReference
+     *
+     */
+    private fun  checkRol(email:String, databaseReference: DatabaseReference)  {
 
         databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {

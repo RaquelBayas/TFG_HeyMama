@@ -1,6 +1,5 @@
 package com.example.heymama.activities
 
-import android.media.Image
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.heymama.models.Message
@@ -12,37 +11,37 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.heymama.GlideApp
 import com.example.heymama.R
 import com.example.heymama.adapters.ChatAdapter
-import com.example.heymama.adapters.PostTimelineAdapter
 import com.example.heymama.interfaces.ItemRecyclerViewListener
-import com.example.heymama.models.PostTimeline
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.firestore.DocumentChange
+import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import org.w3c.dom.Text
 import java.util.*
 
 class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
-    lateinit var firebaseStore: FirebaseStorage
-    lateinit var firestore: FirebaseFirestore
-    lateinit var storageReference: StorageReference
+    private lateinit var firebaseStorage: FirebaseStorage
+    private lateinit var firestore: FirebaseFirestore
+    private lateinit var firebaseStorageRef: StorageReference
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
-    lateinit var uid: String
-    lateinit var friendUID: String
-    lateinit var txt_message_chat: EditText
+    private lateinit var uid: String
+    private lateinit var friendUID: String
+    private lateinit var txt_message_chat: EditText
 
     private lateinit var recyclerViewChats: RecyclerView
     private lateinit var chatsArraylist: ArrayList<Message>
     private lateinit var adapterChats: ChatAdapter
 
+    /**
+     *
+     * @param savedInstanceState Bundle
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
@@ -55,8 +54,8 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         dataBaseReference = dataBase.getReference("Usuarios")
         firestore = FirebaseFirestore.getInstance() //CLOUD STORAGE
-        firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
-        storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").reference
+        firebaseStorage = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
+        firebaseStorageRef = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").reference
 
 
         val intent = intent
@@ -82,9 +81,16 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         // RECYCLERVIEW TIMELINE
         recyclerViewChats = findViewById(R.id.recyclerView_chat)
-        recyclerViewChats.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL,false)
-        recyclerViewChats.setHasFixedSize(true)
+
         chatsArraylist = arrayListOf()
+        adapterChats = ChatAdapter(applicationContext, chatsArraylist)
+        recyclerViewChats.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL,false)
+        recyclerViewChats.adapter = adapterChats
+        recyclerViewChats.setHasFixedSize(true)
+
+        (recyclerViewChats.layoutManager as LinearLayoutManager).stackFromEnd = true
+        (recyclerViewChats.layoutManager as LinearLayoutManager).reverseLayout = true
+
 
         getMessage(auth.uid.toString(),friendUID)
         updateFriendName()
@@ -92,49 +98,63 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     }
 
-    private fun sendMessage(senderUID: String, receiverUID:String, msg: String) {
-        var message = Message(senderUID,receiverUID,msg, Date()) //senderUID+"_"+receiverUID
-        firestore.collection("Chats").document(auth.uid.toString()).collection("Chat").add(message).addOnCompleteListener {
-            if (it.isSuccessful) {
-                firestore.collection("Chats").document(receiverUID).collection("Chat").add(message)
-                txt_message_chat.setText("")
-                Toast.makeText(this,"El mensaje se ha enviado correctamente",Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this,"No se ha podido enviar el mensaje",Toast.LENGTH_SHORT).show()
-            }
-        }
+    /**
+     *
+     * @param senderUID String
+     * @param receiverUID String
+     * @param msg String
+     *
+     */
+    private fun sendMessage(senderUID: String, receiverUID: String, msg: String) {
+        var senderChat = senderUID + receiverUID
+        var receiverChat = receiverUID + senderUID
 
-    }
-
-    private fun getMessage(senderUID: String, receiverUID: String) {
-
-        firestore.collection("Chats").document(auth.uid.toString()).collection("Chat").addSnapshotListener { snapshots, error ->
-            if (error != null) {
-                return@addSnapshotListener
-            } else {
-                for (dc in snapshots!!.documentChanges) {
-
-                    when (dc.type) {
-                        DocumentChange.Type.ADDED -> {
-                            val message = dc.document.toObject(Message::class.java)
-                            if((message.senderUID == senderUID && message.receiverUID == receiverUID) ||
-                                (message.senderUID == receiverUID && message.receiverUID == senderUID)){
-                                chatsArraylist.add(message)
-                            }
+        var message = Message(senderUID,receiverUID,msg, Date().time) //senderUID+"_"+receiverUID
+        dataBase.reference.child("Chats").child(senderUID).child("Messages").child(receiverUID).push()
+            .setValue(message).addOnSuccessListener(object: OnSuccessListener<Void> {
+                override fun onSuccess(p0: Void?) {
+                    dataBase.reference.child("Chats").child(receiverUID).child("Messages").child(senderUID).push().setValue(message).addOnSuccessListener(object:OnSuccessListener<Void> {
+                        override fun onSuccess(p0: Void?) {
+                            txt_message_chat.setText("")
+                            Toast.makeText(applicationContext,"El mensaje se ha enviado correctamente",Toast.LENGTH_SHORT).show()
                         }
-                        DocumentChange.Type.MODIFIED -> chatsArraylist.add(dc.document.toObject(
-                            Message::class.java))
-                        DocumentChange.Type.REMOVED -> chatsArraylist.remove(dc.document.toObject(
-                            Message::class.java))
-                    }
-                    adapterChats = ChatAdapter(this,chatsArraylist,this)
-                    recyclerViewChats.adapter = adapterChats
+                    })
                 }
-            }
-        }
-
+            })
+        dataBase.reference.child("Chats").child("senderChat")
     }
 
+    /**
+     *
+     * @param senderUID String
+     * @param receiverUID String
+     *
+     */
+    private fun getMessage(senderUID: String, receiverUID: String) {
+        var senderChat = senderUID + receiverUID
+        var receiverChat = receiverUID + senderUID
+
+        dataBase.reference.child("Chats").child(senderUID).child("Messages").child(receiverUID).addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                chatsArraylist.clear()
+                for (datasnapshot: DataSnapshot in snapshot.children) {
+                    var message = datasnapshot.getValue(Message::class.java)
+                    chatsArraylist.add(message!!)
+                }
+                chatsArraylist.sort()
+                adapterChats.notifyDataSetChanged()
+            }
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+        })
+    }
+
+    /**
+     *
+     * @param input
+     *
+     */
     private fun updateFriendName(){
         var txt_chat_friend_name = findViewById<TextView>(R.id.txt_chat_friend_name)
         firestore.collection("Usuarios").document(friendUID).get().addOnSuccessListener {
@@ -142,16 +162,27 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
         }
     }
 
+    /**
+     *
+     * @param input
+     *
+     */
     private fun updatePicture(){
         var imageView_chat = findViewById<ImageView>(R.id.imageView_chat)
         glidePicture(friendUID,imageView_chat)
     }
 
+    /**
+     *
+     * @param uid String
+     * @param image ImageView
+     *
+     */
     private fun glidePicture(uid: String, image: ImageView) {
-        storageReference = firebaseStore.getReference("/Usuarios/"+uid+"/images/perfil")
+        firebaseStorageRef = firebaseStorage.getReference("/Usuarios/"+uid+"/images/perfil")
 
         GlideApp.with(applicationContext)
-            .load(storageReference)
+            .load(firebaseStorageRef)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .skipMemoryCache(true)
             .into(image)

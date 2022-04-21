@@ -16,10 +16,13 @@ class RespuestaConsultaActivity : AppCompatActivity() {
     private lateinit var txt_consulta_post_respuesta: TextView
     private lateinit var txt_consulta_user_respuesta: TextView
 
-
     private lateinit var firestore: FirebaseFirestore
 
 
+    /**
+     *
+     * @param savedInstanceState Bundle
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_respuesta_consulta)
@@ -41,6 +44,8 @@ class RespuestaConsultaActivity : AppCompatActivity() {
 
     /**
      *
+     * @param id_consulta String
+     *
      */
     private fun getDataConsulta(id_consulta: String) {
 
@@ -48,7 +53,11 @@ class RespuestaConsultaActivity : AppCompatActivity() {
 
     /**
      *
-      */
+     * @param id_consulta String
+     * @param tema_consulta String
+     * @param id_user_consulta String
+     *
+     */
     private fun putDataConsulta(id_consulta: String,tema_consulta: String, id_user_consulta: String, consulta: String) {
         txt_consulta_post_respuesta = findViewById(R.id.txt_consulta_post_respuesta)
         txt_consulta_post_respuesta.text = consulta

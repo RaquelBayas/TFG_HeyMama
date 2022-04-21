@@ -19,6 +19,11 @@ class ContactoActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     lateinit var firestore: FirebaseFirestore
 
+    /**
+     *
+     * @param savedInstanceState Bundle
+     *
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_contacto)
@@ -45,6 +50,11 @@ class ContactoActivity : AppCompatActivity() {
 
     }
 
+    /**
+     *
+     * @param input
+     *
+     */
     private fun sendConsulta() {
         val spinnerConsultas : Spinner = findViewById(R.id.spinnerConsultas)
         var txt_consulta : EditText = findViewById(R.id.editText_consulta)
@@ -69,6 +79,11 @@ class ContactoActivity : AppCompatActivity() {
 
     }
 
+    /**
+     *
+     * @param activity Activity
+     * @param classs Class<*>
+     */
     fun Context.goToActivity(activity: Activity, classs: Class<*>?) {
         val intent = Intent(activity, classs)
         startActivity(intent)

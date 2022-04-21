@@ -12,10 +12,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import java.sql.Timestamp
 import java.util.*
 
 class PreguntaActivity : AppCompatActivity() {
@@ -23,17 +24,20 @@ class PreguntaActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
-    lateinit var firebaseStore: FirebaseStorage
-    lateinit var firestore: FirebaseFirestore
-    lateinit var storageReference: StorageReference
+    private lateinit var firebaseStore: FirebaseStorage
+    private lateinit var firestore: FirebaseFirestore
+    private lateinit var storageReference: StorageReference
 
+    /**
+     *
+     * @param savedInstanceState Bundle
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pregunta)
 
         val intent = intent
         val foroName = intent.getStringExtra("ForoName")
-        Toast.makeText(this,foroName,Toast.LENGTH_SHORT).show()
 
         //Instancias para la base de datos y la autenticación
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
@@ -58,14 +62,24 @@ class PreguntaActivity : AppCompatActivity() {
         }
     }
 
-    fun enviar_pregunta_foro(user:FirebaseUser, foroName: String){
+    /**
+     *
+     * @param user FirebaseUser
+     * @param foroName String
+     *
+     */
+    private fun enviar_pregunta_foro(user:FirebaseUser, foroName: String){
         var txt_descripcion_foro : EditText = findViewById(R.id.txt_descripcion_foro)
         var txt_titulo_foro : EditText = findViewById(R.id.txt_titulo_foro)
 
+        var ref = firestore.collection("Foros").document("SubForos").collection(foroName).document()
+        var id_ref = ref.id
+
         if(!txt_titulo_foro.text.isEmpty() && !txt_descripcion_foro.text.isEmpty()) {
-            var post = Post(txt_titulo_foro.text.toString(),txt_descripcion_foro.text.toString(),user.uid,
+
+            var post = Post(id_ref,txt_titulo_foro.text.toString(),txt_descripcion_foro.text.toString(),user.uid,
                 Date())
-            addPost(post, foroName)
+            addPost(post,ref)
             Toast.makeText(this,"Correcto.",Toast.LENGTH_SHORT).show()
             finish()
 
@@ -75,7 +89,13 @@ class PreguntaActivity : AppCompatActivity() {
 
     }
 
-    fun addPost(post: Post, foroName: String) {
-        firestore.collection("Foros").document("SubForos").collection(foroName).add(post)
+    /**
+     *
+     * @param post Post
+     * @param reference DocumentReference
+     *
+     */
+    private fun addPost(post: Post, reference: DocumentReference) {
+        reference.set(post)
     }
 }

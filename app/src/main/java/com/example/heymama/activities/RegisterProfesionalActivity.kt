@@ -18,19 +18,24 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class RegisterProfesionalActivity : AppCompatActivity() {
 
-    lateinit var txt_email_prof: EditText
-    lateinit var txt_user_prof: EditText
-    lateinit var txt_nombre_prof: EditText
-    lateinit var txt_apellidos_prof: EditText
-    lateinit var txt_password_prof: EditText
+    private lateinit var txt_email_prof: EditText
+    private lateinit var txt_user_prof: EditText
+    private lateinit var txt_nombre_prof: EditText
+    private lateinit var txt_apellidos_prof: EditText
+    private lateinit var txt_password_prof: EditText
     private lateinit var btn_registro: Button
 
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
-    lateinit var firebaseStore: FirebaseFirestore
+    private lateinit var firebaseStore: FirebaseFirestore
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
 
+    /**
+     *
+     * @param savedInstanceState Bundle
+     *
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register_profesional)
@@ -65,6 +70,11 @@ class RegisterProfesionalActivity : AppCompatActivity() {
     }
 
     // Crear cuenta
+    /**
+     *
+     * @param input
+     *
+     */
     private fun createAccount() {
         val email: String = txt_email_prof.text.toString()
         val password: String = txt_password_prof.text.toString()
@@ -129,6 +139,11 @@ class RegisterProfesionalActivity : AppCompatActivity() {
 
     }
 
+    /**
+     *
+     * @param user FirebaseUser
+     *
+     */
     private fun verifyEmail(user: FirebaseUser?) {
         user?.sendEmailVerification()
             ?.addOnCompleteListener(this) { task ->

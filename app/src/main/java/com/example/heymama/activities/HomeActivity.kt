@@ -40,9 +40,9 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
-    lateinit var firebaseStore: FirebaseStorage
-    lateinit var firestore: FirebaseFirestore
-    lateinit var storageReference: StorageReference
+    private lateinit var firebaseStore: FirebaseStorage
+    private lateinit var firestore: FirebaseFirestore
+    private lateinit var storageReference: StorageReference
 
     private lateinit var textView: TextView
     private lateinit var email: String
@@ -51,11 +51,18 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var drawer: DrawerLayout
     private lateinit var toggle: ActionBarDrawerToggle
 
+    /**
+     *
+     * @constructor
+     * @param savedInstanceState Bundle
+     *
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
         auth = FirebaseAuth.getInstance()
+
         firestore = FirebaseFirestore.getInstance()
 
         val intent = intent
@@ -65,7 +72,9 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         //Instancias para la base de datos y la autenticación
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
-        auth = FirebaseAuth.getInstance()
+
+
+
 
         //Dentro de la base de datos habrá un nodo "Usuarios" donde se guardan los usuarios de la aplicación
         dataBaseReference = dataBase.getReference("Usuarios")
@@ -149,6 +158,11 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         notification()
     }
 
+    /**
+     *
+     * @param input
+     *
+     */
     private fun getMoodStatus() {
         var btn_mood_status : Button = findViewById(R.id.btn_mood_status)
         var date = Date().time
@@ -172,6 +186,12 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             moodfragment.show(supportFragmentManager,"moodDialog")
         }
     }
+
+    /**
+     *
+     * @param user FirebaseUser
+     *
+     */
     private fun getUserName(user:FirebaseUser) {
         // NOMBRE
         textView = findViewById(R.id.textView)
@@ -182,6 +202,11 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     }
 
+    /**
+     *
+     * @param input
+     *
+     */
     private fun notification() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
@@ -192,6 +217,11 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         })
     }
 
+    /**
+     *
+     * @param item MenuItem
+     *
+     */
     override fun onNavigationItemSelected(item: MenuItem) : Boolean {
         when (item.itemId) {
             R.id.nav_item_perfil  -> {
@@ -209,16 +239,31 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+    /**
+     *
+     * @param savedInstanceState Bundle
+     * @param persistentState PersistableBundle
+     */
     override fun onPostCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
         super.onPostCreate(savedInstanceState, persistentState)
         toggle.syncState()
     }
 
+    /**
+     *
+     * @param newConfig Configuration
+     *
+     */
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         toggle.onConfigurationChanged(newConfig)
     }
 
+    /**
+     *
+     * @param item MenuItem
+     *
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(toggle.onOptionsItemSelected(item)){
             return true
@@ -226,7 +271,11 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return super.onOptionsItemSelected(item)
     }
 
-
+    /**
+     *
+     * @param view Int
+     *
+     */
     override fun onClick(view: Int) {
         when(view) {
             R.id.nav_item_respirar -> goToActivity(this, RespirarActivity::class.java)

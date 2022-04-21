@@ -44,6 +44,11 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private lateinit var idpost: String
     private lateinit var iduser: String
 
+    /**
+     *
+     * @param savedInstanceState Bundle
+     *
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_comment_post_tlactivity)
@@ -146,25 +151,6 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         val comment = PostTimeline(doc_id, uid, Date(), edt_comment,0,0,0)
         doctlfb.set(comment)
-
-        /*
-        firestore.collection("Usuarios").document(iduser).addSnapshotListener { value, error ->
-            val docs = value?.data
-            if (docs!!.isEmpty()) {
-                Log.i("Error comment tl","No se ha podido publicar el comentario.")
-            }
-            val user = User(iduser,docs["Name"].toString(),docs["Username"].toString(),docs["Email"].toString(),docs["Rol"].toString(),docs["Bio"].toString(),
-                docs["profilePhoto"].toString())
-
-            var doctlfb = firestore.collection("Timeline").document(idpost).collection("Replies").document()
-            var doc_id = doctlfb.id
-
-            val comment = PostTimeline(doc_id, uid, user, Date().toString(), edt_comment.text.toString(),0,0,0)
-            doctlfb.set(comment)
-            //Toast.makeText(this,"Comentario publicado")
-        }
-
-        */
     }
 
     /**
@@ -195,13 +181,12 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
             }
             //commentsPostsTLArraylist.sort()
             adapterCommentsPostsTL = CommentsPostTLAdapter(this, idpost, commentsPostsTLArraylist, this)
-
-            Log.i("COMMENTS_TL: ", "$idpost - $adapterCommentsPostsTL")
             recyclerViewCommentsTimeline.adapter = adapterCommentsPostsTL
         }
     }
 
     /**
+     *
      * @param intent Intent
      *
      */

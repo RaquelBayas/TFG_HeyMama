@@ -31,7 +31,6 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
-    private lateinit var dataBaseReference: DatabaseReference
     private lateinit var firebaseStore: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageReference: StorageReference
@@ -43,6 +42,10 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private lateinit var edt_post_tl: String
 
 
+    /**
+     * @constructor
+     * @param savedInstanceState Bundle
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_timeline)
@@ -50,9 +53,6 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
         //Instancias para la base de datos y la autenticación
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         auth = FirebaseAuth.getInstance()
-
-        //Dentro de la base de datos habrá un nodo "Usuarios" donde se guardan los usuarios de la aplicación
-        dataBaseReference = dataBase.getReference("Usuarios")
 
         // Usuario
         var user: FirebaseUser? = auth.currentUser
@@ -89,7 +89,13 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
     }
 
 
-    //Método para obtener datos del usuario
+    /**
+     * Este método obtiene los datos del usuario.
+     *
+     * @param edt_comment String
+     * @param uid String
+     *
+     */
     private fun getUserData(edt_comment:String,uid: String) {
         // REALTIME DATABASE
         firestore.collection("Usuarios").document(uid).addSnapshotListener { value, error ->
@@ -122,15 +128,28 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
         */
     }
 
-    fun add_comment_tl(edt_comment:String, uid:String) {
+    /**
+     * Este método añade el comentario en la base de datos.
+     *
+     * @param edt_comment String
+     * @param uid String
+     *
+     */
+    private fun add_comment_tl(edt_comment:String, uid:String) {
         var doctlfb = firestore.collection("Timeline").document()
         var doc_id = doctlfb.id
         val comment = PostTimeline(doc_id,uid,/*userdata,*/Date(),edt_comment,0,0,0)
         doctlfb.set(comment)
     }
 
-    // Obtiene los comentarios de Firebase
-    fun getCommentsTL() {
+
+    /**
+     * Este método obtiene los comentarios de Firebase
+     *
+     * @param input
+     *
+     */
+    private fun getCommentsTL() {
         postsTLArraylist.clear()
         firestore.collection("Timeline").addSnapshotListener { snapshots, e ->
             if (e!= null) {
@@ -159,7 +178,12 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
         }
     }
 
-    // Método para seleccionar los tweets, está ligado al Interface, y a PostTimeAdapter
+    /**
+     * Método para seleccionar los tweets, está ligado al Interface, y a PostTimeAdapter
+     *
+     * @param position Int
+     *
+     */
     override fun onItemClicked(position: Int) {
         Toast.makeText(this,"Has seleccionado el tweet # ${position+1}",Toast.LENGTH_SHORT).show()
         val intent = Intent(this, PerfilActivity::class.java)
