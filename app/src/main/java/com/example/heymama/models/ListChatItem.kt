@@ -4,6 +4,7 @@ import java.util.*
 
 data class ListChatItem(
     var idChat: String = "",
+    var idUser: String = "",
     var name: String = "",
     var username: String = "",
     var lastMessage: String = "",

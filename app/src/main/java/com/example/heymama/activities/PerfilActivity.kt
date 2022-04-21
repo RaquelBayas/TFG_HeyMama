@@ -96,7 +96,7 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
         }
         // BOTÓN MENSAJES
         btn_mensajes = findViewById(R.id.btn_mensajes)
-        if(btn_mensajes.text == "Mensajes") {
+        if(uid.equals(auth.currentUser!!.uid)) {
             btn_mensajes.setOnClickListener {
                 val intent = Intent(this, ListChatsActivity::class.java)
                 intent.putExtra("friendUID", uid)
@@ -139,7 +139,6 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
             uid = intent.getStringExtra("UserUID")!!
         } else {
             uid = auth.currentUser?.uid!!
-
             binding.layoutImage.setOnClickListener { selectImage(100) } // Cambiar imagen layout
             binding.profileImage.setOnClickListener { selectImage(200) } // Cambiar imagen de perfil
         }
@@ -295,7 +294,6 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
             .document(uid).set(friendRequest_send)
         firestore.collection("Friendship").document(uid).collection("FriendRequest")
             .document(currentUserUID).set(friendRequest_receive)
-
     }
 
     /**

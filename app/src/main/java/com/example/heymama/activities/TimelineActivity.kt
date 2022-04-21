@@ -104,7 +104,8 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
             val bio = value?.data?.get("bio").toString()
             val rol = value?.data?.get("rol").toString()
             val email = value?.data?.get("email").toString()
-            val profilePhoto = "Usuarios/"+auth.currentUser?.uid+"/images/perfil"//value?.data?.get("")
+
+            val profilePhoto = "Usuarios/"+uid+"/images/perfil"//value?.data?.get("")
 
             val userdata: User? = User(uid,name,username,email,rol,bio,profilePhoto)
             add_comment_tl(edt_comment,uid)

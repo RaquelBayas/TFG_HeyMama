@@ -91,11 +91,9 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
         (recyclerViewChats.layoutManager as LinearLayoutManager).stackFromEnd = true
         (recyclerViewChats.layoutManager as LinearLayoutManager).reverseLayout = true
 
-
         getMessage(auth.uid.toString(),friendUID)
         updateFriendName()
         updatePicture()
-
     }
 
     /**
@@ -106,9 +104,6 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
      *
      */
     private fun sendMessage(senderUID: String, receiverUID: String, msg: String) {
-        var senderChat = senderUID + receiverUID
-        var receiverChat = receiverUID + senderUID
-
         var message = Message(senderUID,receiverUID,msg, Date().time) //senderUID+"_"+receiverUID
         dataBase.reference.child("Chats").child(senderUID).child("Messages").child(receiverUID).push()
             .setValue(message).addOnSuccessListener(object: OnSuccessListener<Void> {
@@ -121,7 +116,20 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     })
                 }
             })
-        dataBase.reference.child("Chats").child("senderChat")
+        var lastMessage : Map<String, Message> = mapOf("LastMessage" to message)
+        dataBase.reference.child("Chats").child(senderUID).child("Messages").child(receiverUID)
+            .updateChildren(lastMessage)
+            .addOnSuccessListener(object: OnSuccessListener<Void> {
+                override fun onSuccess(p0: Void?) {
+                    dataBase.reference.child("Chats").child(receiverUID).child("Messages").child(senderUID)
+                        .updateChildren(lastMessage).addOnSuccessListener(object:OnSuccessListener<Void> {
+                        override fun onSuccess(p0: Void?) {
+                            txt_message_chat.setText("")
+                            Toast.makeText(applicationContext,"El mensaje se ha enviado correctamente",Toast.LENGTH_SHORT).show()
+                        }
+                    })
+                }
+            })
     }
 
     /**
@@ -131,15 +139,14 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
      *
      */
     private fun getMessage(senderUID: String, receiverUID: String) {
-        var senderChat = senderUID + receiverUID
-        var receiverChat = receiverUID + senderUID
-
         dataBase.reference.child("Chats").child(senderUID).child("Messages").child(receiverUID).addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 chatsArraylist.clear()
                 for (datasnapshot: DataSnapshot in snapshot.children) {
-                    var message = datasnapshot.getValue(Message::class.java)
-                    chatsArraylist.add(message!!)
+                    if(!datasnapshot.key.equals("LastMessage")) {
+                        var message = datasnapshot.getValue(Message::class.java)
+                        chatsArraylist.add(message!!)
+                    }
                 }
                 chatsArraylist.sort()
                 adapterChats.notifyDataSetChanged()

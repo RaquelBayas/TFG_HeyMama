@@ -30,9 +30,9 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
 ) : RecyclerView.Adapter<CommentsPostTLAdapter.HolderForo>() {
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
-    lateinit var firebaseStore: FirebaseStorage
-    lateinit var firestore: FirebaseFirestore
-    lateinit var storageReference: StorageReference
+    private lateinit var firebaseStore: FirebaseStorage
+    private lateinit var firestore: FirebaseFirestore
+    private lateinit var storageReference: StorageReference
 
     private lateinit var id_post: String
     private lateinit var id_user: String
