@@ -75,6 +75,7 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
             if(txt_message_chat.text.isEmpty()){
                 Toast.makeText(this,"Introduce un mensaje",Toast.LENGTH_SHORT).show()
             } else {
+                Toast.makeText(this,"MSG",Toast.LENGTH_SHORT).show()
                 sendMessage(auth.uid.toString(),friendUID,txt_message_chat.text.toString())
             }
         }

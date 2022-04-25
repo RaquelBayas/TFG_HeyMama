@@ -70,7 +70,7 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         // CAMBIAR EL DOCUMENTO -> HAY QUE SELECCIONAR SEGÚN EL TEMA: FAMILIA, EMBARAZO, DEPRESION...
 
-        firestore.collection("Consultas").document(temaConsulta).collection("Cnu65EYdenWjN74UZpPxnQtQrBb2")
+        firestore.collection("Consultas").document(temaConsulta).collection("Consultas")
             .addSnapshotListener { snapshot, error ->
                 for (dc in snapshot!!.documentChanges) {
                     when (dc.type) {

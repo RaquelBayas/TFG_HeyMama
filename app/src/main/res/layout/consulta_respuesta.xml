@@ -5,9 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
-
-    android:background="@drawable/posts_timeline">
+    android:layout_marginTop="5dp"
+    android:background="@drawable/rectangle_pink">
 
 
     <TextView
@@ -31,13 +30,14 @@
         android:id="@+id/txt_consulta_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/montserrat"
         android:text="Username"
         android:textColor="@color/black"
         android:textSize="18sp"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="20dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/txt_consulta_user"

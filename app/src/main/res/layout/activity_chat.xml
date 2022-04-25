@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".activities.ChatActivity">
 
+    <LinearLayout
 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -64,9 +68,11 @@
 
     </androidx.appcompat.widget.Toolbar>
 
+    </LinearLayout>
     <LinearLayout
+        android:layout_weight="1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:id="@+id/linearlayout_chat"
         android:layout_below="@id/toolbar"
         android:orientation="vertical">
@@ -120,7 +126,7 @@
                         android:background="@android:color/transparent"
                         android:fontFamily="@font/baloo"
                         android:gravity="start"
-                        android:hint="Type here..."
+                        android:hint="\n Type here... \n"
                         android:paddingStart="1dp"
                         android:paddingEnd="1dp"
                         android:textSize="16sp"
@@ -149,4 +155,4 @@
     </LinearLayout>
 
 
-</RelativeLayout>
+</LinearLayout>

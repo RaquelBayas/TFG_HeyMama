@@ -15,7 +15,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:orientation="vertical"
             >
             <TextView
@@ -23,6 +23,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
                 android:fontFamily="@font/alegreya"
                 android:text="@string/consulta"
                 android:textColor="@color/fonts"
@@ -30,15 +32,43 @@
                 android:textStyle="bold"
                 />
 
-            <Spinner
-                android:id="@+id/spinnerConsultas"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
                 android:layout_marginBottom="5dp"
-                android:background="@drawable/spinner_consultas"
-                />
+                android:orientation="horizontal">
+
+                <Spinner
+                    android:id="@+id/spinnerConsultas"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="20dp"
+
+                    android:layout_marginBottom="5dp"
+                    android:layout_weight="1"
+
+                    android:background="@drawable/spinner_consultas"
+                    tools:ignore="SpeakableTextPresentCheck" />
+                <Button
+                    android:id="@+id/btn_send_consulta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginBottom="5dp"
+                    android:text="@string/enviar"
+                    android:fontFamily="@font/baloo"
+                    android:textSize="20dp"
+                    android:textColor="@color/white"
+                    android:background="@drawable/btn_enviar_consulta"
+                    >
+
+                </Button>
+            </LinearLayout>
+
 
             <EditText
                 android:id="@+id/editText_consulta"
@@ -59,28 +89,23 @@
                 android:paddingBottom="10dp"
                 android:textColor="@color/fonts"
                 android:textSize="16sp" />
+
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="3"
+            android:layout_weight="1"
             android:orientation="vertical">
 
-
-            <Button
-                android:id="@+id/btn_send_consulta"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            </Button>
 
             <TextView
                 android:id="@+id/txt_contacto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
+                android:padding="10dp"
                 android:fontFamily="@font/alegreya"
                 android:text="@string/contacto"
                 android:textColor="@color/fonts"

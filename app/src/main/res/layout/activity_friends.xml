@@ -13,7 +13,7 @@
         android:layout_marginTop="30dp"
         android:fontFamily="@font/baloo"
         android:text="@string/amigos"
-        android:textColor="@color/pink"
+        android:textColor="@color/mood_bien"
         android:textSize="26sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.161"

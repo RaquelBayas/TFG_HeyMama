@@ -17,7 +17,7 @@ import java.util.*
 
 class ContactoActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
-    lateinit var firestore: FirebaseFirestore
+    private lateinit var firestore: FirebaseFirestore
 
     /**
      *
@@ -60,8 +60,10 @@ class ContactoActivity : AppCompatActivity() {
         var txt_consulta : EditText = findViewById(R.id.editText_consulta)
         var txt_tema : String = spinnerConsultas.selectedItem.toString()
         var user : String = auth.uid.toString()
-        var ref = firestore.collection("Consultas").document(txt_tema)
-            .collection(auth.uid.toString())
+        var ref = firestore.collection("Consultas").document(txt_tema).collection("Consultas").document()
+
+
+        //.collection(auth.uid.toString()).document()
         /*var refUser = firestore.collection("Usuarios").document(auth.uid.toString()).get()
         refUser.addOnSuccessListener { document ->
             if (document != null) {
@@ -69,10 +71,11 @@ class ContactoActivity : AppCompatActivity() {
             }
         }*/
 
-        var consulta = Consulta(ref.id,user,txt_tema,"",txt_consulta.text.toString(),Date())
+
+        var consulta = Consulta(ref.id,user,txt_tema,txt_consulta.text.toString(),Date())
 
         if(txt_consulta.text.isNotEmpty()) {
-            ref.add(consulta)
+            ref.set(consulta)
             Toast.makeText(this,"Consulta enviada correctamente",Toast.LENGTH_SHORT).show()
             txt_consulta.setText("")
         }

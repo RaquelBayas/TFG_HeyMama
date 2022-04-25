@@ -85,6 +85,7 @@ class FriendsActivity : AppCompatActivity() {
      *
      */
     fun getFriends() {
+        friendsArraylist.clear()
         var friend = FriendRequest()
 
         var friendsRef = firestore.collection("Friendship").document(uid).collection("Friends")
@@ -102,7 +103,7 @@ class FriendsActivity : AppCompatActivity() {
                         Log.i("GETFRIENDS", document.data.toString())
                     }
                     friendsArraylist.add(friend)
-                    adapterFriends = FriendsAdapter(applicationContext, friendsArraylist)
+                    adapterFriends = FriendsAdapter(applicationContext, friendsArraylist, uid)
                     recyclerViewFriends.adapter = adapterFriends
                 }
             }

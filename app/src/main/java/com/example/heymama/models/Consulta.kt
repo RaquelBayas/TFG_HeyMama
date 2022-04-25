@@ -9,7 +9,6 @@ data class Consulta(
     var id: String? = null,
     var userID: String? = null, //USER
     var tema: String? = null,
-    var titulo: String? = null,
     var consulta: String? = null,
     @ServerTimestamp
     var timestamp: Date? = null): Parcelable,  Comparable<Consulta> {
@@ -21,7 +20,6 @@ data class Consulta(
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
-        parcel.readString(),
         parcel.readValue(Date::class.java.classLoader) as Date) {
     }
 
@@ -29,7 +27,6 @@ data class Consulta(
         parcel.writeString(id)
         parcel.writeString(userID)
         parcel.writeString(tema)
-        parcel.writeString(titulo)
         parcel.writeString(consulta)
         parcel.writeValue(timestamp)
     }

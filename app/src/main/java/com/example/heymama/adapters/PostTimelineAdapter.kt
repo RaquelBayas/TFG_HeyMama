@@ -1,13 +1,10 @@
 package com.example.heymama.adapters
 
-import android.content.ClipData
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Build
-import android.os.Parcelable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -23,15 +20,8 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
-import com.google.firebase.firestore.EventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.UploadTask
-import java.io.Serializable
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.temporal.TemporalAccessor
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -49,10 +39,6 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
 
     private lateinit var listener: ItemRecyclerViewListener
 
-    enum class ViewHolderType {
-        TYPE_TIMELINE, TYPE_PERFIL
-    }
-
     /**
      *
      */
@@ -64,27 +50,9 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
      *
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder{
-        /*return when(viewType) {
-            ViewHolderType.TYPE_TIMELINE.ordinal -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.add_post,parent,false)
-                return Holder(view,listener)
-            }
-            else -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.activity_perfil,parent,false)
-                return Holder(view,listener)
-            }
-
-        }*/
         val view = LayoutInflater.from(parent.context).inflate(R.layout.add_post,parent,false)
         return Holder(view,listener)
     }
-
-    /*override fun getItemViewType(position: Int): Int {
-        return when(type) {
-            "TIMELINE" -> ViewHolderType.TYPE_TIMELINE.ordinal
-            "PERFIL" -> ViewHolderType.TYPE_PERFIL.ordinal
-        }
-    }*/
 
     /**
      *
@@ -98,18 +66,11 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
 
         firestore = FirebaseFirestore.getInstance()
 
-        //postsTimelineList.sortedDescending()
         var post_tl: PostTimeline = postsTimelineList[position] // get data at specific position
-        //var refPhoto = post_tl.user?.profilePhoto
-        var refPhoto = storageReference.child("Usuarios/"+post_tl.userId+"/images/perfil").toString()
+
         storageReference = storageReference.child("Usuarios/"+post_tl.userId+"/images/perfil")
 
         val ONE_MEGABYTE: Long = 1024 * 1024
-        var uri: Uri = Uri.parse(refPhoto)
-
-        Log.i("URI 0: ", "parse profile photo1: " + position);
-        Log.i("URI 0: ", "parse profile photo2: " + uri);
-        Log.i("URI 0: ", "parse profile photo3: " + storageReference);
 
 
         if(post_tl.userId!!.equals(auth.uid)){
@@ -215,7 +176,16 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
 
         commentsCounter(holder,position)
 
-        // CAMBIAR COLOR DE LOS BOTONES
+        changeButtonColors(holder, post_tl)
+    }
+
+    /**
+     *
+     * @param holder Holder
+     * @param post_tl PostTimeline
+     *
+     */
+    private fun changeButtonColors(holder: Holder, post_tl: PostTimeline) {
         val timeline = firestore.collection("Timeline").orderBy("date", Query.Direction.ASCENDING)
         timeline.get().addOnCompleteListener {
             if(it.isSuccessful) {
@@ -235,8 +205,6 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
             }
         }
     }
-
-
     /**
      *
      * @param name_post String
