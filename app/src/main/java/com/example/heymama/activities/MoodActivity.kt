@@ -28,29 +28,6 @@ class MoodActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
 
-       /* var pieEntries = arrayListOf<PieEntry>()
-        pieEntries.add(PieEntry(10.0f))
-        pieEntries.add(PieEntry(20.0f))
-        pieEntries.add(PieEntry(30.0f))
-
-        var pieChart = findViewById<PieChart>(R.id.pie_chart)
-        pieChart.animateXY(1000,1000)
-
-        val pieDataSet = PieDataSet(pieEntries,"PieChart")
-        pieDataSet.setColors(
-            resources.getColor(R.color.pink),
-            resources.getColor(R.color.purple_700),
-            resources.getColor(R.color.rectangle_orange)
-        )
-
-        val pieData = PieData(pieDataSet)
-        pieChart.centerText = "Mood"
-
-        pieChart.legend.isEnabled = false //Ocultamos los tags
-        pieData.setDrawValues(true)
-
-        pieChart.data = pieData*/
-
         setPieChartData()
     }
 
@@ -66,36 +43,40 @@ class MoodActivity : AppCompatActivity() {
         var count_regular : Float = 0.0f
         var count_mal : Float = 0.0f
         var count_triste : Float = 0.0f
+        var count: Float = 0.0f
 
-        var ref = firestore.collection("Mood").document(auth.uid.toString()).collection("Historial")
-        ref.addSnapshotListener { value, error ->
+        var ref = firestore.collection("Mood").document(auth.uid.toString())
+        ref.collection("Historial").addSnapshotListener { value, error ->
             if(error != null) {
                 return@addSnapshotListener
             }
             var docs = value!!.documents
             for(doc in docs) {
-                Log.i("MOODCHART-0",doc["id"].toString())
                 when(doc["id"].toString()) {
-
                     "0" -> {
                         count_feliz++
-                        pieEntries.add(PieEntry(count_feliz))
+                        count = (count_feliz * 100) / docs.size
+                        pieEntries.add(PieEntry(count))
                     }
                     "1" -> {
                         count_bien++
-                        pieEntries.add(PieEntry(count_bien))
+                        count = (count_bien * 100) / docs.size
+                        pieEntries.add(PieEntry(count))
                     }
                     "2" -> {
                         count_regular++
-                        pieEntries.add(PieEntry(count_regular))
+                        count = (count_regular * 100) / docs.size
+                        pieEntries.add(PieEntry(count))
                     }
                     "3" -> {
                         count_mal++
-                        pieEntries.add(PieEntry(count_mal))
+                        count = (count_mal * 100) / docs.size
+                        pieEntries.add(PieEntry(count))
                     }
                     "4" -> {
                         count_triste++
-                        pieEntries.add(PieEntry(count_triste))
+                        count = (count_triste * 100) / docs.size
+                        pieEntries.add(PieEntry(count))
                     }
                 }
             }
@@ -120,6 +101,5 @@ class MoodActivity : AppCompatActivity() {
 
             pieChart.data = pieData
         }
-
     }
 }

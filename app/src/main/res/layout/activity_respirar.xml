@@ -8,8 +8,8 @@
 
     <Button
         android:id="@+id/btn_empezar_respirar"
-        android:layout_width="222dp"
-        android:layout_height="61dp"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
         android:background="@drawable/rectangle_orange"
         android:fontFamily="@font/alegreya_sans_thin"
         android:text="@string/empezar"
@@ -20,7 +20,23 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/img_respirar"
-        app:layout_constraintVertical_bias="0.467" />
+        app:layout_constraintVertical_bias="0.40" />
+
+    <Button
+        android:id="@+id/btn_parar_respiracion"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:background="@drawable/rectangle_orange"
+        android:fontFamily="@font/alegreya_sans_thin"
+        android:text="@string/parar"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_empezar_respirar"
+        app:layout_constraintVertical_bias="0.19999999" />
 
     <ImageView
         android:id="@+id/img_respirar"
@@ -55,7 +71,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/baloo"
-        android:text="TextView"
         android:textColor="@color/fonts"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/img_respirar"

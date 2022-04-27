@@ -18,6 +18,8 @@ class RespirarActivity : AppCompatActivity(), Utils {
 
     private lateinit var txt_exhalar: TextView
     private lateinit var btn_empezar_respirar: Button
+    private lateinit var btn_parar_respiracion: Button
+    private lateinit var animation: ViewAnimator
     private lateinit var bottomNavigationView: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +31,10 @@ class RespirarActivity : AppCompatActivity(), Utils {
         btn_empezar_respirar = findViewById(R.id.btn_empezar_respirar)
         btn_empezar_respirar.setOnClickListener {
             start_breathing()
+        }
+        btn_parar_respiracion = findViewById(R.id.btn_parar_respiracion)
+        btn_parar_respiracion.setOnClickListener {
+            animation.cancel()
         }
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
@@ -59,7 +65,8 @@ class RespirarActivity : AppCompatActivity(), Utils {
      */
     private fun start_breathing() {
        var img_respirar : ImageView = findViewById(R.id.img_respirar)
-        ViewAnimator.animate(img_respirar)
+
+         animation = ViewAnimator.animate(img_respirar)
             .alpha(0f, 1f)
             .onStart(object: AnimationListener.Start {
                 override fun onStart() {
@@ -80,6 +87,7 @@ class RespirarActivity : AppCompatActivity(), Utils {
 
             })
             .start()
+
     }
 
 }

@@ -5,11 +5,9 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.*
 import com.example.heymama.*
 import com.example.heymama.models.Consulta
-import com.example.heymama.models.User
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -18,6 +16,12 @@ import java.util.*
 class ContactoActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
+    private lateinit var bottomNavigationView: BottomNavigationView
+    private lateinit var spinnerConsultas: Spinner
+    private lateinit var temas: Array<String>
+
+    private lateinit var btn_send_consulta: Button
+    private lateinit var btn_mis_consultas: Button
 
     /**
      *
@@ -30,7 +34,7 @@ class ContactoActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance() //CLOUD STORAGE
-        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
+        bottomNavigationView = findViewById(R.id.bottomNavigationView)
         bottomNavigationView.setOnNavigationItemReselectedListener { item ->
             when(item.itemId) {
                 R.id.nav_bottom_item_home -> finish()
@@ -38,16 +42,26 @@ class ContactoActivity : AppCompatActivity() {
             }
         }
 
-        val spinnerConsultas : Spinner = findViewById(R.id.spinnerConsultas)
-        val temas = resources.getStringArray(R.array.temasConsultas)
+        spinnerConsultas = findViewById(R.id.spinnerConsultas)
+        temas = resources.getStringArray(R.array.temasConsultas)
         val adapter = ArrayAdapter(this,R.layout.spinner_item,temas)
         spinnerConsultas.adapter = adapter
 
-        var btn_send_consulta : Button = findViewById(R.id.btn_send_consulta)
+        btn_send_consulta = findViewById(R.id.btn_send_consulta)
         btn_send_consulta.setOnClickListener {
             sendConsulta()
         }
 
+        btn_mis_consultas = findViewById(R.id.btn_mis_consultas)
+        btn_mis_consultas.setOnClickListener {
+            misConsultas()
+        }
+
+    }
+
+    private fun misConsultas() {
+        val intent = Intent(this, ConsultasActivity::class.java)
+        startActivity(intent)
     }
 
     /**

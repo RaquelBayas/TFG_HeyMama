@@ -55,6 +55,7 @@
 
     <!-- Respirar -->
     <string name="respirar">Respirar</string>
+    <string name="parar">Parar</string>
 
     <!-- Menu nav bar -->
     <string name="nav_item_perfil">Perfil</string>

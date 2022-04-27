@@ -10,27 +10,5 @@ data class User(
     var profilePhoto: String? = ""
 )
 {
-    /*var id : String? = _id
-        get() {
-            return id
-        }
-
-    var name : String? = _name
-        get() {
-            return name
-        }
-
-    var username : String? = _username
-        get() {
-            return username
-        }
-
-
-    var rol : String? = _rol
-        get() {
-            return rol
-        }
-
-*/
 
 }

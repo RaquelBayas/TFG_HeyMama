@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:textAlignment="center"
+    android:background="@color/white"
     tools:context=".activities.RegisterProfesionalActivity">
 
     <TextView
@@ -32,6 +33,7 @@
         android:layout_marginEnd="55dp"
         android:background="@drawable/edittext_white"
         android:ems="10"
+        android:paddingStart="20dp"
         android:hint="Correo electrónico"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -49,6 +51,7 @@
         android:layout_marginEnd="55dp"
         android:background="@drawable/edittext_white"
         android:ems="10"
+        android:paddingStart="20dp"
         android:hint="Nombre"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -66,6 +69,7 @@
         android:layout_marginEnd="55dp"
         android:background="@drawable/edittext_white"
         android:ems="10"
+        android:paddingStart="20dp"
         android:hint="Apellidos"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -83,6 +87,7 @@
         android:layout_marginEnd="125dp"
         android:background="@drawable/edittext_white"
         android:ems="10"
+        android:paddingStart="20dp"
         android:hint="Usuario"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -99,6 +104,7 @@
         android:layout_marginEnd="128dp"
         android:background="@drawable/edittext_white"
         android:ems="10"
+        android:paddingStart="20dp"
         android:hint="Contraseña"
         android:inputType="textPassword"
         app:layout_constraintBottom_toBottomOf="parent"

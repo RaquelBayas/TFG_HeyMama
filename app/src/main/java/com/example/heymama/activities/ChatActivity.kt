@@ -5,6 +5,7 @@ import android.os.Bundle
 import com.example.heymama.models.Message
 import android.util.Log
 import android.widget.*
+import androidx.core.view.size
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -85,8 +86,9 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         chatsArraylist = arrayListOf()
         adapterChats = ChatAdapter(applicationContext, chatsArraylist)
-        recyclerViewChats.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL,false)
+        recyclerViewChats.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL,true)
         recyclerViewChats.adapter = adapterChats
+        recyclerViewChats.smoothScrollToPosition(recyclerViewChats.bottom)
         recyclerViewChats.setHasFixedSize(true)
 
         (recyclerViewChats.layoutManager as LinearLayoutManager).stackFromEnd = true

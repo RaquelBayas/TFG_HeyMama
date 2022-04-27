@@ -41,7 +41,7 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
     private lateinit var title_tema: String
     private lateinit var description_tema: String
     private lateinit var foroName: String
-
+    private lateinit var btn_menu_foro: Button
     private lateinit var id: String
 
     /**
@@ -82,42 +82,45 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
             showDialog(user!!, foroName, id_tema)
         }
 
-        getComments(foroName.toString(),id)
+        getComments(foroName,id)
 
-        var btn_menu_foro: Button = findViewById(R.id.btn_menu_foro)
+        btn_menu_foro = findViewById(R.id.btn_menu_foro)
         btn_menu_foro.visibility = View.VISIBLE
         btn_menu_foro.setOnClickListener {
-            val popupMenu: PopupMenu = PopupMenu(this,btn_menu_foro)
-            popupMenu.menuInflater.inflate(R.menu.article_menu,popupMenu.menu)
-            popupMenu.show()
-
-            popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
-                when(it.itemId) {
-                    R.id.editar -> {
-                        ""
-                    }
-                    R.id.eliminar -> {
-                        ""
-                        firestore.collection("Foros").document("SubForos")
-                            .collection(foroName.toString()).document(id).delete()
-                        firestore.collection("Foros").document("SubForos")
-                            .collection(foroName.toString()).document(id).collection("Comentarios")
-                            .addSnapshotListener { value, error ->
-                                val data = value?.documents
-                                for(i in data!!.iterator()) {
-                                    i.reference.delete()
-                                }
-                                Toast.makeText(this,"Deleted successfully",Toast.LENGTH_SHORT).show()
-                            }
-                        finish()
-                    }
-                }
-                true
-            })
+            menuForo()
         }
 
     }
 
+    private fun menuForo() {
+        val popupMenu: PopupMenu = PopupMenu(this,btn_menu_foro)
+        popupMenu.menuInflater.inflate(R.menu.article_menu,popupMenu.menu)
+        popupMenu.show()
+
+        popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.editar -> {
+                    ""
+                }
+                R.id.eliminar -> {
+                    ""
+                    firestore.collection("Foros").document("SubForos")
+                        .collection(foroName).document(id).delete()
+                    firestore.collection("Foros").document("SubForos")
+                        .collection(foroName).document(id).collection("Comentarios")
+                        .addSnapshotListener { value, error ->
+                            val data = value?.documents
+                            for(i in data!!.iterator()) {
+                                i.reference.delete()
+                            }
+                            Toast.makeText(this,"Deleted successfully",Toast.LENGTH_SHORT).show()
+                        }
+                    finish()
+                }
+            }
+            true
+        })
+    }
     /**
      * Muestra un diálogo que sirve para escribir el comentario que se desea añadir.
      *
@@ -179,11 +182,9 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
      */
     private fun getComments(foroName: String, id: String) {
         firestore = FirebaseFirestore.getInstance()
-
         firestore.collection("Foros").document("SubForos").collection(foroName).document(id).collection("Comentarios")
             .addSnapshotListener { snapshots, e ->
                 if (e!= null) {
-
                     return@addSnapshotListener
                 }
                 for (dc in snapshots!!.documentChanges) {
@@ -196,11 +197,9 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
                         DocumentChange.Type.REMOVED -> commentsArraylist.remove(dc.document.toObject(
                             Comment::class.java))
                     }
-
                 }
                 Collections.sort(commentsArraylist)
                 adapterComments = CommentsForoAdapter(this,commentsArraylist,this)
-
                 recyclerViewComments.adapter = adapterComments
             }
     }

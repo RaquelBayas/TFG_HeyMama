@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+
+    android:id="@+id/relativeLayoutContacto"
     tools:context=".activities.ContactoActivity">
 
     <LinearLayout
@@ -22,8 +24,10 @@
                 android:id="@+id/txt_consulta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:layout_marginStart="10dp"
+                android:padding="5dp"
+
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
                 android:layout_marginTop="10dp"
                 android:fontFamily="@font/alegreya"
                 android:text="@string/consulta"
@@ -32,23 +36,33 @@
                 android:textStyle="bold"
                 />
 
+
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+
                 android:orientation="horizontal">
 
+                <Button
+                    android:id="@+id/btn_mis_consultas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Mis&#10;consultas"
+                    android:layout_margin="5dp"
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/baloo"
+                    android:background="@drawable/btn_enviar_consulta"
+                    >
+
+                </Button>
                 <Spinner
                     android:id="@+id/spinnerConsultas"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginRight="20dp"
-
-                    android:layout_marginBottom="5dp"
+                    android:layout_margin="5dp"
                     android:layout_weight="1"
 
                     android:background="@drawable/spinner_consultas"
@@ -57,11 +71,10 @@
                     android:id="@+id/btn_send_consulta"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginBottom="5dp"
+                   android:layout_margin="5dp"
                     android:text="@string/enviar"
                     android:fontFamily="@font/baloo"
-                    android:textSize="20dp"
+                    android:textSize="18dp"
                     android:textColor="@color/white"
                     android:background="@drawable/btn_enviar_consulta"
                     >
@@ -88,7 +101,7 @@
                 android:paddingRight="10dp"
                 android:paddingBottom="10dp"
                 android:textColor="@color/fonts"
-                android:textSize="16sp" />
+                android:textSize="16sp" />ç
 
         </LinearLayout>
 
@@ -118,7 +131,7 @@
                 android:id="@+id/txt_nne"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="5dp"
+
                 android:layout_marginLeft="5dp"
                 android:fontFamily="@font/alegreya"
                 android:text="@string/NNE"

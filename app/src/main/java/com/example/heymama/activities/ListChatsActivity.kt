@@ -58,6 +58,7 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
     }
 
     private fun setChats() {
+        chatsArraylist.clear()
     //var ref_two = ref_one.collection("Chats").document("3nLuKE4icCVSzvGrMbD0xukDs5l1").collection("Chats").orderBy("timestamp",Query.Direction.DESCENDING).limit(1)
         var ref = dataBase.reference.child("Chats").child(auth.uid.toString()).child("Messages")
         ref.addValueEventListener(object:
@@ -88,19 +89,7 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
      *
      */
     private fun getUserData(userUid: String, msg: Message, datasn: DataSnapshot) {
-        /*dataBase.reference.child("Usuarios").child(userUid).addListenerForSingleValueEvent(object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                var user = snapshot.getValue(User::class.java)
-                receiver_name = user.name
-                receiver_username = user.user
-                Log.i("CHATUSERNAME",snapshot.value.toString())
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-
-        })*/
+        chatsArraylist.clear()
         var ref = firestore.collection("Usuarios").document(userUid)
         ref.addSnapshotListener { value, error ->
             idUser = value!!.data!!.get("ID").toString()

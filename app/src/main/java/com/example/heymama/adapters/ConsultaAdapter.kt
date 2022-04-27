@@ -23,6 +23,7 @@ class ConsultaAdapter(private val context: Context, private val consultasArrayLi
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderConsulta {
+
         val view = LayoutInflater.from(parent.context).inflate(R.layout.consulta,parent,false)
         return HolderConsulta(view, listener)
     }

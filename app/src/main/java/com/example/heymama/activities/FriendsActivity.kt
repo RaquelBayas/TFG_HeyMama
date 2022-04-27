@@ -54,10 +54,8 @@ class FriendsActivity : AppCompatActivity() {
         val intent = intent
         if(intent.getStringExtra("UID") != null) {
             uid = intent.getStringExtra("UID").toString()
-            Log.i("UID-FRIENDS",uid)
         } else {
             uid = auth.currentUser?.uid!!
-            Log.i("UID-FRIENDS-2",uid)
         }
 
         // Firebase
@@ -84,7 +82,7 @@ class FriendsActivity : AppCompatActivity() {
      * @param input
      *
      */
-    fun getFriends() {
+    private fun getFriends() {
         friendsArraylist.clear()
         var friend = FriendRequest()
 

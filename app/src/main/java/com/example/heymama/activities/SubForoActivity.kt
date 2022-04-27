@@ -89,6 +89,7 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
      *
      */
     private fun getTemasData(foroName: String?) {
+        temasArraylist.clear()
         firestore = FirebaseFirestore.getInstance()
 
         firestore.collection("Foros").document("SubForos").collection(foroName.toString())
@@ -113,7 +114,7 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
                 Collections.sort(temasArraylist)
                 adapter = ForoAdapter(this,temasArraylist,this)
                 recyclerView.adapter = adapter
-
+                adapter.notifyDataSetChanged()
             }
 
     }

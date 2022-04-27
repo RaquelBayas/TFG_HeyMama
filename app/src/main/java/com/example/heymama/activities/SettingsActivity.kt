@@ -31,6 +31,12 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var user: FirebaseUser
     private lateinit var uid: String
 
+    private lateinit var txt_settings_name: TextView
+    private lateinit var txt_settings_email: TextView
+    private lateinit var btn_delete_account: Button
+    private lateinit var txt_settings_password: TextView
+    private lateinit var bottomNavigationView: BottomNavigationView
+
     /**
      *
      * @param savedInstanceState Bundle
@@ -46,7 +52,7 @@ class SettingsActivity : AppCompatActivity() {
         user = auth.currentUser!!
         uid = auth.uid.toString()
 
-        val txt_settings_name : TextView = findViewById(R.id.settings_name)
+        txt_settings_name = findViewById(R.id.settings_name)
         txt_settings_name.setOnClickListener {
             change_username()
         }
@@ -57,23 +63,23 @@ class SettingsActivity : AppCompatActivity() {
         }
 
 
-        val txt_settings_email : TextView = findViewById(R.id.settings_email)
+        txt_settings_email = findViewById(R.id.settings_email)
         txt_settings_email.text = auth.currentUser!!.email.toString()
         txt_settings_email.setOnClickListener {
             change_email()
         }
 
-        val btn_delete_account : Button = findViewById(R.id.btn_delete_account)
+        btn_delete_account = findViewById(R.id.btn_delete_account)
         btn_delete_account.setOnClickListener {
             delete_account()
         }
 
-        val txt_settings_password : TextView = findViewById(R.id.settings_password)
+        txt_settings_password = findViewById(R.id.settings_password)
         txt_settings_password.setOnClickListener {
             change_password()
         }
 
-        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
+        bottomNavigationView = findViewById(R.id.bottomNavigationView)
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when(item.itemId) {
                 R.id.nav_bottom_item_respirar -> {
@@ -100,6 +106,10 @@ class SettingsActivity : AppCompatActivity() {
         //activity.finish()
     }
 
+    /**
+     *
+     * @param input
+     */
     private fun change_password() {
         val builder = AlertDialog.Builder(this)
         val view = layoutInflater.inflate(R.layout.dialog_change_password,null)
@@ -243,7 +253,44 @@ class SettingsActivity : AppCompatActivity() {
      *
      */
     private fun delete_account() {
+        //firestore.collection("Chats").document(auth.uid.toString()).delete()
 
+        var temasForos = arrayListOf<String>("Depresión","Embarazo","Posparto","Otros")
+        for(temaForo in temasForos) {
+            firestore.collection("Foros").document("SubForos").collection(temaForo).whereEqualTo("userID",auth.uid.toString())
+                .addSnapshotListener { value, error ->
+                    for(doc in value!!.documents) {
+                        doc.reference.delete().addOnSuccessListener {
+                            doc.reference.collection("Comentarios").addSnapshotListener { value, error ->
+                               for (doc in value!!.documents) {
+                                   doc.reference.delete()
+                               }
+                            }
+                        }.addOnFailureListener {
+
+                        }
+                    }
+                    Log.i("DELETE",value!!.documents.toString())
+                }
+        }
+
+        firestore.collection("Mood").document(auth.uid.toString()).collection("Historial")
+            .addSnapshotListener { value, error ->
+                for(doc in value!!.documents) {
+                    doc.reference.delete()
+                }
+            }
+        firestore.collection("Timeline").whereEqualTo("userId",auth.uid.toString()).addSnapshotListener { value, error ->
+            for(doc in value!!.documents) {
+                doc.reference.delete()
+            }
+        }
+
+        firestore.collection("Usuarios").document(auth.uid.toString()).delete().addOnSuccessListener {
+            Toast.makeText(this,"Cuenta eliminada correctamente",Toast.LENGTH_SHORT).show()
+        }.addOnFailureListener {
+            Utils.showError(this,"Se ha producido un error")
+        }
     }
 
 

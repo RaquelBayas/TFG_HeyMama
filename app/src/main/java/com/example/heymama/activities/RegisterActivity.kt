@@ -24,10 +24,10 @@ import com.google.firebase.storage.StorageReference
 
 class RegisterActivity : AppCompatActivity() {
 
-    lateinit var txt_email: EditText
-    lateinit var txt_password: EditText
-    lateinit var txt_user: EditText
-    lateinit var txt_name: EditText
+    private lateinit var txt_email: EditText
+    private lateinit var txt_password: EditText
+    private lateinit var txt_user: EditText
+    private lateinit var txt_name: EditText
     private lateinit var btn_registro: Button
 
     // FirebaseAuth object
@@ -35,8 +35,8 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
 
-    lateinit var firebaseStore: FirebaseFirestore
-    lateinit var storageReference: StorageReference
+    private lateinit var firebaseStore: FirebaseFirestore
+    private lateinit var storageReference: StorageReference
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -110,9 +110,9 @@ class RegisterActivity : AppCompatActivity() {
 
                         userDB.child("id").setValue(uid)
                         userDB.child("name").setValue(name)
-                        userDB.child("user").setValue(username)
-                        userDB.child("Email").setValue(email)
-                        userDB.child("Rol").setValue("Usuario")
+                        userDB.child("username").setValue(username)
+                        userDB.child("email").setValue(email)
+                        userDB.child("rol").setValue("Usuario")
                         userDB.child("bio").setValue("")
                         userDB.child("profilePhoto").setValue("")
 
