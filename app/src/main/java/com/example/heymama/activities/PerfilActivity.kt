@@ -16,6 +16,9 @@ import com.example.heymama.GlideApp
 import com.example.heymama.R
 import com.example.heymama.adapters.PostTimelineAdapter
 import com.example.heymama.databinding.ActivityPerfilBinding
+import com.example.heymama.fragments.LikesFragment
+import com.example.heymama.fragments.TimelineFragment
+import com.example.heymama.fragments.ViewPagerAdapter
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.interfaces.Utils
 import com.example.heymama.models.FriendRequest
@@ -83,19 +86,20 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
         checkUserProfile()
         existsRequest()
 
-        var txt_user_perfil = findViewById<TextView>(R.id.txt_user_perfil)
 
-        var profileImage : ImageView = findViewById(R.id.profile_image)
+        var txt_user_perfil = binding.txtUserPerfil
+        var txt_user_biografia = binding.txtBiografia
+        var profileImage : ImageView = binding.profileImage
         if (profileImage.drawable == null) {
             loadPicture(uid!!)
         }
 
         firestore.collection("Usuarios").document(uid).addSnapshotListener { value, error ->
             txt_user_perfil.text = value?.data?.get("name").toString()
-            Log.i("NAME_PERFIL", value?.data?.get("name").toString())
+            txt_user_biografia.text = value?.data?.get("bio").toString()
         }
         // BOTÓN MENSAJES
-        btn_mensajes = findViewById(R.id.btn_mensajes)
+        btn_mensajes = binding.btnMensajes
         if(uid.equals(auth.currentUser!!.uid)) {
             btn_mensajes.setOnClickListener {
                 val intent = Intent(this, ListChatsActivity::class.java)
@@ -118,14 +122,26 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
             }
         }
 
-        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
-        bottomNavigationView.setOnNavigationItemReselectedListener { item ->
-            when(item.itemId) {
-                R.id.nav_bottom_item_respirar -> goToActivity(this,RespirarActivity::class.java)
-            }
-        }
         //RECYCLER VIEW
-        loadPostsTL()
+        //loadPostsTL()
+
+        setUpTabs()
+    }
+
+    private fun setUpTabs() {
+
+
+        val tabsAdapter = ViewPagerAdapter(supportFragmentManager)
+        val timelineFragment = TimelineFragment()
+        val bundle = Bundle()
+        bundle.putString("uid",uid)
+        timelineFragment.arguments = bundle
+
+        tabsAdapter.addFragment(TimelineFragment(),"Timeline")
+        tabsAdapter.addFragment(LikesFragment(),"Likes")
+        binding.viewPagerTimeline.adapter = tabsAdapter
+        binding.tabs.setupWithViewPager(binding.viewPagerTimeline)
+
     }
 
     /**

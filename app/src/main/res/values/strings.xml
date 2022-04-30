@@ -38,6 +38,7 @@
 
     <string name="aceptar">Aceptar</string>
     <string name="rechazar">Rechazar</string>
+    <string name="cancelar">Cancelar</string>
 
     <!-- Contacto -->
     <string name="contacto">Contacto</string>

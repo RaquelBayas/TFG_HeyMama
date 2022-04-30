@@ -7,6 +7,7 @@ import android.widget.EditText
 import android.widget.Toast
 import com.example.heymama.R
 import com.example.heymama.Utils
+import com.example.heymama.databinding.ActivityPreguntaBinding
 import com.example.heymama.models.Post
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -27,6 +28,9 @@ class PreguntaActivity : AppCompatActivity() {
     private lateinit var firebaseStore: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageReference: StorageReference
+    private lateinit var binding: ActivityPreguntaBinding
+    private lateinit var txt_descripcion_foro: EditText
+    private lateinit var txt_titulo_foro: EditText
 
     /**
      *
@@ -34,7 +38,8 @@ class PreguntaActivity : AppCompatActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_pregunta)
+        binding = ActivityPreguntaBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val intent = intent
         val foroName = intent.getStringExtra("ForoName")
@@ -56,8 +61,7 @@ class PreguntaActivity : AppCompatActivity() {
         storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").reference
 
 
-        var btn_enviar : Button = findViewById(R.id.btn_enviar)
-        btn_enviar.setOnClickListener {
+        binding.btnEnviar.setOnClickListener {
             enviar_pregunta_foro(user, foroName!!)
         }
     }
@@ -69,8 +73,8 @@ class PreguntaActivity : AppCompatActivity() {
      *
      */
     private fun enviar_pregunta_foro(user:FirebaseUser, foroName: String){
-        var txt_descripcion_foro : EditText = findViewById(R.id.txt_descripcion_foro)
-        var txt_titulo_foro : EditText = findViewById(R.id.txt_titulo_foro)
+        txt_descripcion_foro = binding.txtDescripcionForo
+        txt_titulo_foro = binding.txtTituloForo
 
         var ref = firestore.collection("Foros").document("SubForos").collection(foroName).document()
         var id_ref = ref.id

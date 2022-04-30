@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
 import com.example.heymama.adapters.PostTimelineAdapter
+import com.example.heymama.databinding.ActivityPerfilBinding
+import com.example.heymama.databinding.ActivityTimelineBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.PostTimeline
 import com.example.heymama.models.User
@@ -41,14 +43,16 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     private lateinit var edt_post_tl: String
 
-
+    private lateinit var binding : ActivityTimelineBinding
     /**
      * @constructor
      * @param savedInstanceState Bundle
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_timeline)
+        binding = ActivityTimelineBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
 
         //Instancias para la base de datos y la autenticación
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
@@ -65,7 +69,7 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
 
         // RECYCLERVIEW TIMELINE
-        recyclerViewTimeline = findViewById(R.id.recyclerView_posts)
+        recyclerViewTimeline = binding.recyclerViewPosts
 
         var layoutManager = LinearLayoutManager(this)
         recyclerViewTimeline.layoutManager = layoutManager
@@ -76,8 +80,7 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
         postsTLArraylist = arrayListOf()
 
 
-        val button9: Button = findViewById(R.id.btn_add_post_tl)
-        button9.setOnClickListener {
+        binding.btnAddPostTl.setOnClickListener {
 
             if(!findViewById<EditText>(R.id.edt_post_tl).text.isEmpty()) {
                 edt_post_tl = findViewById<EditText>(R.id.edt_post_tl).text.toString()

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
 import com.example.heymama.adapters.ForoAdapter
+import com.example.heymama.databinding.ActivitySubForoBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.Post
 import com.google.firebase.auth.FirebaseAuth
@@ -37,7 +38,7 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
     private lateinit var adapter: ForoAdapter
 
     private lateinit var foroName: String
-
+    private lateinit var binding: ActivitySubForoBinding
     /**
      *
      * @constructor
@@ -46,7 +47,8 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sub_foro)
+        binding = ActivitySubForoBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val intent = intent
         foroName = intent.getStringExtra("ForoName").toString()
@@ -67,8 +69,7 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
 
 
         // Add question
-        var btn_add_question: Button = findViewById(R.id.btn_add_question)
-        btn_add_question.setOnClickListener { view ->
+        binding.btnAddQuestion.setOnClickListener { view ->
             /*val transaccion = supportFragmentManager.beginTransaction()
             val fragmento = SubForoFragment()
 

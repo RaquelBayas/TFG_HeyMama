@@ -10,6 +10,8 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import com.example.heymama.R
+import com.example.heymama.databinding.ActivityLoginBinding
+import com.example.heymama.databinding.ActivityPerfilBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -30,6 +32,8 @@ class Login : AppCompatActivity() {
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
 
+    private lateinit var binding : ActivityLoginBinding
+
     /**
      * @constructor
      * @param savedInstanceState Bundle
@@ -37,14 +41,16 @@ class Login : AppCompatActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
 
         findViewById<TextView>(R.id.txt_recordar_contraseña).setOnClickListener {
             startActivity(Intent(this, RememberPassword::class.java))
         }
 
-        txt_email = findViewById(R.id.txt_email2)
-        txt_password = findViewById(R.id.txt_password2)
+        txt_email = binding.txtEmail2
+        txt_password = binding.txtPassword2
 
         //Instancias para la base de datos y la autenticación
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
@@ -55,7 +61,7 @@ class Login : AppCompatActivity() {
         //Dentro de la base de datos habrá un nodo "Usuarios" donde se guardan los usuarios de la aplicación
         dataBaseReference = dataBase.reference.child("Usuarios")
 
-        findViewById<Button>(R.id.btnAcceder).setOnClickListener{
+        binding.btnAcceder.setOnClickListener{
 
             dataBaseReference.addValueEventListener(object: ValueEventListener{
                 override fun onCancelled(p0: DatabaseError) {

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -32,8 +33,8 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profile_image"
-                android:layout_width="148dp"
-                android:layout_height="148dp"
+                android:layout_width="124dp"
+                android:layout_height="124dp"
                 android:layout_marginTop="68dp"
                 app:civ_border_color="@color/wine_1"
                 app:civ_border_width="2dp"
@@ -68,6 +69,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
             android:hint="bio"
             android:textSize="16sp"
             android:fontFamily="@font/montserrat_bold"
@@ -85,7 +87,6 @@
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_weight="0.5"
-                android:layout_marginTop="10dp"
 
                 android:background="@drawable/rectangle_orange"
                 android:fontFamily="@font/alegreya"
@@ -98,7 +99,7 @@
                 android:layout_height="48dp"
                 android:layout_weight="0.5"
                 android:layout_marginLeft="10dp"
-                android:layout_marginTop="10dp"
+
                 android:background="@drawable/rectangle_orange"
                 android:fontFamily="@font/alegreya"
                 android:text="@string/mensajes"
@@ -106,25 +107,52 @@
         </LinearLayout>
 
 
-    </LinearLayout>
+       </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        >
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView_perfil"
+
+    <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="15dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_amigos" />
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            >
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/rectangle_purple"
+
+                app:tabInlineLabel="true"
+                app:tabMode="fixed"
+
+                app:tabTextColor="@color/black"
+                >
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Posts"
+                    android:layout_gravity="left"
+                    >
+
+                </com.google.android.material.tabs.TabItem>
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Likes"
+                    android:layout_gravity="left"
+                    >
+
+                </com.google.android.material.tabs.TabItem>
+            </com.google.android.material.tabs.TabLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+    <androidx.viewpager.widget.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/viewPagerTimeline">
+
+    </androidx.viewpager.widget.ViewPager>
+
+
 
     <View
         android:id="@+id/view"
@@ -137,21 +165,6 @@
         app:layout_constraintStart_toStartOf="parent" />
 
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom"
 
-        android:background="@color/white"
-        app:labelVisibilityMode="unlabeled"
-        app:menu="@menu/nav_bar_bottom_menu">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"></FrameLayout>
-    </com.google.android.material.bottomnavigation.BottomNavigationView>
 
 </LinearLayout>

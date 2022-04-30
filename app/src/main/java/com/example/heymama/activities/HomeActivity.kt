@@ -15,6 +15,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.heymama.GlideApp
 import com.example.heymama.R
+import com.example.heymama.dialogs.MoodDialog
 import com.example.heymama.fragments.MoodFragment
 import com.example.heymama.interfaces.Utils
 import com.example.heymama.models.Mood
@@ -180,8 +181,9 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
         btn_mood_status.setOnClickListener {
-            var moodfragment = MoodFragment()
-            moodfragment.show(supportFragmentManager,"moodDialog")
+            //var moodfragment = MoodFragment()
+            MoodDialog().show(supportFragmentManager,"MoodDialog")
+        //moodfragment.show(supportFragmentManager,"moodDialog")
         }
     }
 
