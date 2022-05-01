@@ -6,6 +6,7 @@ data class Message(
     var senderUID: String = "",
     var receiverUID: String = "",
     var message: String = "",
+    var imageUrl: String = "",
     @ServerTimestamp
     var timestamp: Long? = null): Comparable<Message>  {
 

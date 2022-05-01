@@ -73,7 +73,7 @@ class Login : AppCompatActivity() {
                             override fun onCancelled(p1: DatabaseError) {
                             }
                             override fun onDataChange(p1: DataSnapshot) {
-                                val data = p1.child("Email").value
+                                val data = p1.child("email").value
                                 UserInfo.listaMails.add(data.toString())
                             }
                         })
@@ -160,8 +160,8 @@ class Login : AppCompatActivity() {
         databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for(s in snapshot.children) {
-                    if (s.child("Email").value.toString().equals(email)) {
-                        rol = s.child("Rol").value.toString()
+                    if (s.child("email").value.toString().equals(email)) {
+                        rol = s.child("rol").value.toString()
                         if (rol.equals("Profesional")) {
                             val intent = Intent(applicationContext, HomeActivityProf::class.java)
                             intent.putExtra("Rol","Profesional")

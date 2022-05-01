@@ -63,13 +63,21 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
         spinnerConsultas.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, id: Long) {
-                getMisConsultas(temas[position])
-                //getConsultas(temas[position])
+
+                if(rol == "Usuario") {
+                    getMisConsultas(temas[position])
+                } else {
+                    getConsultas(temas[position])
+                }
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
-                getMisConsultas("Embarazo")
-                //getConsultas("Embarazo") // Tema por defecto, es el primer tema del spinner
+
+                if(rol == "Usuario") {
+                    getMisConsultas("Embarazo")
+                } else {
+                    getConsultas("Embarazo")  // Tema por defecto, es el primer tema del spinner
+                }
             }
 
         }
@@ -85,7 +93,7 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     var user : User? = snapshot.getValue(User::class.java)
                     rol = user!!.rol.toString()
 
-                    Log.i("rol-consultas",rol)
+
                 }
 
                 override fun onCancelled(error: DatabaseError) {

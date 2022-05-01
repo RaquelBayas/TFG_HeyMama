@@ -5,9 +5,7 @@ import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
-import com.example.heymama.adapters.ChatAdapter
 import com.example.heymama.models.Consulta
-import com.example.heymama.models.Message
 import java.util.ArrayList
 
 class MisConsultasActivity : AppCompatActivity() {

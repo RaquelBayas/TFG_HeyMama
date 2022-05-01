@@ -42,7 +42,7 @@
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_foros.xml" value="0.152" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_friends.xml" value="0.128" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_home.xml" value="0.4" />
-        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_home_prof.xml" value="0.1" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_home_prof.xml" value="0.16" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_home_profesional.xml" value="0.16944444444444445" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_info.xml" value="0.152" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_layout_article.xml" value="0.12280701754385964" />
@@ -71,7 +71,7 @@
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/add_post_foro_layout.xml" value="0.2" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/app_bar_home.xml" value="0.14651639344262296" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/consulta.xml" value="0.4" />
-        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/consulta_respuesta.xml" value="0.4" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/consulta_respuesta.xml" value="0.6" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/dialog_change_password.xml" value="0.264" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/dialog_change_username.xml" value="0.1635928961748634" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/dialog_mood.xml" value="0.264" />

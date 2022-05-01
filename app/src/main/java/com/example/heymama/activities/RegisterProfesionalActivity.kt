@@ -108,19 +108,19 @@ class RegisterProfesionalActivity : AppCompatActivity() {
                         userDB.child("name").setValue(nombre_prof)
                         userDB.child("apellidos").setValue(apellidos_prof)
                         userDB.child("user").setValue(user_prof)
-                        userDB.child("Email").setValue(email)
-                        userDB.child("Rol").setValue("Profesional")
+                        userDB.child("email").setValue(email)
+                        userDB.child("rol").setValue("Profesional")
                         userDB.child("bio").setValue("")
                         userDB.child("profilePhoto").setValue("")
 
                         val data = hashMapOf(
                             "ID" to uid,
-                            "Name" to nombre_prof,
-                            "Surname" to apellidos_prof,
-                            "Username" to user_prof,
-                            "Email" to email,
-                            "Rol" to "Profesional",
-                            "Bio" to "",
+                            "name" to nombre_prof,
+                            "surname" to apellidos_prof,
+                            "username" to user_prof,
+                            "email" to email,
+                            "rol" to "Profesional",
+                            "bio" to "",
                             "profilePhoto" to ""
                         )
 

@@ -8,6 +8,7 @@ import android.widget.EditText
 import android.widget.Toast
 import com.example.heymama.R
 import com.example.heymama.Utils
+import com.example.heymama.databinding.ActivityLayoutArticleBinding
 import com.example.heymama.models.Article
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -32,6 +33,7 @@ class LayoutArticleActivity : AppCompatActivity() {
     private lateinit var btn_publicar_articulo: Button
     private lateinit var type: String
     private lateinit var bundle: Bundle
+    private lateinit var binding: ActivityLayoutArticleBinding
 
     /**
      *
@@ -40,7 +42,8 @@ class LayoutArticleActivity : AppCompatActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_layout_article)
+        binding = ActivityLayoutArticleBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         //Instancias para la base de datos y la autenticación
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
@@ -68,8 +71,8 @@ class LayoutArticleActivity : AppCompatActivity() {
             edt_titulo_articulo.setText(title_article)
             edt_contenido_articulo.setText(description_article)
         }
-        btn_publicar_articulo = findViewById(R.id.btn_publicar_articulo)
-        btn_publicar_articulo.setOnClickListener {
+
+        binding.btnPublicarArticulo.setOnClickListener {
             Log.i("type_btn",intent.getStringExtra("type").toString())
             if(type.equals("0")) {
 
@@ -89,7 +92,7 @@ class LayoutArticleActivity : AppCompatActivity() {
      */
     private fun editar_articulo()  {
         val reference_article = firestore.collection("Artículos").document(id_article)
-        Log.i("reference_art",reference_article.path)
+
         reference_article.update("article",edt_contenido_articulo.text.toString())
         reference_article.update("title",edt_titulo_articulo.text.toString())
 

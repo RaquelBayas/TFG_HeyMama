@@ -9,11 +9,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
 import com.example.heymama.models.Consulta
-import com.example.heymama.models.Message
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
-import org.w3c.dom.Text
 
 class RespuestaConsultaAdapter(private val context: Context, private val consultaArrayList: ArrayList<Consulta>) : RecyclerView.Adapter<RespuestaConsultaAdapter.HolderConsulta>() {
     private var firebaseUser: FirebaseUser? = null
@@ -29,7 +27,6 @@ class RespuestaConsultaAdapter(private val context: Context, private val consult
         } else {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.consulta_respuesta,parent,false)
             HolderConsulta(view)
-           // respuesta = view.findViewById(R.id.txt_consulta_respuesta_post) //= findViewById(R.id.txt_consulta_respuesta_post)
         }
     }
 

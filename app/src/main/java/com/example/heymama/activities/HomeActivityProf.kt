@@ -14,6 +14,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.example.heymama.R
+import com.example.heymama.databinding.ActivityHomeProfBinding
 import com.example.heymama.fragments.SolicitudesFragment
 import com.example.heymama.interfaces.Utils
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -24,8 +25,10 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
 
     private lateinit var drawer: DrawerLayout
     private lateinit var toggle: ActionBarDrawerToggle
-
-
+    private lateinit var binding: ActivityHomeProfBinding
+    private lateinit var toolbar: androidx.appcompat.widget.Toolbar
+    private lateinit var navigationView: NavigationView
+    private lateinit var bottomNavigationView: BottomNavigationView
     /**
      *
      * @param savedInstanceState Bundle
@@ -33,22 +36,23 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_home_prof)
+        binding = ActivityHomeProfBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar_main)
+        toolbar = binding.toolbarMain
         setSupportActionBar(toolbar)
 
-        drawer = findViewById(R.id.drawer_layout_home_prof)
+        drawer = binding.drawerLayoutHomeProf
         toggle = ActionBarDrawerToggle(this,drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeButtonEnabled(true)
 
-        val navigationView: NavigationView = findViewById(R.id.nav_view)
+        navigationView = binding.navView
         navigationView.setNavigationItemSelectedListener(this)
 
         //BARRA DE NAVEGACIÓN INFERIOR
-        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
+        bottomNavigationView = binding.bottomNavigationView
         bottomNavigationView.setOnNavigationItemReselectedListener { item ->
             when(item.itemId) {
                 R.id.nav_bottom_item_foros -> goToActivity(this,ForosActivity::class.java)
@@ -57,18 +61,15 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
             }
         }
 
-        var txt_consultas : TextView = findViewById(R.id.txt_consultas)
-        txt_consultas.setOnClickListener{
+        binding.txtConsultas.setOnClickListener{
             onClick(R.id.txt_consultas)
         }
 
-        var txt_foros : TextView = findViewById(R.id.txt_foros)
-        txt_foros.setOnClickListener{
+        binding.txtForos.setOnClickListener{
             onClick(R.id.txt_foros)
         }
 
-        var txt_informacion : TextView = findViewById(R.id.txt_informacion)
-        txt_informacion.setOnClickListener{
+        binding.txtInformacion.setOnClickListener{
             onClick(R.id.txt_informacion)
         }
     }
@@ -94,14 +95,6 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
         return true
     }
 
-
-    private fun goToFragment() {
-        val fragment = SolicitudesFragment()
-        val fragmentManager = supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.home_prof_layout,fragment)
-        fragmentTransaction.commit()
-    }
 
     /**
      *

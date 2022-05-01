@@ -5,15 +5,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="5dp"
+    android:layout_margin="5dp"
     android:background="@drawable/rectangle_pink">
 
 
     <TextView
         android:id="@+id/txt_consulta_post"
-        android:layout_width="336dp"
+        android:layout_width="match_parent"
         android:layout_height="37dp"
-        android:layout_marginTop="10dp"
+        android:layout_margin="15dp"
         android:fontFamily="@font/montserrat"
         android:maxLength="300"
         android:text="Tweet"
@@ -21,7 +21,7 @@
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.45"
+        app:layout_constraintHorizontal_bias="0.25"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txt_consulta_name"
         app:layout_constraintVertical_bias="0.0" />
@@ -30,12 +30,13 @@
         android:id="@+id/txt_consulta_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/montserrat"
         android:text="Username"
         android:textColor="@color/black"
         android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/txt_consulta_post"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -54,7 +55,7 @@
         app:layout_constraintHorizontal_bias="0.036"
         app:layout_constraintStart_toEndOf="@+id/txt_consulta_name"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.272" />
+        app:layout_constraintVertical_bias="0.16000003" />
 
     <Button
         android:layout_width="25dp"

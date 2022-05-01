@@ -1,7 +1,12 @@
 package com.example.heymama.activities
 
+import android.app.Activity
+import android.app.ProgressDialog
+import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import com.example.heymama.models.Message
 import android.util.Log
 import android.widget.*
@@ -12,6 +17,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.heymama.GlideApp
 import com.example.heymama.R
 import com.example.heymama.adapters.ChatAdapter
+import com.example.heymama.databinding.ActivityChatBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
@@ -38,14 +44,15 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private lateinit var recyclerViewChats: RecyclerView
     private lateinit var chatsArraylist: ArrayList<Message>
     private lateinit var adapterChats: ChatAdapter
-
+    private lateinit var binding: ActivityChatBinding
     /**
      *
      * @param savedInstanceState Bundle
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_chat)
+        binding = ActivityChatBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // Usuario
         auth = FirebaseAuth.getInstance()
@@ -62,7 +69,7 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
         val intent = intent
         friendUID = intent.getStringExtra("friendUID").toString()
 
-        findViewById<TextView>(R.id.txt_chat_friend_name).text = friendUID
+       binding.txtChatFriendName.text = friendUID
 
         // BOTÓN BACK
         var img_back_chat : ImageView = findViewById(R.id.img_back_chat)
@@ -70,19 +77,20 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
             onBackPressed()
         }
 
-        txt_message_chat = findViewById(R.id.txt_message_chat)
-        var btn_send_message: ImageView = findViewById(R.id.btn_send_message_chat)
-        btn_send_message.setOnClickListener {
+        txt_message_chat = binding.txtMessageChat
+
+        binding.btnSendMessageChat.setOnClickListener {
             if(txt_message_chat.text.isEmpty()){
                 Toast.makeText(this,"Introduce un mensaje",Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this,"MSG",Toast.LENGTH_SHORT).show()
+
                 sendMessage(auth.uid.toString(),friendUID,txt_message_chat.text.toString())
             }
         }
 
         // RECYCLERVIEW TIMELINE
-        recyclerViewChats = findViewById(R.id.recyclerView_chat)
+        recyclerViewChats = binding.recyclerViewChat
 
         chatsArraylist = arrayListOf()
         adapterChats = ChatAdapter(applicationContext, chatsArraylist)
@@ -97,8 +105,105 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
         getMessage(auth.uid.toString(),friendUID)
         updateFriendName()
         updatePicture()
+
+        binding.btnAddImgChat.setOnClickListener {
+            selectImage(100)
+        }
     }
 
+    /**
+     *
+     * @param code Int
+     */
+    private fun selectImage(code: Int) {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        intent.type = "image/*"
+        intent.action = Intent.ACTION_GET_CONTENT
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        startActivityForResult(intent,code)
+    }
+
+    /**
+     *
+     * @param storageReference StorageReference
+     * @param uri Uri
+     */
+    private fun uploadImage(storageReference: StorageReference, uri: Uri){
+        val progressDialog = ProgressDialog(this)
+        progressDialog.setMessage("Subiendo foto...")
+        progressDialog.setCancelable(false)
+        progressDialog.show()
+
+        storageReference.putFile(uri).addOnCompleteListener{ task ->
+            progressDialog.dismiss()
+            if(task.isSuccessful) {
+                storageReference.downloadUrl.addOnSuccessListener { uri ->
+                    val imagePath = uri.toString()
+                    val message = Message(auth.uid.toString(),friendUID,"",imagePath,Date().time)
+                    sendMessageImage(auth.uid.toString(),friendUID,message)
+                }
+            }
+        }
+
+        storageReference.putFile(uri).
+        addOnSuccessListener {
+            //binding.imageView14.setImageURI(ImageUri)
+            Toast.makeText(this,"Foto subida",Toast.LENGTH_SHORT).show()
+            if(progressDialog.isShowing) progressDialog.dismiss()
+        }.addOnFailureListener{
+            if(progressDialog.isShowing) progressDialog.dismiss()
+            Toast.makeText(this,"Hubo un error",Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /**
+     * //Está ligado a selectImage
+     *
+     * @param requestCode Int
+     * @param resultCode Int
+     * @param data Intent
+     *
+     */
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == 100 && resultCode == Activity.RESULT_OK) {
+            if(data != null) {
+                if(data.data != null) {
+                    var selectedImage = data.data
+                    var date = Calendar.getInstance()
+                    var reference = firebaseStorageRef.child("Chats").child(date.timeInMillis.toString())
+                    uploadImage(reference, selectedImage!!)
+                }
+            }
+        }
+    }
+    private fun sendMessageImage(senderUID: String, receiverUID: String, message: Message) {
+        dataBase.reference.child("Chats").child(senderUID).child("Messages").child(receiverUID).push()
+            .setValue(message).addOnSuccessListener(object: OnSuccessListener<Void> {
+                override fun onSuccess(p0: Void?) {
+                    dataBase.reference.child("Chats").child(receiverUID).child("Messages").child(senderUID).push().setValue(message).addOnSuccessListener(object:OnSuccessListener<Void> {
+                        override fun onSuccess(p0: Void?) {
+                            binding.txtMessageChat.setText("")
+                            Toast.makeText(applicationContext,"El mensaje se ha enviado correctamente",Toast.LENGTH_SHORT).show()
+                        }
+                    })
+                }
+            })
+        var lastMessage : Map<String, Message> = mapOf("LastMessage" to message)
+        dataBase.reference.child("Chats").child(senderUID).child("Messages").child(receiverUID)
+            .updateChildren(lastMessage)
+            .addOnSuccessListener(object: OnSuccessListener<Void> {
+                override fun onSuccess(p0: Void?) {
+                    dataBase.reference.child("Chats").child(receiverUID).child("Messages").child(senderUID)
+                        .updateChildren(lastMessage).addOnSuccessListener(object:OnSuccessListener<Void> {
+                            override fun onSuccess(p0: Void?) {
+                                binding.txtMessageChat.setText("")
+                                Toast.makeText(applicationContext,"El mensaje se ha enviado correctamente",Toast.LENGTH_SHORT).show()
+                            }
+                        })
+                }
+            })
+    }
     /**
      *
      * @param senderUID String
@@ -107,13 +212,13 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
      *
      */
     private fun sendMessage(senderUID: String, receiverUID: String, msg: String) {
-        var message = Message(senderUID,receiverUID,msg, Date().time) //senderUID+"_"+receiverUID
+        var message = Message(senderUID,receiverUID,msg, "",Date().time) //senderUID+"_"+receiverUID
         dataBase.reference.child("Chats").child(senderUID).child("Messages").child(receiverUID).push()
             .setValue(message).addOnSuccessListener(object: OnSuccessListener<Void> {
                 override fun onSuccess(p0: Void?) {
                     dataBase.reference.child("Chats").child(receiverUID).child("Messages").child(senderUID).push().setValue(message).addOnSuccessListener(object:OnSuccessListener<Void> {
                         override fun onSuccess(p0: Void?) {
-                            txt_message_chat.setText("")
+                            binding.txtMessageChat.setText("")
                             Toast.makeText(applicationContext,"El mensaje se ha enviado correctamente",Toast.LENGTH_SHORT).show()
                         }
                     })
@@ -127,7 +232,7 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     dataBase.reference.child("Chats").child(receiverUID).child("Messages").child(senderUID)
                         .updateChildren(lastMessage).addOnSuccessListener(object:OnSuccessListener<Void> {
                         override fun onSuccess(p0: Void?) {
-                            txt_message_chat.setText("")
+                            binding.txtMessageChat.setText("")
                             Toast.makeText(applicationContext,"El mensaje se ha enviado correctamente",Toast.LENGTH_SHORT).show()
                         }
                     })
