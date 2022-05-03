@@ -20,7 +20,9 @@
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
             android:id="@+id/txt_message_chat"
-            android:text="Message" />
+            android:text="Message"
+            android:fontFamily="@font/open_sans"
+            android:textSize="20sp"/>
     </LinearLayout>
 
 
@@ -29,6 +31,20 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:text="Time"
-        android:textSize="8dp"
+        android:textSize="12sp"
         android:layout_marginStart="10dp"/>
+
+    <ImageView
+        android:id="@+id/img_chat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxWidth="300dp"
+
+        android:adjustViewBounds="true"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:src="@drawable/profile_picture"
+        >
+
+    </ImageView>
 </LinearLayout>

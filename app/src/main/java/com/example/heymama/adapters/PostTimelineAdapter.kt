@@ -41,12 +41,17 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
 
     /**
      *
+     * @param listener ItemRecyclerViewListener
+     *
      */
     fun setOnItemRecyclerViewListener(listener: ItemRecyclerViewListener) {
         this.listener = listener
     }
 
     /**
+     *
+     * @param parent ViewGroup
+     * @param viewType Int
      *
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder{
@@ -105,18 +110,19 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
             val docs = value!!.data
             with(holder) {
                 name_post.text = docs!!["name"].toString()
-                storageReference
+
+                FirebaseStorage.getInstance().getReference("Usuarios/"+post_tl.userId+"/images/perfil")
                     .getBytes(8 * ONE_MEGABYTE).addOnSuccessListener { bytes ->
                         val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                         holder.photo_post.setImageBitmap(bmp)
                     }.addOnFailureListener {
-                        Log.e(TAG, "Se produjo un error al descargar la imagen.", it)
+                        Log.e(TAG, "Se produjo un error al descargar la imagen."+it.message, it)
                     }
                 photo_post.setOnClickListener {
                     postTimelineListener.onItemClicked(position)
                 }
                 user_post.text = docs["username"].toString()
-                id_user = docs["ID"].toString()
+                id_user = docs["id"].toString()
                 comment_post.text = post_tl.comment
                 commentCount_post.text = post_tl.commentCount.toString() //likeCounter(holder,position).toString()
                 likeCount_post.text = post_tl.likeCount.toString()

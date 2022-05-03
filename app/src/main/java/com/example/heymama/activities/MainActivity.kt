@@ -5,25 +5,23 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import com.example.heymama.R
+import com.example.heymama.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val btnRegister: Button = findViewById(R.id.btnRegister)
-        btnRegister.setOnClickListener {
-            // Do something in response to button click
-            val intent = Intent(this, RegisterAsActivity::class.java)
-            startActivity(intent)
+        binding.btnRegister.setOnClickListener {
+            startActivity(Intent(this,RegisterAsActivity::class.java))
         }
 
-        val btnLogin: Button = findViewById(R.id.btnLogin)
-        btnLogin.setOnClickListener {
-            // Do something in response to button click
-            val intent = Intent(this, Login::class.java)
-            startActivity(intent)
+        binding.btnLogin.setOnClickListener {
+            startActivity(Intent(this, Login::class.java))
         }
 
     }

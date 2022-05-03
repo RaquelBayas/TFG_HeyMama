@@ -86,22 +86,15 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
     }
 
     private fun getDataUser(){
-
         database.reference.child("Usuarios").child(auth.uid.toString()).addValueEventListener(object: ValueEventListener {
-
                 override fun onDataChange(snapshot: DataSnapshot) {
                     var user : User? = snapshot.getValue(User::class.java)
                     rol = user!!.rol.toString()
-
-
                 }
-
                 override fun onCancelled(error: DatabaseError) {
                     //TO DO("Not yet implemented")
                 }
-
             })
-
     }
 
     private fun getMisConsultas(temaConsulta: String) {
@@ -162,7 +155,9 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
                             Consulta::class.java))
                     }
                 }
-                consultasArraylist.sort()
+                if(consultasArraylist.size > 1) {
+                    consultasArraylist.sort()
+                }
                 adapter = ConsultaAdapter(this, consultasArraylist, this)
                 adapter.notifyDataSetChanged()
 

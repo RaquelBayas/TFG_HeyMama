@@ -45,15 +45,17 @@ class TimelineFragment : Fragment(), ItemRecyclerViewListener {
         // Inflate the layout for this fragment
         firestore = FirebaseFirestore.getInstance() //CLOUD STORAGE
         auth = FirebaseAuth.getInstance()
+        postsTLArraylist = arrayListOf()
         _binding = FragmentTimelineBinding.inflate(inflater, container, false)
         val data = arguments
-        uid = auth.uid.toString() //data!!.getString("uid").toString()
-        Log.i("data-fragment",data.toString())
+        uid = data!!["uid"].toString() //data!!.getString("uid").toString()
+        Log.i("data-fragment", data!!["uid"].toString())
         loadPostsTL()
         return binding.root
     }
 
     private fun loadPostsTL() {
+        postsTLArraylist.clear()
         recyclerViewTimeline = binding.recyclerViewPerfil
 
         var layoutManager = LinearLayoutManager(context)

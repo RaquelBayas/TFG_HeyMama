@@ -32,6 +32,7 @@ class LayoutArticleActivity : AppCompatActivity() {
     private lateinit var edt_contenido_articulo : EditText
     private lateinit var btn_publicar_articulo: Button
     private lateinit var type: String
+    private lateinit var user: FirebaseUser
     private lateinit var bundle: Bundle
     private lateinit var binding: ActivityLayoutArticleBinding
 
@@ -49,11 +50,11 @@ class LayoutArticleActivity : AppCompatActivity() {
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         auth = FirebaseAuth.getInstance()
         // Usuario
-        val user: FirebaseUser? = auth.currentUser
+        user = auth.currentUser!!
         firestore = FirebaseFirestore.getInstance()
 
-        edt_titulo_articulo = findViewById(R.id.edt_titulo_articulo)
-        edt_contenido_articulo = findViewById(R.id.edt_contenido_articulo)
+        edt_titulo_articulo = binding.edtTituloArticulo
+        edt_contenido_articulo = binding.edtContenidoArticulo
 
 
         val intent = intent
@@ -62,7 +63,7 @@ class LayoutArticleActivity : AppCompatActivity() {
             Log.i("type", intent.getStringExtra("type").toString())
         }
 
-        if (type.equals("1") && intent.hasExtra("edit_title_article") && intent.hasExtra("edit_description_article") && intent.hasExtra("edit_id_article")) {
+        if (type == "1" && intent.hasExtra("edit_title_article") && intent.hasExtra("edit_description_article") && intent.hasExtra("edit_id_article")) {
             //    publicar_articulo(user!!,1) // 1 EDITAR
             title_article = intent.getStringExtra("edit_title_article")!!.toString()
             description_article = intent.getStringExtra("edit_description_article")!!.toString()
@@ -74,8 +75,7 @@ class LayoutArticleActivity : AppCompatActivity() {
 
         binding.btnPublicarArticulo.setOnClickListener {
             Log.i("type_btn",intent.getStringExtra("type").toString())
-            if(type.equals("0")) {
-
+            if(type == "0") {
                 publicar_articulo(user!!)
             } else {
                 editar_articulo()

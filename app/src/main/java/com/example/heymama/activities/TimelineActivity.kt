@@ -32,7 +32,7 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
-    private lateinit var dataBase: FirebaseDatabase
+    private lateinit var database: FirebaseDatabase
     private lateinit var firebaseStore: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageReference: StorageReference
@@ -55,7 +55,7 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
 
         //Instancias para la base de datos y la autenticación
-        dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
+        database = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         auth = FirebaseAuth.getInstance()
 
         // Usuario
@@ -63,7 +63,7 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
         storageReference = firebaseStore.reference
-        storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").getReference("Usuarios/"+auth.currentUser?.uid+"/images/perfil")
+        //storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").getReference("Usuarios/"+auth.currentUser?.uid+"/images/perfil")
 
         firestore = FirebaseFirestore.getInstance()
 
@@ -154,6 +154,7 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
      *
      */
     private fun getCommentsTL() {
+        Log.i("TAG","here timeline")
         postsTLArraylist.clear()
         firestore.collection("Timeline").addSnapshotListener { snapshots, e ->
             if (e!= null) {
@@ -170,7 +171,7 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 }
             }
             postsTLArraylist.sort()
-            adapterPostsTL = PostTimelineAdapter(this,postsTLArraylist,this)
+            adapterPostsTL = PostTimelineAdapter(this@TimelineActivity,postsTLArraylist,this)
             adapterPostsTL.notifyDataSetChanged()
             adapterPostsTL.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
                 override fun onItemClicked(position: Int) {

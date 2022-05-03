@@ -84,8 +84,8 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 Toast.makeText(this,"Introduce un mensaje",Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this,"MSG",Toast.LENGTH_SHORT).show()
-
-                sendMessage(auth.uid.toString(),friendUID,txt_message_chat.text.toString())
+                var message = Message(auth.uid.toString(),friendUID,txt_message_chat.text.toString(), "",Date().time) //senderUID+"_"+receiverUID
+                sendMessageImage(auth.uid.toString(),friendUID,message)
             }
         }
 
@@ -95,12 +95,15 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
         chatsArraylist = arrayListOf()
         adapterChats = ChatAdapter(applicationContext, chatsArraylist)
         recyclerViewChats.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL,true)
-        recyclerViewChats.adapter = adapterChats
+
         recyclerViewChats.smoothScrollToPosition(recyclerViewChats.bottom)
-        recyclerViewChats.setHasFixedSize(true)
+        recyclerViewChats.setHasFixedSize(false)
 
         (recyclerViewChats.layoutManager as LinearLayoutManager).stackFromEnd = true
         (recyclerViewChats.layoutManager as LinearLayoutManager).reverseLayout = true
+        recyclerViewChats.adapter = adapterChats
+
+
 
         getMessage(auth.uid.toString(),friendUID)
         updateFriendName()
@@ -166,17 +169,19 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
      */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == 100 && resultCode == Activity.RESULT_OK) {
+        if((requestCode == 100) && (resultCode == Activity.RESULT_OK)) {
             if(data != null) {
                 if(data.data != null) {
                     var selectedImage = data.data
                     var date = Calendar.getInstance()
-                    var reference = firebaseStorageRef.child("Chats").child(date.timeInMillis.toString())
+                    var reference = firebaseStorage.getReference("Chats/"+auth.uid.toString()+friendUID+"/"+date.timeInMillis.toString()) //child("Chats").child(date.timeInMillis.toString())
                     uploadImage(reference, selectedImage!!)
                 }
             }
         }
     }
+
+
     private fun sendMessageImage(senderUID: String, receiverUID: String, message: Message) {
         dataBase.reference.child("Chats").child(senderUID).child("Messages").child(receiverUID).push()
             .setValue(message).addOnSuccessListener(object: OnSuccessListener<Void> {
@@ -211,8 +216,8 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
      * @param msg String
      *
      */
-    private fun sendMessage(senderUID: String, receiverUID: String, msg: String) {
-        var message = Message(senderUID,receiverUID,msg, "",Date().time) //senderUID+"_"+receiverUID
+    /*private fun sendMessage(senderUID: String, receiverUID: String, msg: String) {
+
         dataBase.reference.child("Chats").child(senderUID).child("Messages").child(receiverUID).push()
             .setValue(message).addOnSuccessListener(object: OnSuccessListener<Void> {
                 override fun onSuccess(p0: Void?) {
@@ -238,7 +243,7 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     })
                 }
             })
-    }
+    }*/
 
     /**
      *

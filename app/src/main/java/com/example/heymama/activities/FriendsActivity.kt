@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
 import com.example.heymama.adapters.FriendRequestAdapter
 import com.example.heymama.adapters.FriendsAdapter
+import com.example.heymama.databinding.ActivityFriendsBinding
 import com.example.heymama.models.FriendRequest
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
@@ -35,8 +36,9 @@ class FriendsActivity : AppCompatActivity() {
     private lateinit var recyclerViewFriends: RecyclerView
     private lateinit var friendsArraylist: ArrayList<FriendRequest>
     private lateinit var adapterFriends: FriendsAdapter
-
+    private lateinit var binding: ActivityFriendsBinding
     private lateinit var uid: String
+    private lateinit var user: FirebaseUser
 
     /**
      * @constructor
@@ -45,11 +47,12 @@ class FriendsActivity : AppCompatActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R .layout.activity_friends)
+        binding = ActivityFriendsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // Usuario
         auth = FirebaseAuth.getInstance()
-        val user: FirebaseUser? = auth.currentUser
+        user = auth.currentUser!!
 
         val intent = intent
         if(intent.getStringExtra("UID") != null) {
@@ -66,7 +69,7 @@ class FriendsActivity : AppCompatActivity() {
         storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").reference
 
         // Recycler View de los amigos
-        recyclerViewFriends = findViewById(R.id.recyclerview_amigos)
+        recyclerViewFriends = binding.recyclerviewAmigos
         recyclerViewFriends.layoutManager = LinearLayoutManager(this)
         recyclerViewFriends.setHasFixedSize(true)
         friendsArraylist = arrayListOf()
@@ -98,7 +101,6 @@ class FriendsActivity : AppCompatActivity() {
                 friendsRef.get().addOnSuccessListener { documents ->
                     for (document in documents) {
                         friend = document.toObject(FriendRequest::class.java)
-                        Log.i("GETFRIENDS", document.data.toString())
                     }
                     friendsArraylist.add(friend)
                     adapterFriends = FriendsAdapter(applicationContext, friendsArraylist, uid)

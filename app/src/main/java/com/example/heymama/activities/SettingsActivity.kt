@@ -14,10 +14,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.example.heymama.R
 import com.example.heymama.Utils
+import com.example.heymama.databinding.ActivitySettingsBinding
+import com.example.heymama.models.User
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.*
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import org.w3c.dom.Text
@@ -25,17 +26,20 @@ import org.w3c.dom.Text
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
-    private lateinit var dataBase: FirebaseDatabase
+    private lateinit var database: FirebaseDatabase
     private lateinit var firestore: FirebaseFirestore
+
     private lateinit var dataBaseReference: DatabaseReference
     private lateinit var user: FirebaseUser
     private lateinit var uid: String
+    private lateinit var rol: String
 
-    private lateinit var txt_settings_name: TextView
+
     private lateinit var txt_settings_email: TextView
     private lateinit var btn_delete_account: Button
     private lateinit var txt_settings_password: TextView
     private lateinit var bottomNavigationView: BottomNavigationView
+    private lateinit var binding: ActivitySettingsBinding
 
     /**
      *
@@ -43,23 +47,21 @@ class SettingsActivity : AppCompatActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
+        database = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
-        dataBaseReference = dataBase.getReference("Usuarios")
+        dataBaseReference = database.getReference("Usuarios")
         user = auth.currentUser!!
         uid = auth.uid.toString()
 
-        txt_settings_name = findViewById(R.id.settings_name)
-        txt_settings_name.setOnClickListener {
-            change_username()
-        }
+        getDataUser()
 
-        var user_ref = firestore.collection("Usuarios").document(uid)
-        user_ref.addSnapshotListener { value, error ->
-            txt_settings_name.text = value!!.data!!.get("username").toString()
+
+        binding.settingsName.setOnClickListener {
+            change_username()
         }
 
 
@@ -74,8 +76,7 @@ class SettingsActivity : AppCompatActivity() {
             delete_account()
         }
 
-        txt_settings_password = findViewById(R.id.settings_password)
-        txt_settings_password.setOnClickListener {
+        binding.settingsPassword.setOnClickListener {
             change_password()
         }
 
@@ -83,15 +84,21 @@ class SettingsActivity : AppCompatActivity() {
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when(item.itemId) {
                 R.id.nav_bottom_item_respirar -> {
-                    goToActivity(this,RespirarActivity::class.java)
+                    startActivity(Intent(this,RespirarActivity::class.java))
                     return@setOnNavigationItemSelectedListener true
                 }
-                R.id.nav_bottom_item_foros -> {goToActivity(this,ForosActivity::class.java)
+                R.id.nav_bottom_item_foros -> {
+                    startActivity(Intent(this,ForosActivity::class.java))
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.nav_bottom_item_home -> {
                     finish()
-                    goToActivity(this,HomeActivity::class.java)
+                    when(rol) {
+                        "Usuario" ->  startActivity(Intent(this,HomeActivity::class.java))
+                        "Profesional" -> startActivity(Intent(this,HomeActivityProf::class.java))
+                        "Admin" -> startActivity(Intent(this,HomeActivityAdmin::class.java))
+                    }
+
                     return@setOnNavigationItemSelectedListener true
                 }
             }
@@ -100,11 +107,25 @@ class SettingsActivity : AppCompatActivity() {
 
     }
 
-    private fun Context.goToActivity(activity: Activity, classs: Class<*>?) {
-        val intent = Intent(activity, classs)
-        startActivity(intent)
-        //activity.finish()
+    /**
+     * Obtener el rol del usuario y el nombre
+     *
+     */
+    private fun getDataUser(){
+        database.reference.child("Usuarios").child(uid).addValueEventListener(object:
+            ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                var user : User? = snapshot.getValue(User::class.java)
+                rol = user!!.rol.toString()
+                binding.settingsName.text = user!!.name.toString()
+            }
+            override fun onCancelled(error: DatabaseError) {
+                //TO DO("Not yet implemented")
+            }
+        })
+
     }
+
 
     /**
      *
@@ -180,7 +201,7 @@ class SettingsActivity : AppCompatActivity() {
             if(new_email.text.isEmpty()) {
                 return@setPositiveButton
             } else {
-                var users_ref = dataBase.getReference("Usuarios")
+                var users_ref = database.getReference("Usuarios")
                 user_ref.addSnapshotListener { value, error ->
                     var data = value!!.data
                    if (data!!.get("email")!!.equals(new_email.text.toString())) {
@@ -227,7 +248,7 @@ class SettingsActivity : AppCompatActivity() {
             if(new_username.text.isEmpty()) {
                 return@setPositiveButton
             } else {
-                var usernames_ref = dataBase.getReference("Usernames")
+                var usernames_ref = database.getReference("Usernames")
                 usernames_ref.get().addOnSuccessListener { value ->
                     if(!value.child(new_username.text.toString()).exists()) {
                         user_ref.update("username",new_username.text.toString())

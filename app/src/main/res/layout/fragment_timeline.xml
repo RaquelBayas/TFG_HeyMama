@@ -9,6 +9,7 @@
         android:id="@+id/recyclerView_perfil"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/rectangle_purple"
         />
 
 </FrameLayout>

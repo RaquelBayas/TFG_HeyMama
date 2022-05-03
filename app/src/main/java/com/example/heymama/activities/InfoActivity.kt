@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
 import com.example.heymama.adapters.ForoAdapter
 import com.example.heymama.adapters.InfoArticleAdapter
+import com.example.heymama.databinding.ActivityInfoBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.Article
 import com.example.heymama.models.Post
@@ -34,7 +35,7 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
-    lateinit var firestore: FirebaseFirestore
+    private lateinit var firestore: FirebaseFirestore
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var articlesArraylist: ArrayList<Article>
@@ -42,17 +43,21 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private lateinit var adapter: InfoArticleAdapter
 
     private lateinit var rol: String
+    private lateinit var btn_add_article: Button
+    private lateinit var bottomNavigationView: BottomNavigationView
+    private lateinit var binding: ActivityInfoBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_info)
+        binding = ActivityInfoBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val intent = intent
         rol = intent.getStringExtra("Rol")!!
         Toast.makeText(this,rol,Toast.LENGTH_SHORT).show()
 
-        if (rol.equals("Profesional")) {
-            val btn_add_article : Button = findViewById(R.id.btn_add_article)
+        if (rol == "Profesional") {
+            btn_add_article = binding.btnAddArticle
             btn_add_article.visibility = View.VISIBLE
         }
         //Instancias para la base de datos y la autenticación
@@ -71,7 +76,7 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
 
         // Barra de navegación inferior
-        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
+        bottomNavigationView = binding.bottomNavigationView
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when(item.itemId) {
                 R.id.nav_bottom_item_home -> {
@@ -79,15 +84,15 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.nav_bottom_item_foros -> {
-                    goToActivity(this,ForosActivity::class.java)
+                    startActivity(Intent(this,ForosActivity::class.java))
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.nav_bottom_item_respirar -> {
-                    goToActivity(this, RespirarActivity::class.java)
+                    startActivity(Intent(this, RespirarActivity::class.java))
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.nav_bottom_item_ajustes -> {
-                    goToActivity(this,SettingsActivity::class.java)
+                    startActivity(Intent(this,SettingsActivity::class.java))
                     return@setOnNavigationItemSelectedListener true
                 }
             }
@@ -95,7 +100,6 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
         }
         
 
-        var btn_add_article : Button = findViewById(R.id.btn_add_article)
         btn_add_article.setOnClickListener {
             //goToActivity(this,LayoutArticleActivity::class.java)
             val intent = Intent(this,LayoutArticleActivity::class.java)
@@ -157,16 +161,6 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
         }
     }
 
-    /**
-     *
-     * @param activity Activity
-     * @param class Class<*>
-     *
-     */
-    private fun Context.goToActivity(activity: Activity, classs: Class<*>?) {
-        val intent = Intent(activity, classs)
-        startActivity(intent)
-    }
 
     /**
      *

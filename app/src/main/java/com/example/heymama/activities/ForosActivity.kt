@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import com.example.heymama.R
 import com.example.heymama.databinding.ActivityForosBinding
@@ -12,17 +13,22 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.FirebaseDatabase
 import com.example.heymama.interfaces.Utils
+import com.example.heymama.models.User
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 
 class ForosActivity : AppCompatActivity(), Utils{
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
     private lateinit var user: FirebaseUser
-    private lateinit var dataBase: FirebaseDatabase
+    private lateinit var database: FirebaseDatabase
     private lateinit var firebaseStore: FirebaseStorage
     private lateinit var binding: ActivityForosBinding
 
+    private lateinit var rol: String
     private lateinit var txt_depresion: TextView
     private lateinit var txt_embarazo: TextView
     private lateinit var txt_posparto: TextView
@@ -37,13 +43,14 @@ class ForosActivity : AppCompatActivity(), Utils{
         setContentView(binding.root)
 
         //Instancias para la base de datos y la autenticación
-        dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
+        database = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         auth = FirebaseAuth.getInstance()
 
         // Usuario
         user = auth.currentUser!!
         firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
 
+        getDataUser()
 
         txt_depresion = binding.txtDepresion
         binding.txtDepresion.setOnClickListener{
@@ -68,17 +75,18 @@ class ForosActivity : AppCompatActivity(), Utils{
             goToActivity(this,SubForoActivity::class.java,txt_otros.text.toString())
         }
 
-        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
-        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+        binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when(item.itemId) {
                 R.id.nav_bottom_item_respirar -> {
                     goToActivity(this,RespirarActivity::class.java)
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.nav_bottom_item_home -> {
-                    finish()
-                    goToActivity(this,HomeActivity::class.java)
-                    return@setOnNavigationItemSelectedListener true
+                    when (rol) {
+                        "Usuario" -> startActivity(Intent(this, HomeActivity::class.java))
+                        "Profesional" -> startActivity(Intent(this, HomeActivityProf::class.java))
+                        "Admin" -> startActivity(Intent(this, HomeActivityAdmin::class.java))
+                    }
                 }
                 R.id.nav_bottom_item_ajustes -> {
                     goToActivity(this,SettingsActivity::class.java)
@@ -89,7 +97,24 @@ class ForosActivity : AppCompatActivity(), Utils{
         }
     }
 
+    /**
+     * Obtener el rol del usuario
+     *
+     */
+    private fun getDataUser() {
+        database.reference.child("Usuarios").child(auth.uid.toString())
+            .addValueEventListener(object :
+                ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    var user: User? = snapshot.getValue(User::class.java)
+                    rol = user!!.rol.toString()
+                }
 
+                override fun onCancelled(error: DatabaseError) {
+                    //TO DO("Not yet implemented")
+                }
+            })
+    }
     /**
      *
      * @param activity Activity

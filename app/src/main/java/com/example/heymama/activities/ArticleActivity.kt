@@ -16,6 +16,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.heymama.R
 import com.example.heymama.adapters.ForoAdapter
+import com.example.heymama.databinding.ActivityArticleBinding
 import com.example.heymama.models.Article
 import com.example.heymama.models.Post
 import com.google.android.material.navigation.NavigationView
@@ -40,7 +41,7 @@ class ArticleActivity : AppCompatActivity() {
 
     private lateinit var txt_title_article : TextView
     private lateinit var txt_description_article: TextView
-
+    private lateinit var binding: ActivityArticleBinding
     /**
      *
      * @param savedInstanceState Bundle
@@ -48,7 +49,8 @@ class ArticleActivity : AppCompatActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_article)
+        binding = ActivityArticleBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val intent = intent
         val bundle: Bundle? = intent.extras
@@ -64,9 +66,9 @@ class ArticleActivity : AppCompatActivity() {
         articlesArraylist = intent.getParcelableArrayListExtra<Article>("ArticlesArraylist")!!
 
 
-        txt_title_article = findViewById(R.id.txt_title_article)
+        txt_title_article = binding.txtTitleArticle
 
-        txt_description_article = findViewById(R.id.txt_description_article)
+        txt_description_article = binding.txtDescriptionArticle
         txt_description_article.text = description_article
 
 

@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
 import com.example.heymama.adapters.RespuestaConsultaAdapter
+import com.example.heymama.databinding.ActivityRespuestaConsultaBinding
 import com.example.heymama.models.Consulta
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
@@ -35,20 +36,22 @@ class RespuestaConsultaActivity : AppCompatActivity() {
     private lateinit var respuestasArraylist: ArrayList<Consulta>
     private lateinit var respuestaConsultaAdapter: RespuestaConsultaAdapter
 
+    private lateinit var binding: ActivityRespuestaConsultaBinding
     /**
      *
      * @param savedInstanceState Bundle
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_respuesta_consulta)
+        binding = ActivityRespuestaConsultaBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
-        recyclerView = findViewById(R.id.recyclerView_consultas_respuestas)
-        consultasArraylist = arrayListOf<Consulta>()
-        respuestasArraylist = arrayListOf<Consulta>()
+        recyclerView = binding.recyclerViewConsultasRespuestas
+        consultasArraylist = arrayListOf()
+        respuestasArraylist = arrayListOf()
         //respuestaConsultaAdapter = RespuestaConsultaAdapter(this,consultasArraylist,respuestasArraylist)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.setHasFixedSize(true)
@@ -62,8 +65,8 @@ class RespuestaConsultaActivity : AppCompatActivity() {
         }
 
 
-        txt_respuesta_consulta = findViewById(R.id.txt_respuesta_consulta)
-        var btn_send_respuesta_consulta : ImageView = findViewById(R.id.btn_send_respuesta_consulta)
+        txt_respuesta_consulta = binding.txtRespuestaConsulta
+        var btn_send_respuesta_consulta : ImageView = binding.btnSendRespuestaConsulta
         btn_send_respuesta_consulta.setOnClickListener {
             if(txt_respuesta_consulta.text.isEmpty()) {
                 Toast.makeText(this,"Introduce una respuesta",Toast.LENGTH_SHORT).show()

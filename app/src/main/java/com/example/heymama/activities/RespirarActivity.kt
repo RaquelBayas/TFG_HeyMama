@@ -11,8 +11,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.example.heymama.R
 import com.example.heymama.interfaces.Utils
+import com.example.heymama.models.User
 import com.github.florent37.viewanimator.AnimationListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class RespirarActivity : AppCompatActivity(), Utils {
 
@@ -21,10 +27,16 @@ class RespirarActivity : AppCompatActivity(), Utils {
     private lateinit var btn_parar_respiracion: Button
     private lateinit var animation: ViewAnimator
     private lateinit var bottomNavigationView: BottomNavigationView
+    private lateinit var rol: String
+    private lateinit var database: FirebaseDatabase
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_respirar)
+
+        database = FirebaseDatabase.getInstance()
+        auth = FirebaseAuth.getInstance()
 
         txt_exhalar = findViewById(R.id.txt_exhalar)
 
@@ -39,24 +51,38 @@ class RespirarActivity : AppCompatActivity(), Utils {
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
-            when(item.itemId) {
+            when (item.itemId) {
                 R.id.nav_bottom_item_home -> {
                     finish()
-                    goToActivity(this,HomeActivity::class.java)
-                    return@setOnNavigationItemSelectedListener true
+                    when (rol) {
+                        "Usuario" -> startActivity(Intent(this, HomeActivity::class.java))
+                        "Profesional" -> startActivity(Intent(this, HomeActivityProf::class.java))
+                        "Admin" -> startActivity(Intent(this, HomeActivityAdmin::class.java))
+                    }
                 }
-                R.id.nav_bottom_item_foros -> {goToActivity(this,ForosActivity::class.java)
-                    return@setOnNavigationItemSelectedListener true
-                }
-                R.id.nav_bottom_item_ajustes -> {
-                    goToActivity(this,SettingsActivity::class.java)
-                    return@setOnNavigationItemSelectedListener true
+                R.id.nav_bottom_item_foros -> {
+                    startActivity(Intent(this, ForosActivity::class.java))
                 }
             }
             return@setOnNavigationItemSelectedListener false
         }
     }
 
+    /**
+     * Obtener el rol del usuario
+     *
+     */
+    private fun getDataUser(){
+        database.reference.child("Usuarios").child(auth.uid.toString()).addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                var user : User? = snapshot.getValue(User::class.java)
+                rol = user!!.rol.toString()
+            }
+            override fun onCancelled(error: DatabaseError) {
+            //TO DO("Not yet implemented")
+            }
+        })
+    }
     /**
      * Este método sirve para empezar la animación de control de la respiración.
      *

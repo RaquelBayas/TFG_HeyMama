@@ -65,8 +65,7 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
         dataBaseReference.child(friendRequest).addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 holder.txt_nombre_solicitud.text = snapshot.child("name").value.toString()
-                holder.txt_user_solicitud.text = snapshot.child("user").value.toString()
-                Log.i("Adapter-3",snapshot.toString())
+                holder.txt_user_solicitud.text = snapshot.child("username").value.toString()
             }
             override fun onCancelled(error: DatabaseError) {
                 Log.i("ERROR","error-friend")
@@ -183,7 +182,7 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
                 documents.forEach { d ->
                     //NO FUNCIONA CON SOLICITUD DE PROFESIONAL PORQUE LOS ATRIBUTOS DEL REGISTRO ESTAN CON MINUSCULAS
                     if(d.data?.get("username").toString().equals(holder_username)) {
-                        var id = d.data?.get("ID").toString()
+                        var id = d.data?.get("id").toString()
                         searchFriendRequest(id,"aceptar")
                     }
                 }
@@ -210,8 +209,8 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
                 var documents = value.documents
                 documents.forEach { d ->
                     //NO FUNCIONA CON SOLICITUD DE PROFESIONAL PORQUE LOS ATRIBUTOS DEL REGISTRO ESTAN CON MINUSCULAS
-                    if(d.data?.get("Username").toString().equals(holder_username)) {
-                        var id = d.data?.get("ID").toString()
+                    if(d.data?.get("username").toString().equals(holder_username)) {
+                        var id = d.data?.get("id").toString()
                         searchFriendRequest(id,"rechazar")
                     }
                 }

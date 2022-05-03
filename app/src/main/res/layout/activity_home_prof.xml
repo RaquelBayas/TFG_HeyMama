@@ -88,7 +88,6 @@
                     android:id="@+id/imageView8"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:padding="10dp"
                     android:scaleType="centerCrop"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -134,7 +133,6 @@
                     android:id="@+id/imageView9"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:padding="10dp"
                     android:scaleType="centerCrop"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -158,15 +156,18 @@
                     app:layout_constraintVertical_bias="0.265" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/alegreya"
-                    android:textSize="20sp"
                     android:layout_margin="10dp"
+                    android:fontFamily="@font/alegreya"
+                    android:text="Incluye artículos de información"
+                    android:textSize="24sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.3"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/txt_informacion">
+                    app:layout_constraintTop_toBottomOf="@+id/txt_informacion"
+                    app:layout_constraintVertical_bias="0.22000003">
 
                 </TextView>
             </androidx.constraintlayout.widget.ConstraintLayout>

@@ -162,17 +162,25 @@ class Login : AppCompatActivity() {
                 for(s in snapshot.children) {
                     if (s.child("email").value.toString().equals(email)) {
                         rol = s.child("rol").value.toString()
-                        if (rol.equals("Profesional")) {
-                            val intent = Intent(applicationContext, HomeActivityProf::class.java)
-                            intent.putExtra("Rol","Profesional")
-                            startActivity(intent)
+                        when (rol) {
+                            "Profesional" -> {
+                                val intent = Intent(applicationContext, HomeActivityProf::class.java)
+                                intent.putExtra("Rol","Profesional")
+                                startActivity(intent)
 
-                            Log.d("TAG Profesional: ", rol)
-                        } else {
-                            val intent = Intent(applicationContext, HomeActivity::class.java)
-                            intent.putExtra("Rol","Usuario")
-                            startActivity(intent)
-                            Log.d("TAG Usuario: ", rol)
+                                Log.d("TAG Profesional: ", rol)
+                            }
+                            "Admin" -> {
+                                val intent = Intent(applicationContext, HomeActivityAdmin::class.java)
+                                intent.putExtra("Rol","Admin")
+                                startActivity(intent)
+                            }
+                            else -> {
+                                val intent = Intent(applicationContext, HomeActivity::class.java)
+                                intent.putExtra("Rol","Usuario")
+                                startActivity(intent)
+                                Log.d("TAG Usuario: ", rol)
+                            }
                         }
                     }
                 }

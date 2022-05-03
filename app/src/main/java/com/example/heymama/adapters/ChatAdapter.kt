@@ -5,37 +5,75 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.example.heymama.GlideApp
 import com.example.heymama.R
+import com.example.heymama.databinding.ItemChatLeftBinding
+import com.example.heymama.databinding.ItemChatRightBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.Comment
 import com.example.heymama.models.Message
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 
-class ChatAdapter(private val context: Context, private val chatArrayList: ArrayList<Message>) : RecyclerView.Adapter<ChatAdapter.HolderForo>() {
+class ChatAdapter(private val context: Context, private val chatArrayList: ArrayList<Message>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var firebaseUser: FirebaseUser ? = null
+    private var storageReference: StorageReference ? = null
 
     private val MESSAGE_LEFT_RECEIVER = 0
     private val MESSAGE_RIGHT_SENDER = 1
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatAdapter.HolderForo {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         // inflate layout
         return if (viewType == MESSAGE_RIGHT_SENDER) {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_chat_right,parent,false)
-            HolderForo(view)
+            SendHolder(view)
         } else {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_chat_left,parent,false)
-            HolderForo(view)
+            ReceiveHolder(view)
         }
     }
 
-    override fun onBindViewHolder(holder: ChatAdapter.HolderForo, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val message = chatArrayList[position]
-        holder.msg_chat.text = message.message
 
+        if(holder.javaClass == SendHolder::class.java) {
+            val viewHolder = holder as SendHolder
+            if(message.imageUrl != "") {
+                viewHolder.binding_send.txtMessageChat.visibility = View.GONE
+                viewHolder.binding_send.imgChat.visibility = View.VISIBLE
+                storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(message.imageUrl)
+
+                GlideApp.with(context)
+                    .load(storageReference)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(holder.itemView.findViewById(R.id.img_chat))
+            } else {
+                viewHolder.binding_send.txtMessageChat.text = message.message
+                viewHolder.binding_send.imgChat.visibility = View.GONE
+            }
+        } else {
+            val viewHolder = holder as ReceiveHolder
+            if(message.imageUrl != "") {
+                viewHolder.binding_receive.txtMessageChat.visibility = View.GONE
+                viewHolder.binding_receive.imgChat.visibility = View.VISIBLE
+                storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(message.imageUrl)
+
+                GlideApp.with(context)
+                    .load(storageReference)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(holder.itemView.findViewById(R.id.img_chat))
+            } else {
+                viewHolder.binding_receive.txtMessageChat.text = message.message
+                viewHolder.binding_receive.imgChat.visibility = View.GONE
+            }
+        }
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -51,8 +89,11 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
         return chatArrayList.size
     }
 
-    inner class HolderForo(itemView: View) : RecyclerView.ViewHolder(itemView){
-        var msg_chat: TextView = itemView.findViewById(R.id.txt_message_chat)
+    inner class SendHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var binding_send: ItemChatRightBinding = ItemChatRightBinding.bind(itemView)
+    }
+    inner class ReceiveHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+        var binding_receive: ItemChatLeftBinding = ItemChatLeftBinding.bind(itemView)
     }
 
 

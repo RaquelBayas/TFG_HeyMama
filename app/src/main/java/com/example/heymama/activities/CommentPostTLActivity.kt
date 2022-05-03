@@ -12,6 +12,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.heymama.GlideApp
 import com.example.heymama.R
 import com.example.heymama.adapters.CommentsPostTLAdapter
+import com.example.heymama.databinding.ActivityCommentPostTlactivityBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.PostTimeline
 import com.example.heymama.models.User
@@ -43,7 +44,10 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     private lateinit var idpost: String
     private lateinit var iduser: String
+    private lateinit var photo_comment_0: CircleImageView
+    private lateinit var photo_comment: CircleImageView
 
+    private lateinit var binding: ActivityCommentPostTlactivityBinding
     /**
      *
      * @param savedInstanceState Bundle
@@ -51,13 +55,13 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_comment_post_tlactivity)
+        binding = ActivityCommentPostTlactivityBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val intent = intent
         idpost = intent.getStringExtra("idpost").toString()
         iduser = intent.getStringExtra("iduser").toString()
-        Log.i("iduser-0: ",iduser + " - idpost: "+idpost)
-        //Log.i("POSTTL",posttl)
+
         //Instancias para la base de datos y la autenticación
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         auth = FirebaseAuth.getInstance()
@@ -80,19 +84,18 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
 
         storageReference = firebaseStore.getReference("/Usuarios/$iduser/images/perfil")
-        Log.i("iduser_photo",storageReference.toString())
-        val photo_comment_0 : CircleImageView = findViewById(R.id.img_comment_posttl_0)
+
+        photo_comment_0 = binding.imgCommentPosttl0
         getPictures(photo_comment_0,storageReference)
 
         storageReference = firebaseStore.getReference("/Usuarios/"+auth.uid+"/images/perfil")
-        Log.i("iduser_photo-2",storageReference.toString())
-        val photo_comment : CircleImageView = findViewById(R.id.img_comment_posttl_1)
+
+        photo_comment = binding.imgCommentPosttl1
         getPictures(photo_comment,storageReference)
 
         getPostTLInfo(intent)
 
-        val btn_send_posttl: Button = findViewById(R.id.btn_send_posttl)
-        btn_send_posttl.setOnClickListener{
+        binding.btnSendPosttl.setOnClickListener{
             getUserData(dataBaseReference,auth.uid.toString())
             //add_comment_to_posttl(auth.uid.toString(),idpost)
         }
@@ -145,7 +148,6 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
      * @param user User
      */
     private fun add_comment_to_posttl(uid:String, edt_comment:String, user:User/*iduser:String*/) {
-
         var doctlfb = firestore.collection("Timeline").document(idpost).collection("Replies").document()
         var doc_id = doctlfb.id
 
@@ -191,9 +193,7 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
      *
      */
     private fun getPostTLInfo(intent: Intent) {
-        var name : TextView = findViewById(R.id.txt_name_comment_posttl)
-        name.text = intent.getStringExtra("name")
-        var comment : TextView = findViewById(R.id.txt_comment_posttl)
-        comment.text = intent.getStringExtra("comment")
+        binding.txtNameCommentPosttl.text = intent.getStringExtra("name")
+        binding.txtCommentPosttl.text = intent.getStringExtra("comment")
     }
 }

@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.*
 import com.example.heymama.*
+import com.example.heymama.databinding.ActivityContactoBinding
 import com.example.heymama.models.Consulta
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -16,12 +17,13 @@ import java.util.*
 class ContactoActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
-    private lateinit var bottomNavigationView: BottomNavigationView
+
     private lateinit var spinnerConsultas: Spinner
     private lateinit var temas: Array<String>
 
     private lateinit var btn_send_consulta: Button
     private lateinit var btn_mis_consultas: Button
+    private lateinit var binding: ActivityContactoBinding
 
     /**
      *
@@ -30,12 +32,13 @@ class ContactoActivity : AppCompatActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_contacto)
+        binding = ActivityContactoBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance() //CLOUD STORAGE
-        bottomNavigationView = findViewById(R.id.bottomNavigationView)
-        bottomNavigationView.setOnNavigationItemReselectedListener { item ->
+
+        binding.bottomNavigationView.setOnNavigationItemReselectedListener { item ->
             when(item.itemId) {
                 R.id.nav_bottom_item_home -> finish()
                 R.id.nav_item_respirar -> goToActivity(this,RespirarActivity::class.java)
@@ -47,13 +50,11 @@ class ContactoActivity : AppCompatActivity() {
         val adapter = ArrayAdapter(this,R.layout.spinner_item,temas)
         spinnerConsultas.adapter = adapter
 
-        btn_send_consulta = findViewById(R.id.btn_send_consulta)
-        btn_send_consulta.setOnClickListener {
+        binding.btnSendConsulta.setOnClickListener {
             sendConsulta()
         }
 
-        btn_mis_consultas = findViewById(R.id.btn_mis_consultas)
-        btn_mis_consultas.setOnClickListener {
+        binding.btnMisConsultas.setOnClickListener {
             misConsultas()
         }
 
@@ -70,21 +71,11 @@ class ContactoActivity : AppCompatActivity() {
      *
      */
     private fun sendConsulta() {
-        val spinnerConsultas : Spinner = findViewById(R.id.spinnerConsultas)
-        var txt_consulta : EditText = findViewById(R.id.editText_consulta)
+        val spinnerConsultas : Spinner = binding.spinnerConsultas
+        var txt_consulta : EditText = binding.editTextConsulta
         var txt_tema : String = spinnerConsultas.selectedItem.toString()
         var user : String = auth.uid.toString()
         var ref = firestore.collection("Consultas").document(txt_tema).collection("Consultas").document()
-
-
-        //.collection(auth.uid.toString()).document()
-        /*var refUser = firestore.collection("Usuarios").document(auth.uid.toString()).get()
-        refUser.addOnSuccessListener { document ->
-            if (document != null) {
-                user = document.toObject(User::class.java)
-            }
-        }*/
-
 
         var consulta = Consulta(ref.id,user,txt_tema,txt_consulta.text.toString(),Date())
 
@@ -93,7 +84,6 @@ class ContactoActivity : AppCompatActivity() {
             Toast.makeText(this,"Consulta enviada correctamente",Toast.LENGTH_SHORT).show()
             txt_consulta.setText("")
         }
-
     }
 
     /**

@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
 import com.example.heymama.adapters.ListChatItemAdapter
+import com.example.heymama.databinding.ActivityListChatsBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.ListChatItem
 import com.example.heymama.models.Message
@@ -35,10 +36,12 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private lateinit var receiver_name: String
     private lateinit var receiver_username: String
     private lateinit var idUser: String
+    private lateinit var binding: ActivityListChatsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_list_chats)
+        binding = ActivityListChatsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
@@ -46,7 +49,7 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").reference
 
-        recyclerViewChats = findViewById(R.id.recyclerView_listChats)
+        recyclerViewChats = binding.recyclerViewListChats
         recyclerViewChats.layoutManager = LinearLayoutManager(this)
         recyclerViewChats.setHasFixedSize(true)
 
@@ -70,7 +73,7 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
                         if(datasn.key.equals("LastMessage")) {
                             var msg: Message? = datasn.getValue(Message::class.java)
                             var userUid = msg!!.receiverUID
-                            if(userUid.equals(auth.uid.toString())) {
+                            if(userUid == auth.uid.toString()) {
                                 userUid = msg!!.senderUID
                             }
                             getUserData(userUid, msg, datasn)
@@ -86,6 +89,10 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
     }
 
     /**
+     *
+     * @param userUid String
+     * @param msg Message
+     * @param datasn DataSnapshot
      *
      */
     private fun getUserData(userUid: String, msg: Message, datasn: DataSnapshot) {
