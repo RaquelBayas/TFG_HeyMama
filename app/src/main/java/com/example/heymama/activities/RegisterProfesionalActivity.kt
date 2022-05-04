@@ -120,11 +120,12 @@ class RegisterProfesionalActivity : AppCompatActivity() {
                             "username" to user_prof,
                             "email" to email,
                             "rol" to "Profesional",
+                            "status" to "offline",
                             "bio" to "",
                             "profilePhoto" to ""
                         )
 
-                        val usuario = User(uid,nombre_prof,user_prof,email,"Profesional","","")
+                        val usuario = User(uid,nombre_prof,user_prof,email,"Profesional","offline","","")
                         firebaseStore.collection("Usuarios").document(uid!!).set(data)
                         firebaseStore.collection("Usuarios").document(uid!!).set(usuario)
 

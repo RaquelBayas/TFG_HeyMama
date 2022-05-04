@@ -164,7 +164,7 @@
                     android:layout_gravity="bottom"
                     android:background="@color/white"
                     app:labelVisibilityMode="unlabeled"
-                    app:menu="@menu/nav_bar_bottom_menu">
+                    app:menu="@menu/nav_bar_bottom_menu_admin">
 
                     <FrameLayout
                         android:layout_width="match_parent"

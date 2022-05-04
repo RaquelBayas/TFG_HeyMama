@@ -56,7 +56,6 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
         bottomNavigationView.setOnNavigationItemReselectedListener { item ->
             when(item.itemId) {
                 R.id.nav_bottom_item_foros -> startActivity(Intent(this,ForosActivity::class.java))
-                R.id.nav_bottom_item_respirar ->  startActivity(Intent(this, RespirarActivity::class.java))
                 R.id.nav_bottom_item_ajustes ->  startActivity(Intent(this,SettingsActivity::class.java))
             }
         }

@@ -129,11 +129,12 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 val username = it.child("user").value.toString()
                 val bio = it.child("bio").value.toString()
                 val rol = "Usuario"
+                val status = it.child("status").value.toString()
                 val email = it.child("Email").value.toString()
                 val profilePhoto = "Usuarios/"+uid+"/images/perfil"
 
                 val userdata : User? = User(
-                    uid, name, username, email, rol, bio,
+                    uid, name, username, email, rol, bio,status,
                     profilePhoto
                 )
                 add_comment_to_posttl(uid,edt_comment.text.toString(),userdata!!)

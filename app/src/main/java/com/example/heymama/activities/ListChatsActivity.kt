@@ -99,11 +99,14 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
         chatsArraylist.clear()
         var ref = firestore.collection("Usuarios").document(userUid)
         ref.addSnapshotListener { value, error ->
+
             idUser = value!!.data!!.get("ID").toString()
             receiver_name = value!!.data!!.get("name").toString()
             receiver_username = value!!.data!!.get("username").toString()
+            var status = value!!.data!!.get("status").toString()
 
-            var chatItem = ListChatItem(datasn.key.toString(), idUser, receiver_name, receiver_username, msg.message, Date())
+            var chatItem = ListChatItem(datasn.key.toString(), idUser, receiver_name, receiver_username, msg.message, status, Date())
+            Log.i("chatitem-status",status)
             chatsArraylist.clear()
             chatsArraylist.add(chatItem)
 
@@ -116,6 +119,10 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     Toast.makeText(this@ListChatsActivity,"Item number: $position", Toast.LENGTH_SHORT).show()
                 }
             })
+        }
+
+        ref.get().addOnSuccessListener {
+
         }
     }
 

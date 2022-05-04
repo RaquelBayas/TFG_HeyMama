@@ -63,10 +63,8 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
         storageReference = firebaseStore.reference
-        //storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").getReference("Usuarios/"+auth.currentUser?.uid+"/images/perfil")
 
         firestore = FirebaseFirestore.getInstance()
-
 
         // RECYCLERVIEW TIMELINE
         recyclerViewTimeline = binding.recyclerViewPosts
@@ -79,9 +77,7 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
         recyclerViewTimeline.setHasFixedSize(true)
         postsTLArraylist = arrayListOf()
 
-
         binding.btnAddPostTl.setOnClickListener {
-
             if(!findViewById<EditText>(R.id.edt_post_tl).text.isEmpty()) {
                 edt_post_tl = findViewById<EditText>(R.id.edt_post_tl).text.toString()
             }
@@ -106,11 +102,12 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
             val username = value?.data?.get("username").toString()
             val bio = value?.data?.get("bio").toString()
             val rol = value?.data?.get("rol").toString()
+            val status = value?.data?.get("status").toString()
             val email = value?.data?.get("email").toString()
 
             val profilePhoto = "Usuarios/"+uid+"/images/perfil"//value?.data?.get("")
 
-            val userdata: User? = User(uid,name,username,email,rol,bio,profilePhoto)
+            val userdata: User? = User(uid,name,username,email,rol,status,bio,profilePhoto)
             add_comment_tl(edt_comment,uid)
         }
         /*databaseReference.child(uid).get().addOnSuccessListener {

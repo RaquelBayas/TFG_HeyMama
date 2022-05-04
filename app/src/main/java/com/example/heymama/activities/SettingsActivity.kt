@@ -29,7 +29,6 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var database: FirebaseDatabase
     private lateinit var firestore: FirebaseFirestore
 
-    private lateinit var dataBaseReference: DatabaseReference
     private lateinit var user: FirebaseUser
     private lateinit var uid: String
     private lateinit var rol: String
@@ -53,17 +52,14 @@ class SettingsActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
-        dataBaseReference = database.getReference("Usuarios")
         user = auth.currentUser!!
         uid = auth.uid.toString()
 
         getDataUser()
 
-
         binding.settingsName.setOnClickListener {
             change_username()
         }
-
 
         txt_settings_email = findViewById(R.id.settings_email)
         txt_settings_email.text = auth.currentUser!!.email.toString()
@@ -83,10 +79,6 @@ class SettingsActivity : AppCompatActivity() {
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when(item.itemId) {
-                R.id.nav_bottom_item_respirar -> {
-                    startActivity(Intent(this,RespirarActivity::class.java))
-                    return@setOnNavigationItemSelectedListener true
-                }
                 R.id.nav_bottom_item_foros -> {
                     startActivity(Intent(this,ForosActivity::class.java))
                     return@setOnNavigationItemSelectedListener true
@@ -123,7 +115,6 @@ class SettingsActivity : AppCompatActivity() {
                 //TO DO("Not yet implemented")
             }
         })
-
     }
 
 

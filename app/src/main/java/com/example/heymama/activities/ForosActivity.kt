@@ -77,10 +77,7 @@ class ForosActivity : AppCompatActivity(), Utils{
 
         binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when(item.itemId) {
-                R.id.nav_bottom_item_respirar -> {
-                    goToActivity(this,RespirarActivity::class.java)
-                    return@setOnNavigationItemSelectedListener true
-                }
+
                 R.id.nav_bottom_item_home -> {
                     when (rol) {
                         "Usuario" -> startActivity(Intent(this, HomeActivity::class.java))

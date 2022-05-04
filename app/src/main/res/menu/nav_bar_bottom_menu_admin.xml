@@ -4,17 +4,17 @@
     <group>
         <item
             android:title="@string/nav_item_home"
-            android:id="@+id/nav_bottom_admin_item_home"
+            android:id="@+id/nav_bottom_item_home"
             android:icon="@drawable/casa"/>
 
         <item
-            android:title="@string/nav_item_home"
-            android:id="@+id/nav_bottom_admin_item_foros"
+            android:title="@string/nav_item_foros"
+            android:id="@+id/nav_bottom_item_foros"
             android:icon="@drawable/lines"/>
 
         <item
-            android:title="@string/nav_item_home"
-            android:id="@+id/nav_bottom_admin_item_ajustes"
+            android:title="@string/nav_item_ajustes"
+            android:id="@+id/nav_bottom_item_ajustes"
             android:icon="@drawable/settings"/>
     </group>
 </menu>

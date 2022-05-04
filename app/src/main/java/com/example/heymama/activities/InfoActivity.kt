@@ -87,10 +87,6 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     startActivity(Intent(this,ForosActivity::class.java))
                     return@setOnNavigationItemSelectedListener true
                 }
-                R.id.nav_bottom_item_respirar -> {
-                    startActivity(Intent(this, RespirarActivity::class.java))
-                    return@setOnNavigationItemSelectedListener true
-                }
                 R.id.nav_bottom_item_ajustes -> {
                     startActivity(Intent(this,SettingsActivity::class.java))
                     return@setOnNavigationItemSelectedListener true

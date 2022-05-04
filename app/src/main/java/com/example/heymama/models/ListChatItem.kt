@@ -8,6 +8,7 @@ data class ListChatItem(
     var name: String = "",
     var username: String = "",
     var lastMessage: String = "",
+    var status: String,
     var timestamp: Date? = null
 
 ) {

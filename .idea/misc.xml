@@ -16,6 +16,8 @@
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2703125" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_mic.xml" value="0.1707236842105263" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_more.xml" value="0.22763157894736843" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_offline.xml" value="0.1707236842105263" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_online.xml" value="0.1707236842105263" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_send.xml" value="0.22179487179487178" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_send_tl.xml" value="0.24027777777777778" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/item_chat_left.xml" value="0.22179487179487178" />
@@ -48,6 +50,7 @@
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_info.xml" value="0.152" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_layout_article.xml" value="0.12280701754385964" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_list_chats.xml" value="0.2" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_lista_usuarios.xml" value="0.264" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_login.xml" value="0.264" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_main.xml" value="0.264" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_mis_consultas.xml" value="0.264" />
@@ -84,7 +87,7 @@
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/fragment_timeline.xml" value="0.16799999999999998" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/item_chat_left.xml" value="0.2" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/item_chat_right.xml" value="0.264" />
-        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/list_chats_item.xml" value="0.536" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/list_chats_item.xml" value="0.3432624113475177" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/nav_header_menu.xml" value="0.1" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/nav_menu.xml" value="0.2" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/posts_timeline.xml" value="0.21403508771929824" />

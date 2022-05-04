@@ -98,10 +98,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when(item.itemId) {
-                R.id.nav_bottom_item_respirar -> {
-                    goToActivity(this,RespirarActivity::class.java)
-                    return@setOnNavigationItemSelectedListener true
-                }
                 R.id.nav_bottom_item_foros -> {goToActivity(this,ForosActivity::class.java)
                     return@setOnNavigationItemSelectedListener true
                 }

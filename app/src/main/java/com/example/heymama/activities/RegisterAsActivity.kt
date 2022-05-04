@@ -15,7 +15,7 @@ class RegisterAsActivity : AppCompatActivity() {
         btnUsuario.setOnClickListener {
             // Do something in response to button click
             val intent = Intent(this, RegisterActivity::class.java)
-            intent.putExtra("Usuario","Usuario")
+            intent.putExtra("Rol","Usuario")
 
             startActivity(intent)
         }
@@ -24,7 +24,7 @@ class RegisterAsActivity : AppCompatActivity() {
         btnProfesional.setOnClickListener {
             // Do something in response to button click
             val intent = Intent(this, RegisterProfesionalActivity::class.java)
-            intent.putExtra("Profesional","Profesional")
+            intent.putExtra("Rol","Profesional")
             startActivity(intent)
         }
     }

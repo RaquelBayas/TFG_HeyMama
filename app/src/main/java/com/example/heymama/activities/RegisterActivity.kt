@@ -29,6 +29,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var txt_user: EditText
     private lateinit var txt_name: EditText
     private lateinit var btn_registro: Button
+    private lateinit var rol: String
 
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
@@ -44,7 +45,7 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(R.layout.activity_register)
 
         val bundle: Bundle? = intent.extras
-        val rol: String? = intent.getStringExtra("Usuario")
+        rol = intent.getStringExtra("Rol").toString()
 
         var actionBar: ActionBar? = supportActionBar
         actionBar?.setTitle("Create account")
@@ -112,7 +113,7 @@ class RegisterActivity : AppCompatActivity() {
                         userDB.child("name").setValue(name)
                         userDB.child("username").setValue(username)
                         userDB.child("email").setValue(email)
-                        userDB.child("rol").setValue("Usuario")
+                        userDB.child("rol").setValue(rol)
                         userDB.child("bio").setValue("")
                         userDB.child("profilePhoto").setValue("")
 
@@ -121,7 +122,7 @@ class RegisterActivity : AppCompatActivity() {
                             "name" to name,
                             "username" to username,
                             "email" to email,
-                            "rol" to "Usuario",
+                            "rol" to rol,
                             "bio" to "",
                             "profilePhoto" to ""
                         )
@@ -172,10 +173,10 @@ class RegisterActivity : AppCompatActivity() {
                 } else {
                     Toast.makeText(this, "Oh, algo ha ido mal.", Toast.LENGTH_SHORT).show()
                 }
+                finish()
 
-                val intent = Intent(this, MainActivity::class.java)
                 //intent.putExtra("Usuario","Usuario")
-                startActivity(intent)
+                startActivity(Intent(this, MainActivity::class.java))
             }
         Toast.makeText(this, "VerifyEmail 2",Toast.LENGTH_SHORT).show()
     }

@@ -14,13 +14,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
 import com.example.heymama.adapters.CommentsForoAdapter
+import com.example.heymama.databinding.ActivityTemaForoBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.interfaces.Utils
 import com.example.heymama.models.Comment
+import com.example.heymama.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.StorageReference
@@ -30,7 +31,7 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
 
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
-    private lateinit var dataBase: FirebaseDatabase
+    private lateinit var database: FirebaseDatabase
     private lateinit var firestore: FirebaseFirestore
 
     private lateinit var recyclerViewComments: RecyclerView
@@ -43,6 +44,11 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
     private lateinit var foroName: String
     private lateinit var btn_menu_foro: Button
     private lateinit var id: String
+    private lateinit var userID: String
+    private lateinit var rol: String
+    private lateinit var uid: String
+    private lateinit var user: FirebaseUser
+    private lateinit var binding: ActivityTemaForoBinding
 
     /**
      *
@@ -50,18 +56,21 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_tema_foro)
+        binding = ActivityTemaForoBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         //Instancias para la base de datos y la autenticación
-        dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
+        database = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         auth = FirebaseAuth.getInstance()
         // Usuario
-        val user: FirebaseUser? = auth.currentUser
+        user = auth.currentUser!!
+        uid = auth.uid.toString()
 
         val intent = intent
         val bundle: Bundle? = intent.extras
         id_tema = intent.getStringExtra("ID_Tema").toString()
         id = intent.getStringExtra("ID").toString()
+        userID = intent.getStringExtra("UserID").toString()
         title_tema = intent.getStringExtra("Title_Tema").toString()
         description_tema = intent.getStringExtra("Description_Tema").toString()
         foroName = intent.getStringExtra("ForoName").toString()
@@ -83,15 +92,42 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
         }
 
         getComments(foroName,id)
-
-        btn_menu_foro = findViewById(R.id.btn_menu_foro)
-        btn_menu_foro.visibility = View.VISIBLE
-        btn_menu_foro.setOnClickListener {
-            menuForo()
-        }
-
+        getDataUser()
+        //Log.i("temaforoact",rol)
     }
 
+    private fun btnMenuForo() {
+        btn_menu_foro = findViewById(R.id.btn_menu_foro)
+        if((userID == auth.uid.toString()) || (rol == "Admin") ) {
+            btn_menu_foro.visibility = View.VISIBLE
+            btn_menu_foro.setOnClickListener {
+                menuForo()
+            }
+        }
+    }
+    /**
+     * Obtener el rol del usuario y el nombre
+     *
+     */
+    private fun getDataUser(){
+        database.reference.child("Usuarios").child(uid).addValueEventListener(object:
+            ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                var user : User? = snapshot.getValue(User::class.java)
+                rol = user!!.rol.toString()
+
+                btnMenuForo()
+            }
+            override fun onCancelled(error: DatabaseError) {
+                //TO DO("Not yet implemented")
+            }
+        })
+        //btnMenuForo()
+    }
+
+    /**
+     *
+     */
     private fun menuForo() {
         val popupMenu: PopupMenu = PopupMenu(this,btn_menu_foro)
         popupMenu.menuInflater.inflate(R.menu.article_menu,popupMenu.menu)

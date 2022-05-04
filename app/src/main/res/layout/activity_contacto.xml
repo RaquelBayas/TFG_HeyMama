@@ -176,7 +176,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:menu="@menu/nav_bar_bottom_menu">
+        app:menu="@menu/nav_bar_bottom_menu_admin">
 
         <FrameLayout
             android:layout_width="match_parent"

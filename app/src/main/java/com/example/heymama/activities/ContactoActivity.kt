@@ -41,7 +41,14 @@ class ContactoActivity : AppCompatActivity() {
         binding.bottomNavigationView.setOnNavigationItemReselectedListener { item ->
             when(item.itemId) {
                 R.id.nav_bottom_item_home -> finish()
-                R.id.nav_item_respirar -> goToActivity(this,RespirarActivity::class.java)
+                R.id.nav_bottom_item_foros -> {
+                    finish()
+                    startActivity(Intent(this,ForosActivity::class.java))
+                }
+                R.id.nav_bottom_item_ajustes -> {
+                    finish()
+                    startActivity(Intent(this,SettingsActivity::class.java))
+                }
             }
         }
 

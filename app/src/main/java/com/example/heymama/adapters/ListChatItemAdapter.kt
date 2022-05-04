@@ -7,10 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.PopupMenu
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
 import com.example.heymama.Utils
@@ -75,6 +72,12 @@ class ListChatItemAdapter(private val context: Context, private val listChatItem
                 }
 
             txt_msg_chat_item.text = listChatItemsList[position].lastMessage
+            var status = listChatItemsList[position].status
+            if(status == "online"){
+                img_chat_status.setImageResource(R.drawable.ic_online)
+            } else {
+                img_chat_status.setImageResource(R.drawable.ic_offline)
+            }
         }
 
         menuItem(holder)
@@ -119,6 +122,7 @@ class ListChatItemAdapter(private val context: Context, private val listChatItem
         var txt_name_chat_item: TextView = itemView.findViewById(R.id.txt_name_chat_item)
         var txt_username_chat_item: TextView = itemView.findViewById(R.id.txt_username_chat_item)
         var img_chat_item: CircleImageView = itemView.findViewById(R.id.img_chat_item)
+        var img_chat_status: ImageView = itemView.findViewById(R.id.img_chat_status)
         var txt_msg_chat_item: TextView = itemView.findViewById(R.id.txt_msg_chat_item)
         var btn_menu_list_chats_item: Button = itemView.findViewById(R.id.btn_menu_list_chats_item)
 

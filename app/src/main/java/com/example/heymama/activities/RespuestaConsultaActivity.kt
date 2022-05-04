@@ -82,7 +82,7 @@ class RespuestaConsultaActivity : AppCompatActivity() {
         respuestasArraylist.clear()
         firestore.collection("Consultas").document(tema_consulta).collection("Consultas")
             .document(id_consulta).addSnapshotListener { value, error ->
-                var consulta = value!!.data!!.get("consulta")
+                var consulta = value!!.data!!["consulta"]
                 var consulta2 = value!!.toObject(Consulta::class.java)
                 consultasArraylist.add(consulta2!!)
                 Log.i("consultarespuesta",consulta2.toString())

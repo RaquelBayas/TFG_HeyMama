@@ -128,11 +128,12 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
         Toast.makeText(this,"Has seleccionado el tema # ${position+1}",Toast.LENGTH_SHORT).show()
         val intent = Intent(this, TemaForoActivity::class.java)
         //intent.putExtra("ForoName",foroName)
-        intent.putExtra("ID_Tema",idTemasArrayList.get(position))
-        intent.putExtra("ID",temasArraylist.get(position).id)
+        intent.putExtra("ID_Tema", idTemasArrayList[position])
+        intent.putExtra("ID", temasArraylist[position].id)
+        intent.putExtra("UserID",temasArraylist[position].userID)
         intent.putExtra("ForoName",foroName)
-        intent.putExtra("Title_Tema",temasArraylist.get(position).title)
-        intent.putExtra("Description_Tema",temasArraylist.get(position).post)
+        intent.putExtra("Title_Tema", temasArraylist[position].title)
+        intent.putExtra("Description_Tema", temasArraylist[position].post)
         startActivity(intent)
     }
 

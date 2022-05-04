@@ -60,7 +60,6 @@ class FriendsAdapter(private val context: Context, private val friendsList: Arra
         dataBaseReference = dataBase.getReference("Usuarios")
 
         getFriends(holder,position)
-
     }
 
     private fun getFriends(holder:HolderForo,position:Int) {
