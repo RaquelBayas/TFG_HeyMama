@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.heymama.GlideApp
 import com.example.heymama.R
+import com.example.heymama.Utils
 import com.example.heymama.adapters.ChatAdapter
 import com.example.heymama.databinding.ActivityChatBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
@@ -306,5 +307,15 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .skipMemoryCache(true)
             .into(image)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Utils.updateStatus("offline")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Utils.updateStatus("online")
     }
 }

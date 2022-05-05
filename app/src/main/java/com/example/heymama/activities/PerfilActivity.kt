@@ -61,7 +61,6 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
     private lateinit var postsTLArraylist: ArrayList<PostTimeline>
     private lateinit var adapterPostsTL: PostTimelineAdapter
 
-
     /**
      * @constructor
      * @param savedInstanceState Bundle
@@ -179,12 +178,14 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
     private fun setUpTabs() {
         val tabsAdapter = ViewPagerAdapter(supportFragmentManager)
         val timelineFragment = TimelineFragment()
+        val likesFragment = LikesFragment()
         val bundle = Bundle()
         bundle.putString("uid",uid)
         timelineFragment.arguments = bundle
+        likesFragment.arguments = bundle
 
         tabsAdapter.addFragment(timelineFragment,"Timeline")
-        tabsAdapter.addFragment(LikesFragment(),"Likes")
+        tabsAdapter.addFragment(likesFragment,"Likes")
         binding.viewPagerTimeline.adapter = tabsAdapter
         binding.tabs.setupWithViewPager(binding.viewPagerTimeline)
 

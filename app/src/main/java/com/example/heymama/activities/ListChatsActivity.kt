@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
+import com.example.heymama.Utils
 import com.example.heymama.adapters.ListChatItemAdapter
 import com.example.heymama.databinding.ActivityListChatsBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
@@ -22,7 +23,6 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
-
     private lateinit var auth: FirebaseAuth
     private lateinit var firebaseStorage: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
@@ -126,4 +126,13 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        Utils.updateStatus("offline")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Utils.updateStatus("online")
+    }
 }

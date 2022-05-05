@@ -1,5 +1,6 @@
 package com.example.heymama.activities
 
+import PreferencesManager
 import android.content.Intent
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
@@ -48,10 +49,11 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var textView: TextView
     private lateinit var email: String
     private lateinit var name: String
-
+    private lateinit var viewNav: View
+    private lateinit var txt_name_nav_header: TextView
     private lateinit var drawer: DrawerLayout
     private lateinit var toggle: ActionBarDrawerToggle
-
+    private lateinit var prefs: PreferencesManager
     /**
      *
      * @constructor
@@ -60,16 +62,11 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        prefs = PreferencesManager(this)
         setContentView(R.layout.activity_home)
 
         auth = FirebaseAuth.getInstance()
-
         firestore = FirebaseFirestore.getInstance()
-
-        val intent = intent
-        val rol = intent.getStringExtra("Rol")
-        //Toast.makeText(this,rol,Toast.LENGTH_SHORT).show()
-
 
         //Instancias para la base de datos y la autenticación
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
@@ -110,7 +107,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         drawer = findViewById(R.id.drawer_layout)
-        var viewNav : View = navigationView.getHeaderView(0)
+        viewNav = navigationView.getHeaderView(0)
         toggle = object : ActionBarDrawerToggle(this,drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close){
 
             override fun onDrawerStateChanged(newState: Int) {
@@ -126,7 +123,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
         drawer.addDrawerListener(toggle)
-
 
         /*user?.let {
             for(profile in it.providerData) {
@@ -194,6 +190,8 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         firestore.collection("Usuarios").whereEqualTo("email",
             user!!.email).addSnapshotListener { value, error ->
             textView.text = "Bienvenida " + value!!.documents.get(0).get("name").toString()
+            txt_name_nav_header = viewNav.findViewById(R.id.txt_name_nav_header)
+            txt_name_nav_header.text = value!!.documents.get(0).get("name").toString()
         }
 
     }
@@ -214,7 +212,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     /**
-     *
+     * Menú lateral
      * @param item MenuItem
      *
      */
@@ -230,11 +228,21 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_item_messages -> goToActivity(this,TimelineActivity::class.java)
             R.id.nav_item_solicitudes -> goToActivity(this,SolicitudesActivity::class.java)
             R.id.nav_item_ajustes -> goToActivity(this,SettingsActivity::class.java)
+            R.id.nav_item_logout -> logOut()
         }
         drawer.closeDrawer(GravityCompat.START)
         return true
     }
 
+    private fun logOut() {
+        prefs.editor?.clear()
+        prefs.editor?.commit()
+
+        val intent = Intent(this, Login::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+    }
     /**
      *
      * @param savedInstanceState Bundle

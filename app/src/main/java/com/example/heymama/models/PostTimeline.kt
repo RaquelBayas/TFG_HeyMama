@@ -14,7 +14,6 @@ data class PostTimeline(
     var timestamp: Date? = null,
     val comment: String? = "",
     var commentCount: Int = 0,
-    var rtCount: Int = 0,
     var likeCount: Int = 0
 ) : Parcelable, Comparable<PostTimeline> {
 
@@ -30,7 +29,6 @@ data class PostTimeline(
         parcel.readValue(Date::class.java.classLoader) as Date,
         parcel.readString(),
         parcel.readInt(),
-        parcel.readInt(),
         parcel.readInt()
     )
 
@@ -39,7 +37,6 @@ data class PostTimeline(
         parcel.writeString(userId)
         parcel.writeString(comment)
         parcel.writeInt(commentCount)
-        parcel.writeInt(rtCount)
         parcel.writeInt(likeCount)
     }
 

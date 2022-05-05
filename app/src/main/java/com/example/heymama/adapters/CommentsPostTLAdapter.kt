@@ -93,7 +93,7 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
             }
         }
 
-        if(post_tl.userId!!.equals(auth.uid)) {
+        if(post_tl.userId!! == auth.uid) {
             holder.btn_comment_menu_post_tl.visibility = View.VISIBLE
             holder.btn_comment_menu_post_tl.setOnClickListener {
                 val popupMenu: PopupMenu = PopupMenu(context, holder.btn_comment_menu_post_tl)

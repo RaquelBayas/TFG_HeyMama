@@ -85,6 +85,7 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     }
 
+
     private fun getDataUser(){
         database.reference.child("Usuarios").child(auth.uid.toString()).addValueEventListener(object: ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {

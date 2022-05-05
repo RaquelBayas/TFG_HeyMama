@@ -101,9 +101,13 @@ class ListChatItemAdapter(private val context: Context, private val listChatItem
         }
     }
 
-
+    /**
+     * Este método permite eliminar un chat
+     *
+     * @param idUser String
+     *
+     */
     private fun deleteChat(idUser: String) {
-
         dataBase.reference.child("Chats").child(auth.uid.toString()).child("Messages").child(idUser).removeValue().addOnSuccessListener {
             Toast.makeText(context,"Chat eliminado",Toast.LENGTH_SHORT).show()
         }.addOnFailureListener {
@@ -112,12 +116,16 @@ class ListChatItemAdapter(private val context: Context, private val listChatItem
 
     }
 
+    /**
+     *
+     */
     override fun getItemCount(): Int {
         return listChatItemsList.size
     }
 
-
-
+    /**
+     *
+     */
     inner class ChatItemForo(itemView: View, listener:ItemRecyclerViewListener) : RecyclerView.ViewHolder(itemView) {
         var txt_name_chat_item: TextView = itemView.findViewById(R.id.txt_name_chat_item)
         var txt_username_chat_item: TextView = itemView.findViewById(R.id.txt_username_chat_item)

@@ -19,7 +19,9 @@ import com.example.heymama.models.PostTimeline
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 import com.google.firebase.firestore.*
+import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.util.*
@@ -30,6 +32,7 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
 ) : RecyclerView.Adapter<PostTimelineAdapter.Holder>() {
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
+    private lateinit var database: FirebaseDatabase
     private lateinit var firebaseStore: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageReference: StorageReference
@@ -66,6 +69,7 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: PostTimelineAdapter.Holder, position: Int) {
         auth = FirebaseAuth.getInstance()
+        database = FirebaseDatabase.getInstance()
         firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
         storageReference = firebaseStore.reference
 
@@ -176,6 +180,41 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
                         }
                     }
             }
+            var likesReference =  firestore.collection("Likes").document(auth.uid.toString()).collection("Likes").document(post_tl.postId.toString())
+            likesReference.get().addOnCompleteListener {
+                    if(!it.result.exists()) {
+                        val likesMap: HashMap<String, String> = HashMap()
+                        likesMap?.put("timestap", Date().toString())
+                        likesReference.set(likesMap!!)
+                    } else {
+                       likesReference.delete()
+                    }
+                }
+            /*var likesRef = database.reference.child("Likes").child(auth.uid.toString()).child(post_tl.postId.toString())
+            val mapLikes: HashMap<String, String> = HashMap()
+            mapLikes?.put("userID",auth.uid.toString())
+            mapLikes?.put("timestamp", Date().toString())
+            likesRef.setValue(mapLikes)
+            database.reference.child("Likes").child(auth.uid.toString()).addValueEventListener(object: ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for(snap in snapshot.children) {
+                        if(snap.key.toString() == post_tl.postId.toString()) {
+                            Log.i("LIKES-TL-4",snap.key.toString())
+                            database.reference.child("Likes").child(auth.uid.toString()).child(snap.key.toString()).removeValue()
+                        }
+                        Log.i("LIKES-TL-3",snap.key.toString())
+                    }
+
+
+                    Log.i("LIKES-TL",snapshot.key.toString())
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+            })*/
+
         }
 
         likeCounter(holder,position)
@@ -243,9 +282,13 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
                 }
                 if(value!!.documents.isNotEmpty()) {
                     var count : String = value.documents!!.size.toString()
+                    postsTimelineList[position].commentCount = Integer.parseInt(count)
+                    firestore.collection("Timeline").document(postsTimelineList[position].postId.toString()).update("commentCount",Integer.parseInt(count))
                     holder.commentCount_post.text = count
                 } else {
+                    postsTimelineList[position].commentCount = 0
                     holder.commentCount_post.text = '0'.toString()
+
                 }
             }
     }

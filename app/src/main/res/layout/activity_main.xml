@@ -9,64 +9,57 @@
 
     <TextView
         android:id="@+id/appname"
-        android:layout_width="283dp"
-        android:layout_height="158dp"
-        android:layout_marginStart="138dp"
-        android:layout_marginEnd="215dp"
-        android:fontFamily="@font/alegreya_black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/corben_bold"
         android:text="@string/app_name"
         android:textColor="@color/wine_1"
-        android:textSize="60sp"
+        android:textSize="55sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.235"
+        app:layout_constraintHorizontal_bias="0.538"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.356" />
+        app:layout_constraintVertical_bias="0.27" />
 
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="266dp"
         android:layout_height="54dp"
-        android:layout_marginStart="72dp"
-        android:layout_marginEnd="73dp"
-        android:layout_marginBottom="88dp"
         android:background="@drawable/edittext_pink_home"
         android:fontFamily="@font/alegreya"
-        android:text="LOG IN"
+        android:text="@string/logup"
         android:textColor="@color/wine_1"
         android:textSize="40sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.7" />
 
     <Button
         android:id="@+id/btnRegister"
         android:layout_width="266dp"
         android:layout_height="54dp"
-        android:layout_marginStart="72dp"
-        android:layout_marginTop="129dp"
-        android:layout_marginEnd="73dp"
-        android:layout_marginBottom="45dp"
         android:background="@drawable/edittext_pink_home"
         android:fontFamily="@font/alegreya"
-        android:text="LOG UP"
+        android:text="@string/login"
         android:textColor="@color/wine_1"
         android:textSize="40sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/btnLogin"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appname" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.8" />
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="121dp"
         android:layout_height="204dp"
-        android:layout_marginStart="44dp"
-        android:layout_marginTop="56dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="@+id/appname"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/iconohome" />
 

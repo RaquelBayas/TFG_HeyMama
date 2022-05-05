@@ -50,18 +50,24 @@ class TimelineFragment : Fragment(), ItemRecyclerViewListener {
         val data = arguments
         uid = data!!["uid"].toString() //data!!.getString("uid").toString()
         Log.i("data-fragment", data!!["uid"].toString())
+
+        recyclerViewTimeline = binding.recyclerViewPerfil
+        postsTLArraylist = arrayListOf()
+        adapterPostsTL = PostTimelineAdapter(requireContext().applicationContext,postsTLArraylist,this)
+        recyclerViewTimeline.adapter = adapterPostsTL
+
         loadPostsTL()
         return binding.root
     }
 
     private fun loadPostsTL() {
         postsTLArraylist.clear()
-        recyclerViewTimeline = binding.recyclerViewPerfil
+
 
         var layoutManager = LinearLayoutManager(context)
         recyclerViewTimeline.layoutManager = layoutManager
         recyclerViewTimeline.setHasFixedSize(true)
-        postsTLArraylist = arrayListOf()
+
 
         firestore.collection("Timeline").whereEqualTo("userId",uid).addSnapshotListener { snapshots, e ->
             if (e!= null) {
@@ -78,16 +84,16 @@ class TimelineFragment : Fragment(), ItemRecyclerViewListener {
                         PostTimeline::class.java))
                 }
             }
+            adapterPostsTL.notifyDataSetChanged()
             postsTLArraylist.sort()
-            adapterPostsTL = PostTimelineAdapter(requireContext(),postsTLArraylist,this)
+
 
             adapterPostsTL.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
                 override fun onItemClicked(position: Int) {
                     Toast.makeText(context,"Item number: $position", Toast.LENGTH_SHORT).show()
                 }
             })
-            recyclerViewTimeline.adapter = adapterPostsTL
-            recyclerViewTimeline.setHasFixedSize(true)
+
         }
     }
 

@@ -81,7 +81,8 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
         recyclerViewCommentsTimeline.layoutManager = LinearLayoutManager(this)
         recyclerViewCommentsTimeline.setHasFixedSize(true)
         commentsPostsTLArraylist = arrayListOf()
-
+        adapterCommentsPostsTL = CommentsPostTLAdapter(this, idpost, commentsPostsTLArraylist, this)
+        recyclerViewCommentsTimeline.adapter = adapterCommentsPostsTL
 
         storageReference = firebaseStore.getReference("/Usuarios/$iduser/images/perfil")
 
@@ -152,14 +153,19 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
         var doctlfb = firestore.collection("Timeline").document(idpost).collection("Replies").document()
         var doc_id = doctlfb.id
 
-        val comment = PostTimeline(doc_id, uid, Date(), edt_comment,0,0,0)
-        doctlfb.set(comment)
+        val comment = PostTimeline(doc_id, uid, Date(), edt_comment,0,0)
+        doctlfb.set(comment).addOnSuccessListener {
+            Log.i("CommentPostTLActivity","Comentario añadido.")
+        }.addOnFailureListener {
+            Log.i("CommentPostTLActivity","No se ha podido añadir el comentario.")
+        }
     }
 
     /**
      * @param input
      */
     fun getCommentsPostTL() {
+        commentsPostsTLArraylist.clear()
         firestore.collection("Timeline").document(idpost).collection("Replies").addSnapshotListener { snapshots, e ->
             if (e != null) {
                 return@addSnapshotListener
@@ -168,11 +174,9 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 when (dc.type) {
                     DocumentChange.Type.ADDED -> {
                         commentsPostsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
-
                     }
                     DocumentChange.Type.MODIFIED -> commentsPostsTLArraylist.add(
-                        dc.document.toObject(
-                            PostTimeline::class.java
+                        dc.document.toObject(PostTimeline::class.java
                         )
                     )
                     DocumentChange.Type.REMOVED -> commentsPostsTLArraylist.remove(
@@ -182,9 +186,9 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     )
                 }
             }
-            //commentsPostsTLArraylist.sort()
-            adapterCommentsPostsTL = CommentsPostTLAdapter(this, idpost, commentsPostsTLArraylist, this)
-            recyclerViewCommentsTimeline.adapter = adapterCommentsPostsTL
+            adapterCommentsPostsTL.notifyDataSetChanged()
+            commentsPostsTLArraylist.sort()
+
         }
     }
 

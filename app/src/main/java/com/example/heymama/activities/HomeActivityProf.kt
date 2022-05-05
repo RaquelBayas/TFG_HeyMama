@@ -1,5 +1,6 @@
 package com.example.heymama.activities
 
+import PreferencesManager
 import android.content.Intent
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
@@ -29,6 +30,7 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
     private lateinit var toolbar: androidx.appcompat.widget.Toolbar
     private lateinit var navigationView: NavigationView
     private lateinit var bottomNavigationView: BottomNavigationView
+    private lateinit var prefs: PreferencesManager
     /**
      *
      * @param savedInstanceState Bundle
@@ -36,6 +38,7 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        prefs = PreferencesManager(this)
         binding = ActivityHomeProfBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -89,11 +92,21 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
             R.id.nav_item_consultas -> goToActivity(this,ContactoActivity::class.java)
             //R.id.nav_bottom_item_timeline -> goToActivity(this,TimelineActivity::class.java)
             R.id.nav_item_ajustes -> goToActivity(this,SettingsActivity::class.java)
+            R.id.nav_item_logout -> logOut()
         }
         drawer.closeDrawer(GravityCompat.START)
         return true
     }
 
+    private fun logOut() {
+        prefs.editor?.clear()
+        prefs.editor?.commit()
+
+        val intent = Intent(this, Login::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+    }
 
     /**
      *

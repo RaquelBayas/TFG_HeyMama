@@ -139,7 +139,7 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private fun add_comment_tl(edt_comment:String, uid:String) {
         var doctlfb = firestore.collection("Timeline").document()
         var doc_id = doctlfb.id
-        val comment = PostTimeline(doc_id,uid,/*userdata,*/Date(),edt_comment,0,0,0)
+        val comment = PostTimeline(doc_id,uid,/*userdata,*/Date(),edt_comment,0,0)
         doctlfb.set(comment)
     }
 
@@ -167,8 +167,10 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
                         PostTimeline::class.java))
                 }
             }
-            postsTLArraylist.sort()
-            adapterPostsTL = PostTimelineAdapter(this@TimelineActivity,postsTLArraylist,this)
+            if(postsTLArraylist.size > 1) {
+                postsTLArraylist.sort()
+            }
+            adapterPostsTL = PostTimelineAdapter(applicationContext,postsTLArraylist,this)
             adapterPostsTL.notifyDataSetChanged()
             adapterPostsTL.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
                 override fun onItemClicked(position: Int) {

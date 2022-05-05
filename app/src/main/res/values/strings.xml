@@ -1,5 +1,8 @@
 <resources>
-    <string name="app_name">Hey, mama!</string>
+    <string name="app_name">Hey,\nmama!</string>
+    <string name="login">Iniciar sesión</string>
+    <string name="logup">Registrarse</string>
+    <string name="logout">Cerrar sesion</string>
     <string name="empezar">Empezar</string>
     <string name="usuario">Usuario</string>
     <string name="profesional">Profesional</string>
