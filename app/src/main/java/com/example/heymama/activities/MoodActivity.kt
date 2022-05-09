@@ -4,10 +4,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.example.heymama.R
+import com.example.heymama.models.MoodType
 import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
+import com.github.mikephil.charting.formatter.PercentFormatter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -56,27 +59,27 @@ class MoodActivity : AppCompatActivity() {
                     "0" -> {
                         count_feliz++
                         count = (count_feliz * 100) / docs.size
-                        pieEntries.add(PieEntry(count))
+                        pieEntries.add(PieEntry(count,MoodType.FELIZ.name))
                     }
                     "1" -> {
                         count_bien++
                         count = (count_bien * 100) / docs.size
-                        pieEntries.add(PieEntry(count))
+                        pieEntries.add(PieEntry(count,MoodType.BIEN.name))
                     }
                     "2" -> {
                         count_regular++
                         count = (count_regular * 100) / docs.size
-                        pieEntries.add(PieEntry(count))
+                        pieEntries.add(PieEntry(count,MoodType.REGULAR.name))
                     }
                     "3" -> {
                         count_mal++
                         count = (count_mal * 100) / docs.size
-                        pieEntries.add(PieEntry(count))
+                        pieEntries.add(PieEntry(count,MoodType.MAL.name))
                     }
                     "4" -> {
                         count_triste++
                         count = (count_triste * 100) / docs.size
-                        pieEntries.add(PieEntry(count))
+                        pieEntries.add(PieEntry(count,MoodType.TRISTE.name))
                     }
                 }
             }
@@ -84,7 +87,7 @@ class MoodActivity : AppCompatActivity() {
             var pieChart = findViewById<PieChart>(R.id.pie_chart)
             pieChart.animateXY(1000,1000)
 
-            val pieDataSet = PieDataSet(pieEntries,"PieChart")
+            val pieDataSet = PieDataSet(pieEntries,"Emociones")
             pieDataSet.setColors(
                 resources.getColor(R.color.mood_feliz),
                 resources.getColor(R.color.mood_bien),
@@ -94,10 +97,18 @@ class MoodActivity : AppCompatActivity() {
             )
 
             val pieData = PieData(pieDataSet)
+            pieData.setValueFormatter(PercentFormatter())
+            pieData.setValueTextSize(12f)
             pieChart.centerText = "Mood"
+            pieChart.description.isEnabled = false
 
-            pieChart.legend.isEnabled = false //Ocultamos los tags
             pieData.setDrawValues(true)
+
+            var legend = pieChart.legend
+            legend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
+            legend.horizontalAlignment = Legend.LegendHorizontalAlignment.RIGHT
+            legend.orientation = Legend.LegendOrientation.VERTICAL
+            legend.textSize = 12f
 
             pieChart.data = pieData
         }

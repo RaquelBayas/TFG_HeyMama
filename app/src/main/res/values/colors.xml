@@ -12,11 +12,11 @@
     <color name="pink">#FED6E3</color>
     <color name="pink2">#FBDDE7</color>
     <color name="spinner">#C6C6C6</color>
-    <color name="mood_feliz">#84FFFF</color>
+    <color name="mood_feliz">#A7FFEB</color>
     <color name="mood_bien">#FF80AB</color>
     <color name="mood_regular">#FFFF8D</color>
-    <color name="mood_mal">#FF8A80</color>
-    <color name="mood_triste">#448AFF</color>
+    <color name="mood_mal">#FF9E80</color>
+    <color name="mood_triste">#6B85AF</color>
     <color name="rectangle_purple">#DDD1F8</color>
     <color name="rectangle_orange">#F5D9A2</color>
     <color name="rectangle_pink">#FCCDEC</color>

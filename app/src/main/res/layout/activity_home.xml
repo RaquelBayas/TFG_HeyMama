@@ -47,8 +47,7 @@
                 android:id="@+id/btn_mood_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                ></Button>
+                android:layout_marginStart="20dp"></Button>
 
             <HorizontalScrollView
                 android:id="@+id/moodtracking"
@@ -64,51 +63,46 @@
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
 
-                    <RadioGroup
-                        android:layout_width="wrap_content"
+                    <ImageButton
+                        android:id="@+id/btn_mood_home_feliz"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-                        <RadioButton
-                            android:id="@+id/btn_feliz"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="5dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/mood_feliz"
-                            android:text="Feliz" />
-
-                        <RadioButton
-                            android:id="@+id/btn_bien"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="5dp"
-                            android:layout_weight="1"
-                            android:text="Bien" />
-
-                        <RadioButton
-                            android:id="@+id/btn_regular"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="5dp"
-                            android:layout_weight="1"
-                            android:text="Regular" />
-
-                        <RadioButton
-                            android:id="@+id/btn_mal"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="5dp"
-                            android:layout_weight="1"
-                            android:text="Mal" />
-
-                        <RadioButton
-                            android:id="@+id/btn_triste"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="5dp"
-                            android:layout_weight="1"
-                            android:text="Triste" />
-                    </RadioGroup>
+                        android:backgroundTint="@color/mood_feliz"
+                        android:src="@drawable/mood_feliz"
+                        ></ImageButton>
+                    <ImageButton
+                        android:id="@+id/btn_mood_home_bien"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:backgroundTint="@color/mood_bien"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/mood_bien"
+                        ></ImageButton>
+                    <ImageButton
+                        android:id="@+id/btn_mood_home_regular"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:backgroundTint="@color/mood_regular"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/mood_regular"
+                        ></ImageButton>
+                    <ImageButton
+                        android:id="@+id/btn_mood_home_mal"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:backgroundTint="@color/mood_mal"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/mood_mal"
+                        ></ImageButton>
+                    <ImageButton
+                        android:id="@+id/btn_mood_hom_triste"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:backgroundTint="@color/mood_triste"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/mood_triste"
+                        ></ImageButton>
 
                 </LinearLayout>
             </HorizontalScrollView>

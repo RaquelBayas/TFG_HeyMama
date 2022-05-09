@@ -11,18 +11,23 @@ import com.example.heymama.R
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.Article
 import com.example.heymama.models.Post
+import com.example.heymama.models.User
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class InfoArticleAdapter(private val context: Context, private val articleArrayList: ArrayList<Article>, private val articleItemListener: ItemRecyclerViewListener
+class InfoArticleAdapter(private val context: Context, private var articleArrayList: ArrayList<Article>, private val articleItemListener: ItemRecyclerViewListener
 ) : RecyclerView.Adapter<InfoArticleAdapter.HolderArticle>() {
 
     private lateinit var dataBase: FirebaseDatabase
 
+    fun filterList(list: ArrayList<Article>) {
+        this.articleArrayList = list
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderArticle {
-        // inflate layout tema_foro.xml
         val view = LayoutInflater.from(parent.context).inflate(R.layout.tema_info,parent,false)
         return HolderArticle(view)
     }
@@ -31,9 +36,8 @@ class InfoArticleAdapter(private val context: Context, private val articleArrayL
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
 
         val tema_article_info: Article = articleArrayList[position] // get data at specific position
-        holder.titulo_article.setText(tema_article_info.title)
+        holder.titulo_article.text = tema_article_info.title
 
-        Log.i("InfoArticleAdapter",tema_article_info.professionalID.toString())
         dataBase.reference.child("Usuarios").child(tema_article_info.professionalID.toString()).get().addOnSuccessListener {
             if(it.exists()) {
                 var name = it.child("name").value.toString()
@@ -41,7 +45,6 @@ class InfoArticleAdapter(private val context: Context, private val articleArrayL
                 holder.autor_article.text = "$name $lastname"
             }
         }
-
 
         holder.titulo_article.setOnClickListener{
             articleItemListener.onItemClicked(position)

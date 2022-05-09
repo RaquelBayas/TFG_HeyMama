@@ -16,11 +16,10 @@
             android:layout_height="wrap_content"
             android:textSize="24sp"
             android:text="@string/nav_item_ajustes"
-            android:fontFamily="@font/baloo"
+            android:fontFamily="@font/alegreya"
             android:textColor="@color/fonts"
-            android:layout_margin="22dp"
+            android:layout_margin="20dp"
             />
-
     </LinearLayout>
 
     <LinearLayout
@@ -51,7 +50,34 @@
                 android:textSize="20sp"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="20dp"
-                android:hint="Name"
+                android:hint="@string/nombre"
+                android:fontFamily="@font/alegreya_black"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="20dp"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_bio"
+                android:textSize="22sp"
+                android:fontFamily="@font/alegreya"
+                />
+            <TextView
+                android:id="@+id/settings_bio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp"
+                android:hint="@string/bio"
                 android:fontFamily="@font/alegreya_black"
                 />
         </LinearLayout>
@@ -136,28 +162,6 @@
                 />
 
         </LinearLayout>
-
-
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="bottom"
-        android:orientation="vertical">
-
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottomNavigationView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:background="@color/white"
-            app:labelVisibilityMode="unlabeled"
-            app:menu="@menu/nav_bar_bottom_menu_admin">
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-        </com.google.android.material.bottomnavigation.BottomNavigationView>
-    </LinearLayout>
 </LinearLayout>

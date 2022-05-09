@@ -75,23 +75,6 @@ class ForosActivity : AppCompatActivity(), Utils{
             goToActivity(this,SubForoActivity::class.java,txt_otros.text.toString())
         }
 
-        binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
-            when(item.itemId) {
-
-                R.id.nav_bottom_item_home -> {
-                    when (rol) {
-                        "Usuario" -> startActivity(Intent(this, HomeActivity::class.java))
-                        "Profesional" -> startActivity(Intent(this, HomeActivityProf::class.java))
-                        "Admin" -> startActivity(Intent(this, HomeActivityAdmin::class.java))
-                    }
-                }
-                R.id.nav_bottom_item_ajustes -> {
-                    goToActivity(this,SettingsActivity::class.java)
-                    return@setOnNavigationItemSelectedListener true
-                }
-            }
-            return@setOnNavigationItemSelectedListener false
-        }
     }
 
     /**

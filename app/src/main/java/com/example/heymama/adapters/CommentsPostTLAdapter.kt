@@ -22,6 +22,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -30,12 +31,12 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
 ) : RecyclerView.Adapter<CommentsPostTLAdapter.HolderForo>() {
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
-    private lateinit var firebaseStore: FirebaseStorage
+    private lateinit var firebaseStorage: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageReference: StorageReference
-
+    private val ONE_MEGABYTE: Long = 1024 * 1024
     private lateinit var id_post: String
-    private lateinit var id_user: String
+    private lateinit var idUser: String
 
     private lateinit var onClickListener: ItemRecyclerViewListener
 
@@ -55,22 +56,12 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
         var idpost_origin = idpost_origin
 
         auth = FirebaseAuth.getInstance()
-        firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
-        storageReference = firebaseStore.reference
-
+        firebaseStorage = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
+        storageReference = firebaseStorage.reference
         firestore = FirebaseFirestore.getInstance()
 
         val post_tl: PostTimeline = commentsPostsList[position] // get data at specific position
-        val refPhoto = storageReference.child("Usuarios/"+post_tl.userId+"/images/perfil").toString()//post_tl.user?.profilePhoto
-        //Log.i("URI: ", "parse profile photo1: " + post_tl.user.toString());
-        storageReference = storageReference.child("Usuarios/"+post_tl.userId+"/images/perfil")
-
-        val ONE_MEGABYTE: Long = 1024 * 1024
-        var uri : Uri = Uri.parse(refPhoto)
-
-
-        Log.i("URI: ", "parse profile photo2: " + uri);
-        Log.i("URI: ", "parse profile photo3: " + storageReference);
+        val refPhoto = firebaseStorage.getReference("Usuarios/"+post_tl.userId+"/images/perfil")
 
         with(holder) {
             firestore.collection("Usuarios").document(post_tl.userId!!).addSnapshotListener { value, error ->
@@ -80,16 +71,18 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
                 val docs = value!!.data
                 name_post.text = docs!!["name"].toString()
                 user_post.text = docs["username"].toString()
-                id_user = docs["id"].toString()
+                idUser = docs["id"].toString()
                 comment_post.text = post_tl.comment
-                storageReference
-                    .getBytes(8 * ONE_MEGABYTE).
+                refPhoto.getBytes(8 * ONE_MEGABYTE).
                     addOnSuccessListener { bytes ->
                         val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                         holder.photo_post.setImageBitmap(bmp)
                     }.addOnFailureListener {
                         Log.e(ContentValues.TAG, "Se produjo un error al descargar la imagen.", it)
                     }
+                var timestamp = post_tl.timestamp
+                val dateFormat = SimpleDateFormat("dd/MM/yy \n  HH:mm")
+                time_post.text = dateFormat.format(timestamp)
             }
         }
 
@@ -151,7 +144,7 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
         var user_post: TextView = itemView.findViewById(R.id.txt_user_comment_posttl)
         var name_post: TextView = itemView.findViewById(R.id.txt_name_comment_posttl)
         var photo_post: ImageView = itemView.findViewById(R.id.img_comment_posttl)
-        //var time_post: TextView = itemView.findViewById(R.id.txt_tweet_hora)
+        var time_post: TextView = itemView.findViewById(R.id.txt_tweet_hora)
         var comment_post: TextView = itemView.findViewById(R.id.txt_comment_posttl)
         var btn_comment_menu_post_tl : Button = itemView.findViewById(R.id.btn_comment_menu_post_tl)
     }

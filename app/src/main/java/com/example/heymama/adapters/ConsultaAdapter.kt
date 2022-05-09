@@ -53,8 +53,8 @@ class ConsultaAdapter(private val context: Context, private val consultasArrayLi
                 return@addSnapshotListener
             }
             val data = value!!.data
-            holder.name_consulta.text = "r" //data!!["name"].toString()
-            holder.userc_consulta.text = "rb" //data!!["username"].toString()
+            holder.name_consulta.text = data!!["name"].toString()
+            holder.userc_consulta.text = data!!["username"].toString()
 
         }
     }
@@ -71,6 +71,7 @@ class ConsultaAdapter(private val context: Context, private val consultasArrayLi
         init {
             itemView.setOnClickListener {
                 Log.i("ONCLICK: ",listener.onItemClicked(adapterPosition).toString())
+                true
             }
         }
     }

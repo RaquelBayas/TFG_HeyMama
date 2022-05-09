@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import com.example.heymama.R
+import com.example.heymama.databinding.ActivityRespirarBinding
 import com.example.heymama.interfaces.Utils
 import com.example.heymama.models.User
 import com.github.florent37.viewanimator.AnimationListener
@@ -26,14 +27,14 @@ class RespirarActivity : AppCompatActivity(), Utils {
     private lateinit var btn_empezar_respirar: Button
     private lateinit var btn_parar_respiracion: Button
     private lateinit var animation: ViewAnimator
-    private lateinit var bottomNavigationView: BottomNavigationView
-    private lateinit var rol: String
+    private lateinit var binding: ActivityRespirarBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_respirar)
+        binding = ActivityRespirarBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         database = FirebaseDatabase.getInstance()
         auth = FirebaseAuth.getInstance()
@@ -49,40 +50,8 @@ class RespirarActivity : AppCompatActivity(), Utils {
             animation.cancel()
         }
 
-        bottomNavigationView = findViewById(R.id.bottomNavigationView)
-        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_bottom_item_home -> {
-                    finish()
-                    when (rol) {
-                        "Usuario" -> startActivity(Intent(this, HomeActivity::class.java))
-                        "Profesional" -> startActivity(Intent(this, HomeActivityProf::class.java))
-                        "Admin" -> startActivity(Intent(this, HomeActivityAdmin::class.java))
-                    }
-                }
-                R.id.nav_bottom_item_foros -> {
-                    startActivity(Intent(this, ForosActivity::class.java))
-                }
-            }
-            return@setOnNavigationItemSelectedListener false
-        }
     }
 
-    /**
-     * Obtener el rol del usuario
-     *
-     */
-    private fun getDataUser(){
-        database.reference.child("Usuarios").child(auth.uid.toString()).addValueEventListener(object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                var user : User? = snapshot.getValue(User::class.java)
-                rol = user!!.rol.toString()
-            }
-            override fun onCancelled(error: DatabaseError) {
-            //TO DO("Not yet implemented")
-            }
-        })
-    }
     /**
      * Este método sirve para empezar la animación de control de la respiración.
      *
@@ -92,15 +61,11 @@ class RespirarActivity : AppCompatActivity(), Utils {
     private fun start_breathing() {
        var img_respirar : ImageView = findViewById(R.id.img_respirar)
 
-         animation = ViewAnimator.animate(img_respirar)
-            .alpha(0f, 1f)
-            .onStart(object: AnimationListener.Start {
-                override fun onStart() {
-                    txt_exhalar.text = "Inhala... Exhala"
-                }
-
-            })
-            .scale(0.02f, 1.5f, 0.02f)
+        animation = ViewAnimator.animate(img_respirar).alpha(0f, 1f).onStart(object: AnimationListener.Start {
+            override fun onStart() {
+                txt_exhalar.text = "Inhala... Exhala"
+            }
+        }).scale(0.02f, 1.5f, 0.02f)
             .rotation(360f)
             .repeatCount(5)
             .duration(6500) // 6.5 segundos
@@ -110,10 +75,8 @@ class RespirarActivity : AppCompatActivity(), Utils {
                     img_respirar.scaleX = 1.0f
                     img_respirar.scaleY = 1.0f
                 }
-
             })
             .start()
-
     }
 
 }

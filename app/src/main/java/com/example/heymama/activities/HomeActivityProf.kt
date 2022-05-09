@@ -102,7 +102,7 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
         prefs.editor?.clear()
         prefs.editor?.commit()
 
-        val intent = Intent(this, Login::class.java)
+        val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)

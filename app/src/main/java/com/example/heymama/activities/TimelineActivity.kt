@@ -66,7 +66,6 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         firestore = FirebaseFirestore.getInstance()
 
-        // RECYCLERVIEW TIMELINE
         recyclerViewTimeline = binding.recyclerViewPosts
 
         var layoutManager = LinearLayoutManager(this)
@@ -79,10 +78,11 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         binding.btnAddPostTl.setOnClickListener {
             if(!findViewById<EditText>(R.id.edt_post_tl).text.isEmpty()) {
-                edt_post_tl = findViewById<EditText>(R.id.edt_post_tl).text.toString()
+                edt_post_tl = binding.edtPostTl.text.toString()
             }
-            getUserData(edt_post_tl,user!!.uid,)
+            add_comment_tl(edt_post_tl,user!!.uid)
             Toast.makeText(this, "Post add", Toast.LENGTH_SHORT).show()
+            binding.edtPostTl.setText("")
         }
         getCommentsTL()
     }
@@ -106,27 +106,7 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
             val email = value?.data?.get("email").toString()
 
             val profilePhoto = "Usuarios/"+uid+"/images/perfil"//value?.data?.get("")
-
-            val userdata: User? = User(uid,name,username,email,rol,status,bio,profilePhoto)
-            add_comment_tl(edt_comment,uid)
         }
-        /*databaseReference.child(uid).get().addOnSuccessListener {
-            if (it.exists()) {
-                val name = it.child("name").value.toString()
-                val username = it.child("user").value.toString()
-                val bio = it.child("bio").value.toString()
-                val rol = "Usuario"
-                val email = it.child("Email").value.toString()
-                val profilePhoto = "Usuarios/"+auth.currentUser?.uid+"/images/perfil"
-
-                val userdata : User? = User(
-                    uid, name, username, email, rol, bio,
-                    profilePhoto
-                )
-               add_comment_tl(edt_comment, userdata!!,uid)
-            }
-        }
-        */
     }
 
     /**

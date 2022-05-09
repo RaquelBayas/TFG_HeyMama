@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
@@ -16,6 +17,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.heymama.GlideApp
 import com.example.heymama.R
+import com.example.heymama.databinding.ActivityHomeBinding
 import com.example.heymama.dialogs.MoodDialog
 import com.example.heymama.fragments.MoodFragment
 import com.example.heymama.interfaces.Utils
@@ -54,6 +56,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var drawer: DrawerLayout
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var prefs: PreferencesManager
+    private lateinit var binding: ActivityHomeBinding
     /**
      *
      * @constructor
@@ -62,8 +65,9 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityHomeBinding.inflate(layoutInflater)
         prefs = PreferencesManager(this)
-        setContentView(R.layout.activity_home)
+        setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
@@ -133,20 +137,20 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             }
         }*/
-        getMoodStatus()
+        //getMoodStatus()
         getUserName(user!!)
 
-        val btn_foros_home : TextView = findViewById(R.id.btn_foros_home)
-        btn_foros_home.setOnClickListener{
+        binding.btnForosHome.setOnClickListener{
             onClick(R.id.btn_foros_home)
         }
 
-        val btn_info_home : TextView = findViewById(R.id.btn_info_home)
-        btn_info_home.setOnClickListener{
+        binding.btnInfoHome.setOnClickListener{
             onClick(R.id.btn_info_home)
         }
 
         notification()
+
+        mood()
     }
 
     /**
@@ -176,6 +180,41 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             //var moodfragment = MoodFragment()
             MoodDialog().show(supportFragmentManager,"MoodDialog")
         //moodfragment.show(supportFragmentManager,"moodDialog")
+        }
+    }
+
+    private fun mood() {
+        var btn_mood_feliz = binding.btnMoodHomeFeliz
+        var btn_mood_bien = binding.btnMoodHomeBien
+        var btn_mood_regular = binding.btnMoodHomeRegular
+        var btn_mood_mal = binding.btnMoodHomeMal
+        var btn_mood_triste = binding.btnMoodHomTriste
+        var date = Date().time
+        var simpleDateFormat = SimpleDateFormat("dd MM yyyy")
+        var dateString = simpleDateFormat.format(date)
+
+        val listMoods = arrayListOf<ImageButton>(btn_mood_feliz,btn_mood_bien,btn_mood_regular,btn_mood_mal,btn_mood_triste)
+        val listMoodsTypes = arrayListOf<MoodType>(*MoodType.values())
+        for((index,button) in listMoods.withIndex()) {
+            button.setOnClickListener{
+                var mood = Mood(listMoodsTypes[index].ordinal.toString(), listMoodsTypes[index].name, Date())
+                firestore.collection("Mood").document(auth.uid.toString()).collection("Historial").document(dateString).set(mood)
+            }
+        }
+
+        firestore.collection("Mood").document(auth.uid.toString()).collection("Historial").addSnapshotListener { value, error ->
+            if(error != null) {
+                return@addSnapshotListener
+            }
+            var docs = value!!.documents
+            for(doc in docs) {
+                if (doc.id == dateString) {
+                    for(button in listMoods){
+                        button.isClickable = false
+                    }
+                    Toast.makeText(this,"Ya has registrado cómo te sientes hoy.",Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
@@ -237,8 +276,8 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun logOut() {
         prefs.editor?.clear()
         prefs.editor?.commit()
-
-        val intent = Intent(this, Login::class.java)
+        finish()
+        val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
@@ -292,6 +331,15 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 startActivity(intent)
             }
         }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        return super.onKeyDown(keyCode, event)
     }
 
 

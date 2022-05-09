@@ -44,6 +44,7 @@ class Login : AppCompatActivity() {
             var prefs_password = prefs.preferences?.getString("password","")
             var rol = prefs.preferences?.getString("rol","")
             Log.i("PREFS",prefs_email + " " + rol)
+            finish()
             goHomeActivity(rol.toString())
         } else {
 
@@ -114,7 +115,6 @@ class Login : AppCompatActivity() {
                             checkRegister(emailFireBase,mailVerified)
                             Toast.makeText(this, "Debes registrarte primero.", Toast.LENGTH_LONG).show()
                         }
-                        //checkRol(email,dataBaseReference)
                     }else {
                         if(mutableList!!.contains(email)) {
                             Toast.makeText(this, "La contraseña es incorrecta.", Toast.LENGTH_LONG).show()
@@ -168,7 +168,6 @@ class Login : AppCompatActivity() {
                     }
                 }
             }
-
             override fun onCancelled(error: DatabaseError) {
                 TODO("Not yet implemented")
             }
@@ -193,11 +192,13 @@ class Login : AppCompatActivity() {
             else -> {
                 val intent = Intent(applicationContext, HomeActivity::class.java)
                 intent.putExtra("Rol","Usuario")
+                finish()
                 startActivity(intent)
                 Log.d("TAG Usuario: ", rol)
             }
         }
     }
+
     override fun onPause() {
         super.onPause()
         Utils.updateStatus("offline")
@@ -206,5 +207,13 @@ class Login : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         Utils.updateStatus("online")
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(this, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
     }
 }

@@ -19,7 +19,7 @@
     <TextView
         android:id="@+id/txt_comment_posttl"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginStart="12dp"
         android:layout_marginTop="12dp"
         android:fontFamily="@font/montserrat"
@@ -55,6 +55,18 @@
         android:textSize="14sp"
         app:layout_constraintStart_toEndOf="@+id/txt_name_comment_posttl"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txt_tweet_hora"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/montserrat_bold"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/img_comment_posttl" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/img_comment_posttl"

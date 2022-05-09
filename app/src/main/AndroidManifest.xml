@@ -18,99 +18,131 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".activities.ListaUsuariosActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.HomeActivityAdmin"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.MisConsultasActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.ListChatsActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.RespuestaConsultaActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.ConsultasActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.SettingsActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.MoodActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.CommentPostTLActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.ChatActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.FriendsActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.SolicitudesActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.TimelineActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.LayoutArticleActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.ArticleActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.InfoActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.HomeActivityProf"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.TemaForoActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.PreguntaActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".fragments.SubForoFragment"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.ContactoActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.PerfilActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.SubForoActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.ForosActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.RespirarActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.RegisterProfesionalActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.RegisterAsActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.HomeActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.RememberPassword"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.Login"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.RegisterActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".activities.MainActivity"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

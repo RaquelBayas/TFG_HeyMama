@@ -21,7 +21,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
 class FriendRequestAdapter(private val context: Context, private val friendRequestList: ArrayList<FriendRequest>
-) : RecyclerView.Adapter<FriendRequestAdapter.HolderForo>() {
+) : RecyclerView.Adapter<FriendRequestAdapter.Holder>() {
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
@@ -39,10 +39,9 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): FriendRequestAdapter.HolderForo {
-
+    ): FriendRequestAdapter.Holder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.tema_friendrequests, parent, false)
-        return HolderForo(view)
+        return Holder(view)
     }
 
     /**
@@ -51,7 +50,7 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
      * @param position Int
      *
      */
-    override fun onBindViewHolder(holder: FriendRequestAdapter.HolderForo, position: Int) {
+    override fun onBindViewHolder(holder: FriendRequestAdapter.Holder, position: Int) {
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance() //CLOUD STORAGE
         firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
@@ -85,14 +84,12 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
             }
 
         // BOTÓN ACEPTAR SOLICITUD
-        var acceptButton: Button = holder.btn_aceptar_solicitud
-        acceptButton.setOnClickListener {
+        holder.btn_aceptar_solicitud.setOnClickListener {
             acceptFriendRequest(holder)
         }
 
         // BOTÓN RECHAZAR SOLICITUD
-        var denyButton: Button = holder.btn_rechazar_solicitud
-        denyButton.setOnClickListener {
+        holder.btn_rechazar_solicitud.setOnClickListener {
             denyFriendRequest(holder)
         }
     }
@@ -112,13 +109,12 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
             friendship_reference.document(auth.currentUser?.uid.toString())
                 .collection("Friends").document(id).set(friends)
 
-            friends = FriendRequest(id, auth.currentUser?.uid.toString(), "friends")
+            //friends = FriendRequest(id, auth.currentUser?.uid.toString(), "friends")
             friendship_reference.document(id).collection("Friends")
                 .document(auth.currentUser?.uid.toString()).set(friends)
         }
         // ELIMINA LA SOLICITUD DE AMISTAD
         deleteFriendRequest(friendship_reference,id)
-
     }
 
     /**
@@ -172,7 +168,7 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
      * @param holder FriendRequestAdapter.HolderForo
      *
      */
-    private fun acceptFriendRequest(holder: FriendRequestAdapter.HolderForo) {
+    private fun acceptFriendRequest(holder: FriendRequestAdapter.Holder) {
         Log.i("ACCESS1",holder.txt_user_solicitud.text.toString())
         var holder_username = holder.txt_user_solicitud.text.toString()
         //BUSCA EL ID DEL USERNAME CAPTURADO EN EL HOLDER
@@ -184,7 +180,9 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
                     if(d.data?.get("username").toString().equals(holder_username)) {
                         var id = d.data?.get("id").toString()
                         searchFriendRequest(id,"aceptar")
+                        Log.i("friendReqAdapt-accept0","here")
                     }
+                    Log.i("friendReqAdapt-accept",d.toString())
                 }
             }
         }
@@ -201,7 +199,7 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
      * @param holder FriendRequesAdapter.HolderForo
      *
      */
-    private fun denyFriendRequest(holder:FriendRequestAdapter.HolderForo) {
+    private fun denyFriendRequest(holder:FriendRequestAdapter.Holder) {
         var holder_username = holder.txt_user_solicitud.text.toString()
         //BUSCA EL ID DEL USERNAME CAPTURADO EN EL HOLDER
         firestore.collection("Usuarios").addSnapshotListener { value, error ->
@@ -212,6 +210,7 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
                     if(d.data?.get("username").toString().equals(holder_username)) {
                         var id = d.data?.get("id").toString()
                         searchFriendRequest(id,"rechazar")
+                        Log.i("friendRequestAdapt-deny","here")
                     }
                 }
             }
@@ -232,7 +231,7 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
      * @param itemView View
      *
      */
-    inner class HolderForo(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var txt_nombre_solicitud: TextView = itemView.findViewById(R.id.txt_nombre_solicitud)
         var txt_user_solicitud: TextView = itemView.findViewById(R.id.txt_user_solicitud)
         var img_solicitud: ImageView = itemView.findViewById(R.id.img_solicitud)

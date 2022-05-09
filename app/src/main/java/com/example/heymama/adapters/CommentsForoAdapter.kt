@@ -1,6 +1,7 @@
 package com.example.heymama.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,9 +20,13 @@ class CommentsForoAdapter(private val context: Context, private val commentsForo
 ) : RecyclerView.Adapter<CommentsForoAdapter.HolderForo>() {
 
     private lateinit var auth : FirebaseAuth
+    private lateinit var listener: ItemRecyclerViewListener
+
+    fun setOnItemRecyclerViewListener(listener: ItemRecyclerViewListener) {
+        this.listener = listener
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentsForoAdapter.HolderForo {
-        // inflate layout tema_foro.xml
         val view = LayoutInflater.from(parent.context).inflate(R.layout.tema_foro,parent,false)
         return HolderForo(view)
     }
@@ -35,7 +40,6 @@ class CommentsForoAdapter(private val context: Context, private val commentsForo
         holder.comment_foro.setOnClickListener{
             foroItemListener.onItemClicked(position)
         }
-
     }
 
     override fun getItemCount(): Int {
@@ -44,7 +48,12 @@ class CommentsForoAdapter(private val context: Context, private val commentsForo
 
     inner class HolderForo(itemView: View) : RecyclerView.ViewHolder(itemView){
         var comment_foro: TextView = itemView.findViewById(R.id.textView8)
-    }
 
+        init {
+            itemView.setOnClickListener {
+                Log.i("ONCLICK: ",listener.onItemClicked(adapterPosition).toString())
+            }
+        }
+    }
 
 }

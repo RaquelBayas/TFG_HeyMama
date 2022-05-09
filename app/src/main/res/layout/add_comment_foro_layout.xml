@@ -1,35 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-
-    <EditText
-        android:id="@+id/edt_add_comment"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textMultiLine"
-        android:textColor="@color/fonts"
-        tools:ignore="TouchTargetSizeCheck,TextContrastCheck"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="32dp" />
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btn_add_comment_foro"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:background="@color/pink"
-        android:fontFamily="@font/archivo_black"
-        android:text="@string/add_comment"
-        android:textColor="@color/fonts"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edt_add_comment" />
+        <EditText
+            android:id="@+id/edt_add_comment"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_margin="10dp"
+            android:ems="10"
+            android:inputType="textMultiLine"
+            android:gravity="top|start"
+            android:hint="@string/enviar"
+            android:padding="10dp"
+            android:textColor="@color/fonts"
+            android:background="@drawable/rectangle_edit_article"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="TouchTargetSizeCheck,TextContrastCheck" />
+
+        <Button
+            android:id="@+id/btn_add_comment_foro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/edittext_pink_home"
+            android:fontFamily="@font/alegreya"
+            android:text="@string/enviar"
+            android:textSize="20dp">
+
+        </Button>
+    </LinearLayout>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+</RelativeLayout>

@@ -39,7 +39,7 @@ class HomeActivityAdmin : AppCompatActivity(), NavigationView.OnNavigationItemSe
         setContentView(binding.root)
 
 
-        binding.txtConsultas.setOnClickListener{
+        binding.txtListaUsuarios.setOnClickListener{
             startActivity(Intent(this,ListaUsuariosActivity::class.java))
         }
 

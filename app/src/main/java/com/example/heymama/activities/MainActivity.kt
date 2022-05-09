@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             binding.btnLogin.setOnClickListener {
+                finish()
                 startActivity(Intent(this, Login::class.java))
             }
         }

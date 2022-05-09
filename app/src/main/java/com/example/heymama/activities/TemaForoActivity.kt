@@ -6,6 +6,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
@@ -166,22 +167,21 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
      *
      */
     private fun showDialog(user: FirebaseUser, foroName: String, urlTema: String) {
-        val builder = AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this,R.style.CustomForoCommentsLayout).create()
         val inflater: LayoutInflater = layoutInflater
         val dialogLayout: View = inflater.inflate(R.layout.add_comment_foro_layout,null)
         val editText: EditText = dialogLayout.findViewById(R.id.edt_add_comment)
-
-        with(builder){
-            setTitle("Introduce un comentario")
-            setPositiveButton("Añadir") {dialog, which ->
+        val btn_add_comment: Button = dialogLayout.findViewById(R.id.btn_add_comment_foro)
+        builder.setView(dialogLayout)
+        btn_add_comment.setOnClickListener {
+            if(editText.text.isNotEmpty()) {
                 add_comment(editText.text.toString(),user,foroName,urlTema,id)
+                builder.dismiss()
+            } else {
+                Toast.makeText(this,"Escribe un comentario",Toast.LENGTH_SHORT).show()
             }
-            setNegativeButton("Cancelar"){dialog, which ->
-                Log.d("Cancelar","Negative button selected")
-            }
-            setView(dialogLayout)
-            show()
         }
+        builder.show()
     }
 
     /**
@@ -236,7 +236,16 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
                 }
                 Collections.sort(commentsArraylist)
                 adapterComments = CommentsForoAdapter(this,commentsArraylist,this)
+
+                adapterComments.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
+                    override fun onItemLongClicked(position: Int) {
+                        commentsArraylist.removeAt(position)
+                        adapterComments.notifyItemRemoved(position)
+                    }
+                })
                 recyclerViewComments.adapter = adapterComments
             }
     }
+
+
 }

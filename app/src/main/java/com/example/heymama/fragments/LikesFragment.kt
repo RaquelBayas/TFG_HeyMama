@@ -66,13 +66,11 @@ class LikesFragment : Fragment(), ItemRecyclerViewListener {
         recyclerViewLikes.layoutManager = layoutManager
         recyclerViewLikes.setHasFixedSize(true)
 
-
         var timelineReference = firestore.collection("Timeline")
         var likesReference = firestore.collection("Likes").document(uid).collection("Likes")
         likesReference.addSnapshotListener { value, error ->
             var docs  = value!!.documents
             docs.iterator().forEach {
-                Log.i("LIKESFRAGMENT-4",it.id)
                 timelineReference.whereEqualTo("postId",it.id).addSnapshotListener { value, error ->
                     for(doc in value!!.documentChanges) {
                        when(doc.type) {
@@ -85,25 +83,15 @@ class LikesFragment : Fragment(), ItemRecyclerViewListener {
                                PostTimeline::class.java))
                        }
                     }
-
                     adapterLikes.notifyDataSetChanged()
                     adapterLikes.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
                         override fun onItemClicked(position: Int) {
                             Toast.makeText(context,"Item number: $position", Toast.LENGTH_SHORT).show()
                         }
                     })
-                   // recyclerViewLikes.adapter = adapterLikes
-                    //recyclerViewLikes.setHasFixedSize(true)
-                    Log.i("LIKESFRAGMENT-2",likesArraylist.toString())
                 }
             }
-
-            Log.i("LIKESFRAGMENT-3",value!!.documents.toString())
         }
-
-
-
-
     }
 
 }

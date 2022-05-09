@@ -15,6 +15,7 @@ import com.example.heymama.R
 import com.example.heymama.adapters.ConsultaAdapter
 import com.example.heymama.adapters.ForoAdapter
 import com.example.heymama.adapters.PostTimelineAdapter
+import com.example.heymama.databinding.ActivityConsultasBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.Consulta
 import com.example.heymama.models.Post
@@ -38,27 +39,47 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var rol: String
+    private lateinit var binding: ActivityConsultasBinding
+    private var data: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_consultas)
+        binding = ActivityConsultasBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
         firestore = FirebaseFirestore.getInstance()
         getDataUser()
 
-        recyclerView = findViewById(R.id.recyclerView_consultas)
+        recyclerView = binding.recyclerViewConsultas
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.setHasFixedSize(true)
 
         consultasArraylist = arrayListOf()
 
-        spinnerConsultas = findViewById(R.id.spinnerConsultas_prof)
+        spinnerConsultas = binding.spinnerConsultasProf
         temas = resources.getStringArray(R.array.temasConsultas)
         val adapter = ArrayAdapter(this,R.layout.spinner_item,temas)
         spinnerConsultas.adapter = adapter
 
+    }
+
+
+    private fun getDataUser(){
+        database.reference.child("Usuarios").child(auth.uid.toString()).addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                var user : User? = snapshot.getValue(User::class.java)
+                rol = user!!.rol.toString()
+                getSpinner()
+            }
+            override fun onCancelled(error: DatabaseError) {
+            //TO DO("Not yet implemented")
+            }
+        })
+    }
+
+    fun getSpinner() {
         var selectedItem = spinnerConsultas.selectedItem.toString()
         spinnerConsultas.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
@@ -81,23 +102,7 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
             }
 
         }
-
-
     }
-
-
-    private fun getDataUser(){
-        database.reference.child("Usuarios").child(auth.uid.toString()).addValueEventListener(object: ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    var user : User? = snapshot.getValue(User::class.java)
-                    rol = user!!.rol.toString()
-                }
-                override fun onCancelled(error: DatabaseError) {
-                    //TO DO("Not yet implemented")
-                }
-            })
-    }
-
     private fun getMisConsultas(temaConsulta: String) {
         consultasArraylist.clear()
 

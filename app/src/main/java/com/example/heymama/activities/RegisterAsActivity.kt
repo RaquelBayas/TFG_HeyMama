@@ -5,23 +5,25 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import com.example.heymama.R
+import com.example.heymama.databinding.ActivityRegisterAsBinding
 
 class RegisterAsActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityRegisterAsBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register_as)
+        binding = ActivityRegisterAsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val btnUsuario: Button = findViewById(R.id.btn_usuario)
-        btnUsuario.setOnClickListener {
+        binding.btnUsuario.setOnClickListener {
             // Do something in response to button click
             val intent = Intent(this, RegisterActivity::class.java)
             intent.putExtra("Rol","Usuario")
-
             startActivity(intent)
         }
 
-        val btnProfesional: Button = findViewById(R.id.btn_profesional)
-        btnProfesional.setOnClickListener {
+        binding.btnProfesional.setOnClickListener {
             // Do something in response to button click
             val intent = Intent(this, RegisterProfesionalActivity::class.java)
             intent.putExtra("Rol","Profesional")

@@ -8,38 +8,30 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.PopupMenu
-import android.widget.TextView
-import androidx.core.content.ContextCompat.startActivity
+import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
 import com.example.heymama.activities.PerfilActivity
-import com.example.heymama.interfaces.Utils
 import com.example.heymama.models.FriendRequest
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
+import com.example.heymama.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
-class FriendsAdapter(private val context: Context, private val friendsList: ArrayList<FriendRequest>, private val uidProfileFriends : String
-) : RecyclerView.Adapter<FriendsAdapter.HolderForo>() {
+class FriendsAdapter(private val context: Context, private var friendsList: ArrayList<FriendRequest>, private val uidProfileFriends : String
+) : RecyclerView.Adapter<FriendsAdapter.HolderForo>(), Filterable {
 
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
-    private lateinit var dataBase: FirebaseDatabase
-    private lateinit var dataBaseReference: DatabaseReference
     private lateinit var firebaseStore: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageReference: StorageReference
     private lateinit var uidFriend: String
+    private lateinit var uid: String
+    private val ONE_MEGABYTE : Long = 1024 * 1024
 
     override fun onCreateViewHolder(parent: ViewGroup,
                                     viewType: Int
@@ -55,48 +47,74 @@ class FriendsAdapter(private val context: Context, private val friendsList: Arra
         firestore = FirebaseFirestore.getInstance() //CLOUD STORAGE
         firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
         storageReference = firebaseStore.reference
-        dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
-
-        dataBaseReference = dataBase.getReference("Usuarios")
-
         getFriends(holder,position)
     }
 
-    private fun getFriends(holder:HolderForo,position:Int) {
+     fun filterList(list: ArrayList<FriendRequest>) {
+        this.friendsList = list
+    }
+    /**
+     * Este método permite filtrar la búsqueda de amigos.
+     *
+     * @param friend String
+     */
+    override fun getFilter(): Filter {
+        TODO("Not yet implemented")
+    }
 
-        var uid = friendsList[position].friend_send_uid
+    fun filter(friend: String) {
+        var newList = friendsList
+        friendsList.iterator().forEach {
+            if((it.friend_receive_uid.contains(friend)) || (it.friend_send_uid.contains(friend))){
 
-        firestore.collection("Usuarios").document(uid).addSnapshotListener { value, error ->
-            holder.txt_nombre_amigo.text = value?.data?.get("name").toString() // MAYUSCULA?
-            holder.txt_user_amigo.text = value?.data?.get("username").toString()
-
-            storageReference = firebaseStore.getReference("/Usuarios/"+uid+"/images/perfil")
-            val ONE_MEGABYTE: Long = 1024 * 1024
-            storageReference
-                .getBytes(8 * ONE_MEGABYTE).
-                addOnSuccessListener { bytes ->
-                    val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                    holder.img_amigos.setImageBitmap(bmp)
-                }.addOnFailureListener {
-                    Log.e(ContentValues.TAG, "Se produjo un error al descargar la imagen.", it)
-                }
+                newList.add(it)
+            }
         }
-        holder.img_amigos.setOnClickListener {
-            visitFriend(uid)
+    }
+
+    private fun getFriends(holder:HolderForo,position:Int) {
+        if(friendsList[position].friend_receive_uid != uidProfileFriends) {
+            uid = friendsList[position].friend_receive_uid
+        } else {
+            uid = friendsList[position].friend_send_uid
         }
 
         with(holder) {
-            if( uidProfileFriends == auth.uid) {
+            firestore.collection("Usuarios").document(uid).addSnapshotListener { value, error ->
+                val user = value?.toObject(User::class.java)
+                txt_nombre_amigo.text = user!!.name
+                txt_user_amigo.text = user!!.username
+
+                storageReference = firebaseStore.getReference("/Usuarios/"+user.id+"/images/perfil")
+                storageReference
+                    .getBytes(8 * ONE_MEGABYTE).
+                    addOnSuccessListener { bytes ->
+                        val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                        img_amigos.setImageBitmap(bmp)
+                    }.addOnFailureListener {
+                        Log.e(ContentValues.TAG, "Se produjo un error al descargar la imagen.", it)
+                    }
+                img_amigos.setOnClickListener {
+                    visitFriend(value?.data?.get("id").toString())
+                }
+            }
+            menuFriend(holder)
+        }
+    }
+
+    private fun menuFriend(holder: HolderForo) {
+        with(holder) {
+            if (uidProfileFriends == auth.uid) {
                 btn_menu_friends.visibility = View.VISIBLE
                 btn_menu_friends.setOnClickListener {
-                    val popupMenu: PopupMenu = PopupMenu(context,holder.btn_menu_friends)
-                    popupMenu.menuInflater.inflate(R.menu.post_tl_menu,popupMenu.menu) //Sólo tiene la opción de eliminar
+                    val popupMenu: PopupMenu = PopupMenu(context, holder.btn_menu_friends)
+                    popupMenu.menuInflater.inflate(R.menu.post_tl_menu,
+                        popupMenu.menu) //Sólo tiene la opción de eliminar
                     popupMenu.show()
                     popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
-                        when(it.itemId) {
+                        when (it.itemId) {
                             R.id.eliminar_post_tl -> {
                                 getUIDFriend(txt_user_amigo.text.toString())
-
                             }
                         }
                         true
@@ -105,7 +123,6 @@ class FriendsAdapter(private val context: Context, private val friendsList: Arra
             }
         }
     }
-
     /**
      *
      * @param username String
@@ -139,10 +156,9 @@ class FriendsAdapter(private val context: Context, private val friendsList: Arra
      */
     private fun visitFriend(uid:String) {
         val intent = Intent(context, PerfilActivity::class.java)
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         intent.putExtra("UserUID",uid)
         this.context.startActivity(intent)
-
     }
 
     /**
@@ -161,5 +177,7 @@ class FriendsAdapter(private val context: Context, private val friendsList: Arra
         var img_amigos: ImageView = itemView.findViewById(R.id.img_amigos)
         var btn_menu_friends: Button = itemView.findViewById(R.id.btn_menu_friends)
     }
+
+
 
 }

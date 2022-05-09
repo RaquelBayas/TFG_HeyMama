@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import java.text.SimpleDateFormat
 
 class ChatAdapter(private val context: Context, private val chatArrayList: ArrayList<Message>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -57,6 +58,9 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
             } else {
                 viewHolder.binding_send.txtMessageChat.text = message.message
                 viewHolder.binding_send.imgChat.visibility = View.GONE
+                var timeMessage = getTime(message)
+                viewHolder.binding_send.itemChatTime.text = timeMessage
+
             }
         } else {
             val viewHolder = holder as ReceiveHolder
@@ -74,6 +78,13 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
                 viewHolder.binding_receive.imgChat.visibility = View.GONE
             }
         }
+    }
+
+    fun getTime(message: Message): String {
+        var timestamp = message.timestamp
+        val dateFormat = SimpleDateFormat("HH:mm")
+        var time_message = dateFormat.format(timestamp)
+        return time_message
     }
 
     override fun getItemViewType(position: Int): Int {

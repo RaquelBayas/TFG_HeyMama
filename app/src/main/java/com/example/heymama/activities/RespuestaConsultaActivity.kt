@@ -66,8 +66,7 @@ class RespuestaConsultaActivity : AppCompatActivity() {
 
 
         txt_respuesta_consulta = binding.txtRespuestaConsulta
-        var btn_send_respuesta_consulta : ImageView = binding.btnSendRespuestaConsulta
-        btn_send_respuesta_consulta.setOnClickListener {
+       binding.btnSendRespuestaConsulta.setOnClickListener {
             if(txt_respuesta_consulta.text.isEmpty()) {
                 Toast.makeText(this,"Introduce una respuesta",Toast.LENGTH_SHORT).show()
             } else {
@@ -105,7 +104,8 @@ class RespuestaConsultaActivity : AppCompatActivity() {
                     }
                     Log.i("respuestas",dc.document.toString())
                 }
-
+                respuestasArraylist.sortedDescending()
+                consultasArraylist.sortedDescending()
                 respuestaConsultaAdapter = RespuestaConsultaAdapter(this,consultasArraylist)
                 respuestaConsultaAdapter.notifyDataSetChanged()
                 recyclerView.adapter = respuestaConsultaAdapter
@@ -120,12 +120,9 @@ class RespuestaConsultaActivity : AppCompatActivity() {
     }
 
     private fun sendReply() {
-
         var ref = firestore.collection("Consultas").document(tema_consulta).collection("Consultas").document(id_consulta)
             .collection("Respuestas").document()
-
         var respuesta = Consulta(ref.id,auth.uid.toString(),tema_consulta,txt_respuesta_consulta.text.toString(), Date())
-
         try {
             ref.set(respuesta)
             Toast.makeText(this,"Respuesta enviada correctamente",Toast.LENGTH_SHORT).show()
@@ -133,7 +130,6 @@ class RespuestaConsultaActivity : AppCompatActivity() {
         } catch(e: Exception) {
             print(e.message)
         }
-
     }
 
 

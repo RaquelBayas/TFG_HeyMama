@@ -11,5 +11,13 @@ data class User(
     var profilePhoto: String? = ""
 )
 {
+    var _id = id
+    get() {
+        return _id
+    }
 
+    var _name = name
+    get() {
+        return _name
+    }
 }

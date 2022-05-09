@@ -118,7 +118,7 @@ class RegisterActivity : AppCompatActivity() {
                         userDB.child("profilePhoto").setValue("")
 
                         val data = hashMapOf(
-                            "ID" to uid,
+                            "id" to uid,
                             "name" to name,
                             "username" to username,
                             "email" to email,
@@ -133,7 +133,6 @@ class RegisterActivity : AppCompatActivity() {
                         }.addOnFailureListener {
                             Log.i("user-new",it.toString())
                         }
-
                         //firebaseStore.collection("Usuarios").document(auth.uid.toString()).set(usuario)
 
                     } else{
@@ -143,7 +142,6 @@ class RegisterActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, "Rellena los datos por favor.",Toast.LENGTH_SHORT).show()
         }
-
     }
 
     private fun verifyUser(username:String,email:String) {
@@ -185,7 +183,6 @@ class RegisterActivity : AppCompatActivity() {
     private fun verifyPassword(password: String) : Boolean{
         return (password != null && password.length >= 7)
     }
-
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed() //go previous activity

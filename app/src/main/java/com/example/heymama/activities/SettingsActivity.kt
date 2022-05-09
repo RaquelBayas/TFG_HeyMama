@@ -7,7 +7,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -16,12 +15,10 @@ import com.example.heymama.R
 import com.example.heymama.Utils
 import com.example.heymama.databinding.ActivitySettingsBinding
 import com.example.heymama.models.User
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.*
 import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.ktx.Firebase
-import org.w3c.dom.Text
+
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -33,11 +30,6 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var uid: String
     private lateinit var rol: String
 
-
-    private lateinit var txt_settings_email: TextView
-    private lateinit var btn_delete_account: Button
-    private lateinit var txt_settings_password: TextView
-    private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var binding: ActivitySettingsBinding
 
     /**
@@ -58,45 +50,24 @@ class SettingsActivity : AppCompatActivity() {
         getDataUser()
 
         binding.settingsName.setOnClickListener {
-            change_username()
+            changeUsername()
         }
 
-        txt_settings_email = findViewById(R.id.settings_email)
-        txt_settings_email.text = auth.currentUser!!.email.toString()
-        txt_settings_email.setOnClickListener {
-            change_email()
+        binding.settingsBio.setOnClickListener {
+            changeBio()
+        }
+        binding.settingsEmail.text = auth.currentUser!!.email.toString()
+        binding.settingsEmail.setOnClickListener {
+            changeEmail()
         }
 
-        btn_delete_account = findViewById(R.id.btn_delete_account)
-        btn_delete_account.setOnClickListener {
-            delete_account()
+        binding.btnDeleteAccount.setOnClickListener {
+            deleteAccount()
         }
 
         binding.settingsPassword.setOnClickListener {
-            change_password()
+            changePassword()
         }
-
-        bottomNavigationView = findViewById(R.id.bottomNavigationView)
-        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
-            when(item.itemId) {
-                R.id.nav_bottom_item_foros -> {
-                    startActivity(Intent(this,ForosActivity::class.java))
-                    return@setOnNavigationItemSelectedListener true
-                }
-                R.id.nav_bottom_item_home -> {
-                    finish()
-                    when(rol) {
-                        "Usuario" ->  startActivity(Intent(this,HomeActivity::class.java))
-                        "Profesional" -> startActivity(Intent(this,HomeActivityProf::class.java))
-                        "Admin" -> startActivity(Intent(this,HomeActivityAdmin::class.java))
-                    }
-
-                    return@setOnNavigationItemSelectedListener true
-                }
-            }
-            return@setOnNavigationItemSelectedListener false
-        }
-
     }
 
     /**
@@ -110,6 +81,7 @@ class SettingsActivity : AppCompatActivity() {
                 var user : User? = snapshot.getValue(User::class.java)
                 rol = user!!.rol.toString()
                 binding.settingsName.text = user!!.name.toString()
+                binding.settingsBio.text = user!!.bio.toString()
             }
             override fun onCancelled(error: DatabaseError) {
                 //TO DO("Not yet implemented")
@@ -117,12 +89,45 @@ class SettingsActivity : AppCompatActivity() {
         })
     }
 
+    private fun changeBio() {
+        val builder = AlertDialog.Builder(this)
+        val view = layoutInflater.inflate(R.layout.dialog_change_username,null)
+        builder.setView(view)
+
+        //Obtenemos el editText del nombre de usuario
+        var txt_old = view.findViewById<TextView>(R.id.settings_txt_old)
+        var txt_new = view.findViewById<TextView>(R.id.settings_txt_new)
+        txt_old.text = resources.getString(R.string.bio_actual)
+        txt_new.text = resources.getString(R.string.bio_nueva)
+
+        val new_bio = view.findViewById<EditText>(R.id.edt_settings_username)
+        val old_bio = view.findViewById<TextView>(R.id.settings_old_name)
+
+        var user_ref = firestore.collection("Usuarios").document(uid)
+        user_ref.addSnapshotListener { value, error ->
+            old_bio.text = value!!.data!!.get("bio").toString()
+        }
+
+        builder.setPositiveButton("Confirmar"){ dialogInterface : DialogInterface, which ->
+            if(new_bio.text.isEmpty()) {
+                return@setPositiveButton
+            } else {
+                user_ref.update("bio",new_bio.text.toString())
+                database.getReference("Usuarios").child(uid).child("bio").setValue(new_bio.text.toString())
+            }
+        }
+        builder.setNegativeButton("Cancelar"){ dialogInterface : DialogInterface, which ->
+            dialogInterface.dismiss()
+        }
+        val dialog = builder.create()
+        dialog.show()
+    }
 
     /**
      *
      * @param input
      */
-    private fun change_password() {
+    private fun changePassword() {
         val builder = AlertDialog.Builder(this)
         val view = layoutInflater.inflate(R.layout.dialog_change_password,null)
         builder.setView(view)
@@ -167,11 +172,10 @@ class SettingsActivity : AppCompatActivity() {
      * @param input
      *
      */
-    private fun change_email() {
+    private fun changeEmail() {
         val builder = AlertDialog.Builder(this)
         val view = layoutInflater.inflate(R.layout.dialog_change_username,null)
         builder.setView(view)
-
 
         //Obtenemos el editText del nombre de usuario
         var txt_old = view.findViewById<TextView>(R.id.settings_txt_old)
@@ -220,11 +224,10 @@ class SettingsActivity : AppCompatActivity() {
      * @param input
      *
      */
-    private fun change_username() {
+    private fun changeUsername() {
         val builder = AlertDialog.Builder(this)
         val view = layoutInflater.inflate(R.layout.dialog_change_username,null)
         builder.setView(view)
-
 
         //Obtenemos el editText del nombre de usuario
         val new_username = view.findViewById<EditText>(R.id.edt_settings_username)
@@ -264,7 +267,7 @@ class SettingsActivity : AppCompatActivity() {
      * @param input
      *
      */
-    private fun delete_account() {
+    private fun deleteAccount() {
         //firestore.collection("Chats").document(auth.uid.toString()).delete()
 
         var temasForos = arrayListOf<String>("Depresión","Embarazo","Posparto","Otros")

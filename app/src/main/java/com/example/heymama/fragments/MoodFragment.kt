@@ -50,19 +50,6 @@ class MoodFragment : DialogFragment() {
     fun setMood(view : Int) {
         var moodtype : MoodType? = null
 
-        /*when(moodtype) {
-
-            MoodType.BIEN -> {
-
-                print("")
-            }
-            MoodType.FELIZ -> print("")
-            MoodType.MAL -> print("")
-            MoodType.REGULAR -> print("")
-            MoodType.TRISTE -> print("")
-
-        }*/
-
         when(view) {
             R.id.btn_mood_regular -> {
                 Toast.makeText(context, MoodType.REGULAR.name, Toast.LENGTH_SHORT).show()

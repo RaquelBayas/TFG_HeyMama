@@ -60,8 +60,8 @@ class ListChatItemAdapter(private val context: Context, private val listChatItem
             txt_username_chat_item.text = listChatItemsList[position].username
             idUser = listChatItemsList[position].idUser
 
-            storageReference = storageReference.child("Usuarios/"+idUser+"/images/perfil")
-
+            storageReference = firebaseStorage.getReference("Usuarios/"+idUser+"/images/perfil")
+            Log.i("listitem",idUser)
             storageReference
                 .getBytes(8 * ONE_MEGABYTE).
                 addOnSuccessListener { bytes ->

@@ -346,7 +346,8 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
 
         var friendRequest_send = FriendRequest(uid,currentUserUID,"send")
         var friendRequest_receive = FriendRequest(uid,currentUserUID,"receive")
-
+        Log.i("sendFriendRequest",friendRequest_send.friend_send_uid)
+        Log.i("sendFriendRequest-2",friendRequest_receive.friend_receive_uid)
         firestore.collection("Friendship").document(currentUserUID).collection("FriendRequest")
             .document(uid).set(friendRequest_send)
         firestore.collection("Friendship").document(uid).collection("FriendRequest")

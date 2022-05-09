@@ -33,7 +33,6 @@ class SolicitudesActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private lateinit var requestsArraylist: ArrayList<FriendRequest>
     private lateinit var adapterRequests: FriendRequestAdapter
 
-
     /**
      *
      * @param savedInstanceState Bundle
@@ -72,7 +71,6 @@ class SolicitudesActivity : AppCompatActivity(), ItemRecyclerViewListener {
      *
      */
     private fun getFriendRequest() {
-
         firestore.collection("Friendship").document(auth.currentUser!!.uid).collection("FriendRequest")
             .addSnapshotListener { value, error ->
                 if(value != null) {
@@ -80,11 +78,8 @@ class SolicitudesActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     document.forEach { d ->
                         d.reference.addSnapshotListener { value, error ->
                             if (value != null) {
-                                var friend_receive_uid = value.get("friend_receive_uid").toString()
-                                var friend_send_uid = value.get("friend_send_uid").toString()
-                                var state = value.get("state").toString()
-                                var friendRequest = FriendRequest(friend_receive_uid,friend_send_uid,state)
-                                if ((friendRequest != null) && (state == "receive")) { // SÓLO SE MUESTRAN LOS QUE HAN ENVIADO LA SOLICITUD
+                                var friendRequest = value.toObject(FriendRequest::class.java)
+                                if ((friendRequest != null) && (friendRequest.state == "receive")) { // SÓLO SE MUESTRAN LOS QUE HAN ENVIADO LA SOLICITUD
                                     requestsArraylist.add(friendRequest)
                                     adapterRequests = FriendRequestAdapter(applicationContext,requestsArraylist)
                                     recyclerViewRequests.adapter = adapterRequests

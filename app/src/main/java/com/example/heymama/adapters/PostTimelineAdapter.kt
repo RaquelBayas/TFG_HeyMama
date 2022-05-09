@@ -24,6 +24,7 @@ import com.google.firebase.firestore.*
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -36,7 +37,7 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
     private lateinit var firebaseStore: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageReference: StorageReference
-
+    private val ONE_MEGABYTE: Long = 1024 * 1024
     private lateinit var id_post: String
     private lateinit var id_user: String
 
@@ -72,15 +73,11 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
         database = FirebaseDatabase.getInstance()
         firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
         storageReference = firebaseStore.reference
-
         firestore = FirebaseFirestore.getInstance()
 
         var post_tl: PostTimeline = postsTimelineList[position] // get data at specific position
 
         storageReference = storageReference.child("Usuarios/"+post_tl.userId+"/images/perfil")
-
-        val ONE_MEGABYTE: Long = 1024 * 1024
-
 
         if(post_tl.userId!!.equals(auth.uid)){
             holder.btn_menu_post_tl.visibility = View.VISIBLE
@@ -131,36 +128,17 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
                 commentCount_post.text = post_tl.commentCount.toString() //likeCounter(holder,position).toString()
                 likeCount_post.text = post_tl.likeCount.toString()
                 id_post = post_tl.postId.toString()
-
+                var timestamp = post_tl.timestamp
+                val dateFormat = SimpleDateFormat("dd/MM/yy \n  HH:mm")
+                time_post.text = dateFormat.format(timestamp)
                 commentButton.setOnClickListener {
                     commentPostTL(name_post.text.toString(),user_post.text.toString(),comment_post.text.toString(), postsTimelineList[Integer.parseInt(adapterPosition.toString())].postId.toString(), id_user
                     )
                 }
             }
         }
-        /*with(holder) {
-            name_post.setText(post_tl.user?.name)
-            user_post.text = post_tl.user?.username
-            id_user = post_tl.user?.id.toString()
-            comment_post.text = post_tl.comment
-            commentCount_post.text = post_tl.commentCount.toString() //likeCounter(holder,position).toString()
-            likeCount_post.text = post_tl.likeCount.toString()
-            id_post = post_tl.postId.toString()
 
-            /*var dateFormat = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss Z yyyy")
-
-            var date : LocalDate = LocalDate.parse(post_tl.date, DateTimeFormatter.ISO_DATE)
-            var datepost = post_tl.date.toString()
-
-            //Log.i("date",datepost)
-            var dateFormat2 = SimpleDateFormat("dd/MM/yyyy")
-            Log.i("date", dateFormat2.parse(datepost).toString())
-            time_post.text = datepost//dateFormat2.format(post_tl.date).toString()
-            //time_post.text = dateFormat2.format(date.time.toString()).toString()
-*/
-        }*/
-        holder.likeButton.setOnClickListener { //object: View.OnClickListener {
-            //override fun onClick(p0: View?) {
+        holder.likeButton.setOnClickListener {
             firestore.collection("Timeline").addSnapshotListener { value, error ->
                 if (error != null) {
                     return@addSnapshotListener
@@ -182,39 +160,14 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
             }
             var likesReference =  firestore.collection("Likes").document(auth.uid.toString()).collection("Likes").document(post_tl.postId.toString())
             likesReference.get().addOnCompleteListener {
-                    if(!it.result.exists()) {
-                        val likesMap: HashMap<String, String> = HashMap()
-                        likesMap?.put("timestap", Date().toString())
-                        likesReference.set(likesMap!!)
-                    } else {
-                       likesReference.delete()
-                    }
+                if(!it.result.exists()) {
+                    val likesMap: HashMap<String, String> = HashMap()
+                    likesMap?.put("timestap", Date().toString())
+                    likesReference.set(likesMap!!)
+                } else {
+                    likesReference.delete()
                 }
-            /*var likesRef = database.reference.child("Likes").child(auth.uid.toString()).child(post_tl.postId.toString())
-            val mapLikes: HashMap<String, String> = HashMap()
-            mapLikes?.put("userID",auth.uid.toString())
-            mapLikes?.put("timestamp", Date().toString())
-            likesRef.setValue(mapLikes)
-            database.reference.child("Likes").child(auth.uid.toString()).addValueEventListener(object: ValueEventListener{
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    for(snap in snapshot.children) {
-                        if(snap.key.toString() == post_tl.postId.toString()) {
-                            Log.i("LIKES-TL-4",snap.key.toString())
-                            database.reference.child("Likes").child(auth.uid.toString()).child(snap.key.toString()).removeValue()
-                        }
-                        Log.i("LIKES-TL-3",snap.key.toString())
-                    }
-
-
-                    Log.i("LIKES-TL",snapshot.key.toString())
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
-
-            })*/
-
+            }
         }
 
         likeCounter(holder,position)

@@ -14,6 +14,7 @@ import com.example.heymama.databinding.ActivityListChatsBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.ListChatItem
 import com.example.heymama.models.Message
+import com.example.heymama.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
@@ -99,11 +100,11 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
         chatsArraylist.clear()
         var ref = firestore.collection("Usuarios").document(userUid)
         ref.addSnapshotListener { value, error ->
-
-            idUser = value!!.data!!.get("ID").toString()
-            receiver_name = value!!.data!!.get("name").toString()
-            receiver_username = value!!.data!!.get("username").toString()
-            var status = value!!.data!!.get("status").toString()
+            val user = value!!.toObject(User::class.java)
+            idUser = user!!.id.toString()
+            receiver_name = user.name.toString()
+            receiver_username = user.username.toString()
+            var status = user.status
 
             var chatItem = ListChatItem(datasn.key.toString(), idUser, receiver_name, receiver_username, msg.message, status, Date())
             Log.i("chatitem-status",status)
@@ -116,7 +117,6 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     val intent = Intent(applicationContext, ChatActivity::class.java)
                     intent.putExtra("friendUID", chatsArraylist[position].idUser)
                     startActivity(intent)
-                    Toast.makeText(this@ListChatsActivity,"Item number: $position", Toast.LENGTH_SHORT).show()
                 }
             })
         }

@@ -27,6 +27,9 @@
         <item name="colorPrimary">@color/white</item>
     </style>
 
+    <style name="CustomForoCommentsLayout" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:background">@drawable/dialog_comment_foro_view</item>
+    </style>
     <style name="noAnimTheme" parent="android:Theme">
         <item name="android:windowAnimationStyle">@null</item>
     </style>

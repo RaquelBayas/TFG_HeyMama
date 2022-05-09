@@ -9,6 +9,7 @@ import android.os.Parcelable
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +21,7 @@ import com.example.heymama.databinding.ActivityInfoBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.Article
 import com.example.heymama.models.Post
+import com.example.heymama.models.User
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -44,7 +46,6 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     private lateinit var rol: String
     private lateinit var btn_add_article: Button
-    private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var binding: ActivityInfoBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,11 +55,15 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         val intent = intent
         rol = intent.getStringExtra("Rol")!!
-        Toast.makeText(this,rol,Toast.LENGTH_SHORT).show()
 
         if (rol == "Profesional") {
             btn_add_article = binding.btnAddArticle
             btn_add_article.visibility = View.VISIBLE
+            btn_add_article.setOnClickListener {
+                val intent = Intent(this,LayoutArticleActivity::class.java)
+                intent.putExtra("type","0") //0 PUBLICAR NUEVO ARTÍCULO
+                startActivity(intent)
+            }
         }
         //Instancias para la base de datos y la autenticación
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
@@ -72,37 +77,11 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         articlesArraylist = arrayListOf<Article>()
         idArticlesArrayList = arrayListOf()
+        adapter = InfoArticleAdapter(this,articlesArraylist,this)
+        recyclerView.adapter = adapter
         getArticlesData()
 
-
-        // Barra de navegación inferior
-        bottomNavigationView = binding.bottomNavigationView
-        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
-            when(item.itemId) {
-                R.id.nav_bottom_item_home -> {
-                    finish()
-                    return@setOnNavigationItemSelectedListener true
-                }
-                R.id.nav_bottom_item_foros -> {
-                    startActivity(Intent(this,ForosActivity::class.java))
-                    return@setOnNavigationItemSelectedListener true
-                }
-                R.id.nav_bottom_item_ajustes -> {
-                    startActivity(Intent(this,SettingsActivity::class.java))
-                    return@setOnNavigationItemSelectedListener true
-                }
-            }
-            return@setOnNavigationItemSelectedListener false
-        }
-        
-
-        btn_add_article.setOnClickListener {
-            //goToActivity(this,LayoutArticleActivity::class.java)
-            val intent = Intent(this,LayoutArticleActivity::class.java)
-            intent.putExtra("type","0") //0 PUBLICAR NUEVO ARTÍCULO
-            startActivity(intent)
-
-        }
+        searchView()
     }
 
     /**
@@ -114,34 +93,47 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private fun getArticlesData() {
         firestore = FirebaseFirestore.getInstance()
 
-        firestore.collection("Artículos")
-            .addSnapshotListener { snapshots, e ->
-                if (e != null) {
-                    Log.w("TAG", "listen:error", e)
-                    return@addSnapshotListener
-                }
-                //adapter = ForoAdapter(this,temasArraylist,this)
-                for (dc in snapshots!!.documentChanges) {
-                    when (dc.type) {
-                        DocumentChange.Type.ADDED ->
-                        {
-                            articlesArraylist.add(dc.document.toObject(Article::class.java))
-                            idArticlesArrayList.add(dc.document.reference.id)
-
-                        }
-                        //DocumentChange.Type.MODIFIED -> articlesArraylist.add(dc.document.toObject(Article::class.java))
-                        DocumentChange.Type.REMOVED -> articlesArraylist.remove(dc.document.toObject(Article::class.java))
-                    }
-
-                }
-                adapter = InfoArticleAdapter(this,articlesArraylist,this)
-                adapter.notifyDataSetChanged()
-                recyclerView.adapter = adapter
-
+        firestore.collection("Artículos").addSnapshotListener { snapshots, e ->
+            if (e != null) {
+                Log.w("TAG", "listen:error", e)
+                return@addSnapshotListener
             }
-
+            //adapter = ForoAdapter(this,temasArraylist,this)
+            for (dc in snapshots!!.documentChanges) {
+                when (dc.type) {
+                    DocumentChange.Type.ADDED -> {
+                        articlesArraylist.add(dc.document.toObject(Article::class.java))
+                        idArticlesArrayList.add(dc.document.reference.id)
+                    }
+                    //DocumentChange.Type.MODIFIED -> articlesArraylist.add(dc.document.toObject(Article::class.java))
+                    DocumentChange.Type.REMOVED -> articlesArraylist.remove(dc.document.toObject(Article::class.java))
+                }
+            }
+            adapter.notifyDataSetChanged()
+        }
     }
 
+    private fun searchView() {
+        binding.searchViewInfo.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(p0: String?): Boolean {
+                filter(p0!!)
+                return true
+            }
+        })
+    }
+    private fun filter(articleSearch: String) {
+        var articleSearchArrayList = ArrayList<Article>()
+        for(article in articlesArraylist) {
+            if(article.title!!.toLowerCase()!!.contains(articleSearch.toLowerCase())!!) {
+                articleSearchArrayList.add(article)
+            }
+        }
+        adapter.filterList(articleSearchArrayList)
+    }
     /**
      * Este método permite eliminar un artículo
      *
@@ -156,7 +148,6 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
             recyclerView.adapter = adapter
         }
     }
-
 
     /**
      *
