@@ -201,7 +201,7 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_menu"
-        app:menu="@menu/nav_bar_bottom_menu">
+        app:menu="@menu/nav_menu_2">
 
     </com.google.android.material.navigation.NavigationView>
 

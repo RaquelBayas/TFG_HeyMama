@@ -43,6 +43,16 @@ class HomeActivityAdmin : AppCompatActivity(), NavigationView.OnNavigationItemSe
             startActivity(Intent(this,ListaUsuariosActivity::class.java))
         }
 
+        binding.txtForos.setOnClickListener{
+            startActivity(Intent(this,ForosActivity::class.java))
+        }
+
+        binding.txtInformacion.setOnClickListener{
+            val intent = Intent(this, InfoActivity::class.java)
+            intent.putExtra("Rol","Admin")
+            startActivity(intent)
+        }
+
         val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar_main)
         setSupportActionBar(toolbar)
         val navigationView: NavigationView = binding.navView
@@ -53,9 +63,9 @@ class HomeActivityAdmin : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
             override fun onDrawerStateChanged(newState: Int) {
                 var profileImage_nav = viewNav.findViewById<ImageView>(R.id.nav_header_icon)
-
             }
         }
+
         drawer.addDrawerListener(toggle)
 
         bottomNavigationView = binding.bottomNavigationView
@@ -83,7 +93,8 @@ class HomeActivityAdmin : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-
+            R.id.nav_item_ajustes -> startActivity(Intent(this,SettingsActivity::class.java))
+            R.id.nav_item_timeline -> startActivity(Intent(this,TimelineActivity::class.java))
             R.id.nav_item_logout -> logOut()
         }
         drawer.closeDrawer(GravityCompat.START)

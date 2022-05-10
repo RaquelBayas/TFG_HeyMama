@@ -7,7 +7,6 @@
     android:orientation="vertical"
     tools:context=".activities.RespuestaConsultaActivity">
 
-
     <LinearLayout
         android:layout_weight="3"
         android:layout_width="match_parent"
@@ -60,7 +59,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:background="@android:color/transparent"
-                            android:fontFamily="@font/baloo"
+                            android:fontFamily="@font/alegreya"
                             android:gravity="start|center"
                             android:hint="Type here..."
                             android:padding="5dp"

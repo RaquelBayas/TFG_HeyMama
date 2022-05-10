@@ -5,6 +5,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
@@ -35,7 +37,10 @@ class ConsultaAdapter(private val context: Context, private val consultasArrayLi
         with(holder) {
 
             consulta.text = consultasArrayList[position].consulta.toString()
-
+            holder.btn_menu_consulta_.visibility = View.VISIBLE
+            btn_menu_consulta_.setOnClickListener {
+                menuBtnConsulta(holder,consultasArrayList[position])
+            }
         }
 
     }
@@ -55,8 +60,28 @@ class ConsultaAdapter(private val context: Context, private val consultasArrayLi
             val data = value!!.data
             holder.name_consulta.text = data!!["name"].toString()
             holder.userc_consulta.text = data!!["username"].toString()
-
         }
+    }
+
+    private fun menuBtnConsulta(holder: HolderConsulta, consulta: Consulta,) {
+        val popupMenu: PopupMenu = PopupMenu(context,holder.btn_menu_consulta_)
+        popupMenu.menuInflater.inflate(R.menu.post_tl_menu,popupMenu.menu)
+        popupMenu.show()
+
+        popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.eliminar_post_tl -> {
+                    firestore.collection("Consultas").document(consulta.tema.toString()).collection("Consultas").
+                    document(consulta.id.toString()).addSnapshotListener { value, error ->
+                        value!!.reference.collection("Respuestas").addSnapshotListener { value, error ->
+                            value!!.documents.iterator().forEach { it.reference.delete() }
+                        }
+                        value.reference.delete()
+                    }
+                }
+            }
+            true
+        })
     }
 
     override fun getItemCount(): Int {
@@ -67,6 +92,7 @@ class ConsultaAdapter(private val context: Context, private val consultasArrayLi
         var userc_consulta: TextView = itemView.findViewById(R.id.txt_consulta_user)
         var name_consulta: TextView = itemView.findViewById(R.id.txt_consulta_name)
         var consulta: TextView = itemView.findViewById(R.id.txt_consulta_post)
+        var btn_menu_consulta_: Button = itemView.findViewById(R.id.btn_menu_consulta)
 
         init {
             itemView.setOnClickListener {

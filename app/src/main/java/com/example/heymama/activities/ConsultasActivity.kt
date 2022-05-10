@@ -81,26 +81,26 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     fun getSpinner() {
         var selectedItem = spinnerConsultas.selectedItem.toString()
+
         spinnerConsultas.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, id: Long) {
-
-                if(rol == "Usuario") {
-                    getMisConsultas(temas[position])
-                } else {
-                    getConsultas(temas[position])
-                }
+                //if(temas[position] != temas[0]) {
+                    if (rol == "Usuario") {
+                        getMisConsultas(temas[position])
+                    } else {
+                        getConsultas(temas[position])
+                    }
+                //}
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
-
                 if(rol == "Usuario") {
                     getMisConsultas("Embarazo")
                 } else {
                     getConsultas("Embarazo")  // Tema por defecto, es el primer tema del spinner
                 }
             }
-
         }
     }
     private fun getMisConsultas(temaConsulta: String) {
@@ -123,25 +123,23 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 }
                 consultasArraylist.sort()
                 adapter = ConsultaAdapter(this, consultasArraylist, this)
+                adapter.setHasStableIds(true)
                 adapter.notifyDataSetChanged()
 
                 adapter.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
                     override fun onItemClicked(position: Int) {
                         Toast.makeText(this@ConsultasActivity,"Item number: $position",Toast.LENGTH_SHORT).show()
-                        var id_consulta = consultasArraylist[position].id.toString()
-                        var tema_consulta = consultasArraylist[position].tema.toString()
-                        var id_user_consulta = consultasArraylist[position].userID.toString()
-                        var consulta = consultasArraylist[position].consulta.toString()
+                        val id_consulta = consultasArraylist[position].id.toString()
+                        val tema_consulta = consultasArraylist[position].tema.toString()
+                        val id_user_consulta = consultasArraylist[position].userID.toString()
+                        val consulta = consultasArraylist[position].consulta.toString()
 
                         open(id_consulta,tema_consulta,id_user_consulta,consulta)
                     }
                 })
-
                 recyclerView.adapter = adapter
                 recyclerView.setHasFixedSize(true)
-
             }
-
     }
     private fun getConsultas(temaConsulta: String) {
         consultasArraylist.clear()
@@ -165,23 +163,22 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     consultasArraylist.sort()
                 }
                 adapter = ConsultaAdapter(this, consultasArraylist, this)
+                adapter.setHasStableIds(true)
                 adapter.notifyDataSetChanged()
 
                 adapter.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
                     override fun onItemClicked(position: Int) {
                         Toast.makeText(this@ConsultasActivity,"Item number: $position",Toast.LENGTH_SHORT).show()
-                        var id_consulta = consultasArraylist[position].id.toString()
-                        var tema_consulta = consultasArraylist[position].tema.toString()
-                        var id_user_consulta = consultasArraylist[position].userID.toString()
-                        var consulta = consultasArraylist[position].consulta.toString()
+                        val id_consulta = consultasArraylist[position].id.toString()
+                        val tema_consulta = consultasArraylist[position].tema.toString()
+                        val id_user_consulta = consultasArraylist[position].userID.toString()
+                        val consulta = consultasArraylist[position].consulta.toString()
 
                         open(id_consulta,tema_consulta,id_user_consulta,consulta)
                     }
                 })
-
                 recyclerView.adapter = adapter
                 recyclerView.setHasFixedSize(true)
-
             }
     }
 

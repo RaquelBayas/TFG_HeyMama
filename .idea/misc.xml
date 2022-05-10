@@ -39,6 +39,7 @@
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/rectangle_purple.xml" value="0.2703125" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/spinner_consultas.xml" value="0.18020833333333333" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/square_info.xml" value="0.202734375" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/theme_dialog_cerrar_consulta.xml" value="0.1707236842105263" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/font/alegreya.xml" value="0.17960526315789474" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/font/alegreya_black.xml" value="0.17960526315789474" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/font/alegreya_black2..xml" value="0.17960526315789474" />
@@ -69,7 +70,7 @@
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_register_profesional.xml" value="0.264" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_remember_password.xml" value="0.25226449275362317" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_respirar.xml" value="0.176" />
-        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_respuesta_consulta.xml" value="0.264" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_respuesta_consulta.xml" value="0.16" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_settings.xml" value="0.16" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_solicitudes.xml" value="0.2" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/activity_sub_foro.xml" value="0.4" />
@@ -83,6 +84,7 @@
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/app_bar_home.xml" value="0.14651639344262296" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/consulta.xml" value="0.4" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/consulta_respuesta.xml" value="0.6" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/dialog_cerrar_consulta.xml" value="0.2" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/dialog_change_password.xml" value="0.264" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/dialog_change_username.xml" value="0.1635928961748634" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/dialog_mood.xml" value="0.264" />
@@ -112,6 +114,7 @@
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/menu/nav_bar_bottom_menu.xml" value="0.16486486486486487" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/menu/nav_bar_bottom_menu_admin.xml" value="0.16052631578947368" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/menu/nav_menu.xml" value="0.2" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/menu/nav_menu_2.xml" value="0.16052631578947368" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/menu/post_tl_menu.xml" value="0.16944444444444445" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/xml/root_preferences.xml" value="0.25416666666666665" />
       </map>
@@ -126,7 +129,7 @@
   <component name="VisualizationToolProject">
     <option name="state">
       <ProjectState>
-        <option name="scale" value="0.1" />
+        <option name="scale" value="0.16" />
       </ProjectState>
     </option>
   </component>

@@ -27,6 +27,9 @@
         <item name="colorPrimary">@color/white</item>
     </style>
 
+    <style name="CustomBtnCerrarConsulta" >
+        <item name="android:background">@drawable/rectangle_purple</item>
+    </style>
     <style name="CustomForoCommentsLayout" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="android:background">@drawable/dialog_comment_foro_view</item>
     </style>

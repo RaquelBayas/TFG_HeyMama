@@ -6,6 +6,8 @@
     <string name="empezar">Empezar</string>
     <string name="usuario">Usuario</string>
     <string name="profesional">Profesional</string>
+    <string name="si">Sí</string>
+    <string name="no">No</string>
     <string name="crear_cuenta">Crear cuenta</string>
     <string name="acceder">Acceder</string>
     <string name="recordar_contraseña">Recordar contraseña</string>
@@ -50,12 +52,14 @@
     <string name="NNE">Número Nacional de Emergencia</string>
     <string name="hint_edt_consulta">Introduce tu consulta</string>
     <string-array name="temasConsultas">
+        <item>Selecciona un tema</item>
         <item>Embarazo</item>
         <item>Parto</item>
         <item>Posparto</item>
         <item>Familia</item>
         <item>Otros</item>
     </string-array>
+    <string name="cerrarConsulta">Cerrar consulta</string>
 
     <!-- Respirar -->
     <string name="respirar">Respirar</string>
@@ -69,7 +73,7 @@
     <string name="nav_item_respirar">Respirar</string>
     <string name="nav_item_consultas">Consultas</string>
     <string name="nav_item_ajustes">Ajustes</string>
-
+    <string name="nav_item_timeline">Timeline</string>
     <!-- Bottom nav bar -->
     <string name="nav_item_home">Perfil</string>
     <string name="nav_item_foros">Foros</string>

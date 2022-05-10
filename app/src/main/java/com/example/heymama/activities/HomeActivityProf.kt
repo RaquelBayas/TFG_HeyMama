@@ -64,21 +64,22 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
         }
 
         binding.txtConsultas.setOnClickListener{
-            onClick(R.id.txt_consultas)
+            startActivity(Intent(this,ConsultasActivity::class.java))
         }
 
         binding.txtForos.setOnClickListener{
-            onClick(R.id.txt_foros)
+            startActivity(Intent(this,ForosActivity::class.java))
         }
 
         binding.txtInformacion.setOnClickListener{
-            onClick(R.id.txt_informacion)
+            val intent = Intent(this, InfoActivity::class.java)
+            intent.putExtra("Rol","Profesional")
+            startActivity(intent)
         }
     }
 
-    // MENÚ LATERAL
     /**
-     *
+     * Menú lateral
      * @param item MenuItem
      *
      */
@@ -88,10 +89,10 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
                 val intent = Intent(this, PerfilActivity::class.java)
                 startActivity(intent)
             }
-            R.id.nav_item_respirar -> onClick(R.id.nav_item_respirar)
-            R.id.nav_item_consultas -> goToActivity(this,ContactoActivity::class.java)
-            //R.id.nav_bottom_item_timeline -> goToActivity(this,TimelineActivity::class.java)
-            R.id.nav_item_ajustes -> goToActivity(this,SettingsActivity::class.java)
+            R.id.nav_item_respirar -> startActivity(Intent(this,RespirarActivity::class.java))
+            R.id.nav_item_consultas -> startActivity(Intent(this,ContactoActivity::class.java))
+            R.id.nav_item_timeline -> startActivity(Intent(this,TimelineActivity::class.java))
+            R.id.nav_item_ajustes -> startActivity(Intent(this,SettingsActivity::class.java))
             R.id.nav_item_logout -> logOut()
         }
         drawer.closeDrawer(GravityCompat.START)
@@ -139,25 +140,4 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
         }
         return super.onOptionsItemSelected(item)
     }
-
-    /**
-     *
-     * @param view Int
-     *
-     */
-    override fun onClick(view: Int) {
-        when(view) {
-            R.id.nav_item_respirar -> goToActivity(this, RespirarActivity::class.java)
-            R.id.nav_bottom_item_respirar -> goToActivity(this, RespirarActivity::class.java)
-            R.id.txt_consultas -> goToActivity(this,ConsultasActivity::class.java)
-            R.id.txt_foros -> goToActivity(this, ForosActivity::class.java)
-            R.id.txt_informacion -> {
-                val intent = Intent(this, InfoActivity::class.java)
-                intent.putExtra("Rol","Profesional")
-                startActivity(intent)
-                //goToActivity(this, InfoActivity::class.java)
-            }
-        }
-    }
-
 }

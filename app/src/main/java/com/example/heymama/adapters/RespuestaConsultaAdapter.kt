@@ -69,10 +69,8 @@ class RespuestaConsultaAdapter(private val context: Context, private val consult
     override fun getItemViewType(position: Int): Int {
         firebaseUser = FirebaseAuth.getInstance().currentUser
         return if (consultaArrayList[position].userID == firebaseUser!!.uid) {
-           Log.i("resp-type-0","here")
             MESSAGE_CONSULTA
         } else {
-            Log.i("resp-type-1","here")
             MESSAGE_RESPUESTA
         }
     }
@@ -82,7 +80,6 @@ class RespuestaConsultaAdapter(private val context: Context, private val consult
 
     inner class HolderConsulta(itemView: View) : RecyclerView.ViewHolder(itemView) {
        // var userc_consulta: TextView = itemView.find
-        // ViewById(R.id.txt_consulta_user)
         var name_consulta: TextView = itemView.findViewById(R.id.txt_consulta_name)
         var username_consulta: TextView = itemView.findViewById(R.id.txt_consulta_user)
         var consulta: TextView = itemView.findViewById(R.id.txt_consulta_post)

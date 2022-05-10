@@ -1,11 +1,13 @@
 package com.example.heymama.activities
 
+import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
@@ -23,9 +25,6 @@ class RespuestaConsultaActivity : AppCompatActivity() {
     private lateinit var tema_consulta : String
     private lateinit var id_user_consulta : String
     private lateinit var consulta : String
-
-    private lateinit var txt_consulta_post_respuesta: TextView
-    private lateinit var txt_consulta_user_respuesta: TextView
 
     private lateinit var txt_respuesta_consulta: TextView
     private lateinit var firestore: FirebaseFirestore
@@ -56,6 +55,7 @@ class RespuestaConsultaActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.setHasFixedSize(true)
 
+
         val intent = intent
         if (intent.hasExtra("id_consulta") && intent.hasExtra("tema_consulta") && intent.hasExtra("id_user_consulta") && intent.hasExtra("consulta")) {
             id_consulta = intent.getStringExtra("id_consulta").toString()
@@ -64,30 +64,37 @@ class RespuestaConsultaActivity : AppCompatActivity() {
             consulta = intent.getStringExtra("consulta").toString()
         }
 
-
         txt_respuesta_consulta = binding.txtRespuestaConsulta
-       binding.btnSendRespuestaConsulta.setOnClickListener {
+
+        binding.btnSendRespuestaConsulta.setOnClickListener {
             if(txt_respuesta_consulta.text.isEmpty()) {
                 Toast.makeText(this,"Introduce una respuesta",Toast.LENGTH_SHORT).show()
             } else {
                 sendReply()
             }
         }
+
         showConsultaRespuestas()
     }
 
+    /**
+     *
+     */
     private fun showConsultaRespuestas() {
         consultasArraylist.clear()
         respuestasArraylist.clear()
         firestore.collection("Consultas").document(tema_consulta).collection("Consultas")
             .document(id_consulta).addSnapshotListener { value, error ->
-                var consulta = value!!.data!!["consulta"]
-                var consulta2 = value!!.toObject(Consulta::class.java)
-                consultasArraylist.add(consulta2!!)
-                Log.i("consultarespuesta",consulta2.toString())
-                respuestaConsultaAdapter = RespuestaConsultaAdapter(this,consultasArraylist)
+                if(error != null) {
+                    return@addSnapshotListener
+                }
+                var consulta = value!!.toObject(Consulta::class.java)
+                consultasArraylist.add(consulta!!)
+                respuestaConsultaAdapter = RespuestaConsultaAdapter(this, consultasArraylist)
+                respuestaConsultaAdapter.setHasStableIds(true)
                 respuestaConsultaAdapter.notifyDataSetChanged()
                 recyclerView.adapter = respuestaConsultaAdapter
+
             }
 
         firestore.collection("Consultas").document(tema_consulta).collection("Consultas").document(id_consulta).collection("Respuestas")
@@ -97,41 +104,32 @@ class RespuestaConsultaActivity : AppCompatActivity() {
                         DocumentChange.Type.ADDED -> {
                             consultasArraylist.add(dc.document.toObject(Consulta::class.java))
                         }
-                        DocumentChange.Type.MODIFIED -> consultasArraylist.add(dc.document.toObject(
-                            Consulta::class.java))
                         DocumentChange.Type.REMOVED -> consultasArraylist.remove(dc.document.toObject(
                             Consulta::class.java))
                     }
-                    Log.i("respuestas",dc.document.toString())
                 }
                 respuestasArraylist.sortedDescending()
                 consultasArraylist.sortedDescending()
                 respuestaConsultaAdapter = RespuestaConsultaAdapter(this,consultasArraylist)
+                respuestaConsultaAdapter.setHasStableIds(true)
                 respuestaConsultaAdapter.notifyDataSetChanged()
                 recyclerView.adapter = respuestaConsultaAdapter
-                //Log.i("resp-array",respuestaConsultaAdapter.toString())
             }
-
-
-
-        //respuestaConsultaAdapter.notifyDataSetChanged()
-
-
     }
 
+    /**
+     *
+     */
     private fun sendReply() {
-        var ref = firestore.collection("Consultas").document(tema_consulta).collection("Consultas").document(id_consulta)
+        val ref = firestore.collection("Consultas").document(tema_consulta).collection("Consultas").document(id_consulta)
             .collection("Respuestas").document()
-        var respuesta = Consulta(ref.id,auth.uid.toString(),tema_consulta,txt_respuesta_consulta.text.toString(), Date())
+        val respuesta = Consulta(ref.id,auth.uid.toString(),tema_consulta,txt_respuesta_consulta.text.toString(), Date())
         try {
             ref.set(respuesta)
             Toast.makeText(this,"Respuesta enviada correctamente",Toast.LENGTH_SHORT).show()
-            txt_respuesta_consulta .setText("")
+            txt_respuesta_consulta.text = ""
         } catch(e: Exception) {
             print(e.message)
         }
     }
-
-
-
 }

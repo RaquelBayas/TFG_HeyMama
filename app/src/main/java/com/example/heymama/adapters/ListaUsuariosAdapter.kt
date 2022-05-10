@@ -9,14 +9,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.User
+import com.google.firebase.auth.EmailAuthCredential
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.auth.FirebaseAuthProvider
+import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -26,7 +29,7 @@ class ListaUsuariosAdapter(private val context: Context, private val listaUsuari
 
     private lateinit var listener: ItemRecyclerViewListener
     private lateinit var auth: FirebaseAuth
-    private lateinit var dataBase: FirebaseDatabase
+    private lateinit var database: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
     private lateinit var firebaseStore: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
@@ -42,11 +45,150 @@ class ListaUsuariosAdapter(private val context: Context, private val listaUsuari
         firestore = FirebaseFirestore.getInstance() //CLOUD STORAGE
         firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
         storageReference = firebaseStore.reference
-        dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
+        database = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
 
-        dataBaseReference = dataBase.getReference("Usuarios")
+        dataBaseReference = database.getReference("Usuarios")
 
         getUsuarios(holder,position)
+        holder.btn_menu_user.visibility = View.VISIBLE
+        holder.btn_menu_user.setOnClickListener {
+            menuUser(holder,listaUsuarios[position])
+        }
+
+    }
+
+    private fun menuUser(holder: Holder, user: User,) {
+        val popupMenu: PopupMenu = PopupMenu(context,holder.btn_menu_user)
+        popupMenu.menuInflater.inflate(R.menu.post_tl_menu,popupMenu.menu)
+        popupMenu.show()
+
+        popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.eliminar_post_tl -> {
+                    deleteUserAccount(user)
+                }
+            }
+            true
+        })
+    }
+
+    private fun deleteUserAccount(user: User) {
+        var userId = user.id.toString()
+        firestore.collection("Usuarios").document(userId).delete().addOnSuccessListener {
+           database.getReference("Usuarios/$userId").removeValue()
+           deleteAuth(user)
+        }
+        database.getReference("Usernames/"+user.username).removeValue()
+        database.getReference("Chats/"+userId+"/Messages").addValueEventListener(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                snapshot.children.iterator().forEach {
+                    it.ref.removeValue()
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+        deleteUserPosts(userId)
+        deleteUserMood(userId)
+        deleteUserForos(userId)
+        deleteUserConsultas(userId)
+        if(user.rol == "Profesional"){
+            deleteUserArticulos(userId)
+        }
+        deleteUserPhotos(userId)
+        deleteUserLikes(userId)
+        deleteUserFriends(userId)
+    }
+
+    private fun deleteAuth(user: User) {
+
+
+    }
+
+    private fun deleteUserPosts(userId: String) {
+        firestore.collection("Timeline").whereEqualTo("userId",userId).addSnapshotListener { value, error ->
+            value!!.documents.iterator().forEach {
+                it.reference.delete()
+            }
+        }
+        firestore.collection("Timeline").addSnapshotListener { value, error ->
+            value!!.documents.iterator().forEach {
+                it.reference.collection("Replies").whereEqualTo("userId",userId).addSnapshotListener { value, error ->
+                    value!!.documents.iterator().forEach { posts ->
+                        Log.i("listusers",posts.reference.path)
+                        posts.reference.delete()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun deleteUserMood(userId: String) {
+        firestore.collection("Mood").document(userId).collection("Historial").addSnapshotListener { value, error ->
+            value!!.documents.iterator().forEach {
+                it.reference.delete()
+            }
+        }
+    }
+
+    private fun deleteUserForos(userId: String){
+        var arrayForos = arrayListOf<String>("Depresión","Posparto","Embarazo","Otros")
+        for(foro in arrayForos) {
+            firestore.collection("Foros").document("SubForos").collection(foro).whereEqualTo("userID",userId).addSnapshotListener { value, error ->
+                value!!.documents.iterator().forEach {
+                    it.reference.collection("Comentarios").addSnapshotListener { value, error ->
+                        value!!.documents.iterator().forEach { it.reference.delete() }
+                    }
+                    it.reference.delete()
+                }
+            }
+        }
+    }
+
+    private fun deleteUserConsultas(userId: String) {
+        var arrayTemas = arrayListOf<String>("Embarazo","Familia","Parto","Posparto","Otros")
+        for(tema in arrayTemas) {
+            firestore.collection("Consultas").document(tema).collection("Consultas").addSnapshotListener { value, error ->
+                value!!.documents.iterator().forEach {
+                    it.reference.collection("Respuestas").addSnapshotListener { value, error ->
+                        value!!.documents.iterator().forEach { it.reference.delete() }
+                    }
+                    it.reference.delete()
+                }
+            }
+        }
+    }
+
+    private fun deleteUserArticulos(userId: String) {
+        firestore.collection("Artículos").whereEqualTo("professionalID",userId).addSnapshotListener { value, error ->
+            value!!.documents.iterator().forEach { it.reference.delete() }
+        }
+    }
+
+    private fun deleteUserPhotos(userId: String) {
+        firebaseStore.getReference("Usuarios/"+userId+"/images/perfil").delete()
+        firebaseStore.getReference("Usuarios/"+userId+"/images/layout").delete()
+    }
+
+    private fun deleteUserLikes(userId: String) {
+        firestore.collection("Likes").document(userId).collection("Likes").addSnapshotListener { value, error ->
+            value!!.documents.iterator().forEach {
+                firestore.collection("Timeline").document(it.id).collection("Likes").document(userId).delete()
+                it.reference.delete()
+            }
+        }
+
+    }
+
+    private fun deleteUserFriends(userId: String){
+        var reference = firestore.collection("Friendship")
+        reference.document(userId).collection("Friends").addSnapshotListener { value, error ->
+            value!!.documents.iterator().forEach {
+                reference.document(it.id).collection("Friends").document(userId).delete()
+                it.reference.delete()
+            }
+        }
+        reference.document(userId).delete()
     }
 
     private fun getUsuarios(holder: ListaUsuariosAdapter.Holder, position: Int) {

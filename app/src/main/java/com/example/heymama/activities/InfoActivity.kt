@@ -56,7 +56,7 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
         val intent = intent
         rol = intent.getStringExtra("Rol")!!
 
-        if (rol == "Profesional") {
+        if ((rol == "Profesional") || (rol == "Admin")) {
             btn_add_article = binding.btnAddArticle
             btn_add_article.visibility = View.VISIBLE
             btn_add_article.setOnClickListener {
@@ -68,8 +68,6 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
         //Instancias para la base de datos y la autenticación
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         auth = FirebaseAuth.getInstance()
-        // Usuario
-        val user: FirebaseUser? = auth.currentUser
 
         recyclerView = findViewById(R.id.articles_recyclerView)
         recyclerView.layoutManager = GridLayoutManager(this,2)
@@ -128,7 +126,7 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private fun filter(articleSearch: String) {
         var articleSearchArrayList = ArrayList<Article>()
         for(article in articlesArraylist) {
-            if(article.title!!.toLowerCase()!!.contains(articleSearch.toLowerCase())!!) {
+            if(article.title!!.lowercase().contains(articleSearch.lowercase())) {
                 articleSearchArrayList.add(article)
             }
         }

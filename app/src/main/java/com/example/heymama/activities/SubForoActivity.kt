@@ -56,8 +56,6 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
         //Instancias para la base de datos y la autenticación
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         auth = FirebaseAuth.getInstance()
-        // Usuario
-        val user: FirebaseUser? = auth.currentUser
 
         recyclerView = findViewById(R.id.foro_recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -70,12 +68,6 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
 
         // Add question
         binding.btnAddQuestion.setOnClickListener { view ->
-            /*val transaccion = supportFragmentManager.beginTransaction()
-            val fragmento = SubForoFragment()
-
-            transaccion.replace(R.id.act_subforo,fragmento)
-            //transaccion.addToBackStack(null)
-            transaccion.commit()*/
             val intent = Intent(this,PreguntaActivity::class.java)
             intent.putExtra("ForoName",foroName)
             startActivity(intent)
@@ -110,14 +102,12 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
                         DocumentChange.Type.MODIFIED -> temasArraylist.add(dc.document.toObject(Post::class.java))
                         DocumentChange.Type.REMOVED -> temasArraylist.remove(dc.document.toObject(Post::class.java))
                     }
-
                 }
                 Collections.sort(temasArraylist)
                 adapter = ForoAdapter(this,temasArraylist,this)
                 recyclerView.adapter = adapter
                 adapter.notifyDataSetChanged()
             }
-
     }
 
     /**

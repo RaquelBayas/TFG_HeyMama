@@ -117,8 +117,7 @@
                 android:id="@+id/txt_contacto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:padding="10dp"
+                android:layout_margin="10dp"
                 android:fontFamily="@font/alegreya"
                 android:text="@string/contacto"
                 android:textColor="@color/fonts"
@@ -132,7 +131,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
 
-                android:layout_marginLeft="5dp"
+                android:layout_marginLeft="10dp"
                 android:fontFamily="@font/alegreya"
                 android:text="@string/NNE"
                 android:textAlignment="textStart"
@@ -154,35 +153,5 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txt_nne" />
         </LinearLayout>
-
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_alignParentBottom="true"
-        android:gravity="bottom">
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="@color/white"
-        app:labelVisibilityMode="unlabeled"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:menu="@menu/nav_bar_bottom_menu_admin">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"></FrameLayout>
-    </com.google.android.material.bottomnavigation.BottomNavigationView>
-
     </LinearLayout>
 </RelativeLayout>

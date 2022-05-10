@@ -79,28 +79,10 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
 
         storageReference = storageReference.child("Usuarios/"+post_tl.userId+"/images/perfil")
 
-        if(post_tl.userId!!.equals(auth.uid)){
+        if(post_tl.userId!! == auth.uid){
             holder.btn_menu_post_tl.visibility = View.VISIBLE
             holder.btn_menu_post_tl.setOnClickListener {
-                val popupMenu: PopupMenu = PopupMenu(context,holder.btn_menu_post_tl)
-                popupMenu.menuInflater.inflate(R.menu.post_tl_menu,popupMenu.menu)
-                popupMenu.show()
-
-                popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
-                    when(it.itemId) {
-                        R.id.eliminar_post_tl -> {
-                            firestore.collection("Timeline").document(post_tl.postId.toString()).delete()
-                            firestore.collection("Timeline").document(post_tl.postId.toString()).collection("Likes").get().addOnCompleteListener(object:OnCompleteListener<QuerySnapshot> {
-                                override fun onComplete(p0: Task<QuerySnapshot>) {
-                                    for(doc in p0.result) {
-                                        firestore.collection("Timeline").document(post_tl.postId.toString()).collection("Likes").document(doc.id).delete()
-                                    }
-                                }
-                            })
-                        }
-                    }
-                    true
-                    })
+                menuBtnPostTL(holder,post_tl)
             }
         }
 
@@ -177,6 +159,28 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
         changeButtonColors(holder, post_tl)
     }
 
+    private fun menuBtnPostTL(holder: PostTimelineAdapter.Holder,post_tl: PostTimeline) {
+        val popupMenu: PopupMenu = PopupMenu(context,holder.btn_menu_post_tl)
+        popupMenu.menuInflater.inflate(R.menu.post_tl_menu,popupMenu.menu)
+        popupMenu.show()
+
+        popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.eliminar_post_tl -> {
+                    firestore.collection("Timeline").document(post_tl.postId.toString()).delete()
+                    firestore.collection("Timeline").document(post_tl.postId.toString()).collection("Likes").get().addOnCompleteListener(object:OnCompleteListener<QuerySnapshot> {
+                        override fun onComplete(p0: Task<QuerySnapshot>) {
+                            for(doc in p0.result) {
+                                firestore.collection("Timeline").document(post_tl.postId.toString()).collection("Likes").document(doc.id).delete()
+                            }
+                        }
+                    })
+                }
+            }
+            true
+        })
+    }
+
     /**
      *
      * @param holder Holder
@@ -239,7 +243,7 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
                     firestore.collection("Timeline").document(postsTimelineList[position].postId.toString()).update("commentCount",Integer.parseInt(count))
                     holder.commentCount_post.text = count
                 } else {
-                    postsTimelineList[position].commentCount = 0
+                    //postsTimelineList[position].commentCount = 0
                     holder.commentCount_post.text = '0'.toString()
 
                 }
