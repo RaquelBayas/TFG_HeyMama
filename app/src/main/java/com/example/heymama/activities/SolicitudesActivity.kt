@@ -44,7 +44,6 @@ class SolicitudesActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         // Usuario
         auth = FirebaseAuth.getInstance()
-        val user: FirebaseUser? = auth.currentUser
         uid = auth.currentUser?.uid!!
 
         // Firebase

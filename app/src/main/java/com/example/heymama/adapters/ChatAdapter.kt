@@ -22,22 +22,27 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.text.SimpleDateFormat
 
-class ChatAdapter(private val context: Context, private val chatArrayList: ArrayList<Message>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ChatAdapter(private val context: Context, private val chatArrayList: ArrayList<Message>, private val chatListener: ItemRecyclerViewListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var firebaseUser: FirebaseUser ? = null
     private var storageReference: StorageReference ? = null
+    private lateinit var listener: ItemRecyclerViewListener
 
     private val MESSAGE_LEFT_RECEIVER = 0
     private val MESSAGE_RIGHT_SENDER = 1
+
+    fun setOnItemRecyclerViewListener(listener: ItemRecyclerViewListener) {
+        this.listener = listener
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         // inflate layout
         return if (viewType == MESSAGE_RIGHT_SENDER) {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_chat_right,parent,false)
-            SendHolder(view)
+            SendHolder(view,listener)
         } else {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_chat_left,parent,false)
-            ReceiveHolder(view)
+            ReceiveHolder(view,listener)
         }
     }
 
@@ -55,12 +60,16 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
                     .load(storageReference)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(holder.itemView.findViewById(R.id.img_chat))
+                var timeMessage = getTime(message)
+                viewHolder.binding_send.itemChatTime.text = timeMessage
+                Log.i("CHAT-MSG",message.message + " - " + position)
             } else {
+                viewHolder.binding_send.txtMessageChat.visibility = View.VISIBLE
                 viewHolder.binding_send.txtMessageChat.text = message.message
                 viewHolder.binding_send.imgChat.visibility = View.GONE
                 var timeMessage = getTime(message)
                 viewHolder.binding_send.itemChatTime.text = timeMessage
-
+                Log.i("CHAT-MSG-2",message.message + " - " + position)
             }
         } else {
             val viewHolder = holder as ReceiveHolder
@@ -73,9 +82,16 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
                     .load(storageReference)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(holder.itemView.findViewById(R.id.img_chat))
+                var timeMessage = getTime(message)
+                viewHolder.binding_receive.itemChatTime.text = timeMessage
+                Log.i("CHAT-MSG-3",message.message + " - " + position)
             } else {
+                viewHolder.binding_receive.txtMessageChat.visibility = View.VISIBLE
                 viewHolder.binding_receive.txtMessageChat.text = message.message
                 viewHolder.binding_receive.imgChat.visibility = View.GONE
+                var timeMessage = getTime(message)
+                viewHolder.binding_receive.itemChatTime.text = timeMessage
+                Log.i("CHAT-MSG-4",message.message + " - " + position)
             }
         }
     }
@@ -100,11 +116,23 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
         return chatArrayList.size
     }
 
-    inner class SendHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class SendHolder(itemView: View, listener:ItemRecyclerViewListener) : RecyclerView.ViewHolder(itemView) {
         var binding_send: ItemChatRightBinding = ItemChatRightBinding.bind(itemView)
+        init {
+            itemView.setOnLongClickListener {
+                Log.i("ONCLICK: ",listener.onItemLongClicked(adapterPosition).toString())
+                return@setOnLongClickListener true
+            }
+        }
     }
-    inner class ReceiveHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+    inner class ReceiveHolder(itemView: View, listener:ItemRecyclerViewListener) : RecyclerView.ViewHolder(itemView){
         var binding_receive: ItemChatLeftBinding = ItemChatLeftBinding.bind(itemView)
+        init {
+            itemView.setOnLongClickListener {
+                Log.i("ONCLICK: ",listener.onItemLongClicked(adapterPosition).toString())
+                return@setOnLongClickListener true
+            }
+        }
     }
 
 

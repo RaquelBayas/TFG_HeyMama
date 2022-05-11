@@ -33,7 +33,7 @@
                 android:layout_marginTop="10dp"
                 android:background="@android:color/transparent"
                 android:ems="10"
-                android:gravity="bottom|left"
+                android:gravity="top|left"
                 android:inputType="textPersonName|textLongMessage|textMultiLine|textCapSentences"
                 android:maxLength="300"
                 android:minHeight="48dp"

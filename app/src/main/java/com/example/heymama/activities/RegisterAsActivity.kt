@@ -25,7 +25,7 @@ class RegisterAsActivity : AppCompatActivity() {
 
         binding.btnProfesional.setOnClickListener {
             // Do something in response to button click
-            val intent = Intent(this, RegisterProfesionalActivity::class.java)
+            val intent = Intent(this, RegisterActivity::class.java)
             intent.putExtra("Rol","Profesional")
             startActivity(intent)
         }

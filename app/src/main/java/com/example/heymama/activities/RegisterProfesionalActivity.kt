@@ -125,7 +125,7 @@ class RegisterProfesionalActivity : AppCompatActivity() {
                             "profilePhoto" to ""
                         )
 
-                        val usuario = User(uid,nombre_prof,user_prof,email,"Profesional","offline","","")
+                        val usuario = User(uid,nombre_prof,user_prof,email,"Profesional",false,"offline","","")
                         firebaseStore.collection("Usuarios").document(uid!!).set(data)
                         firebaseStore.collection("Usuarios").document(uid!!).set(usuario)
 

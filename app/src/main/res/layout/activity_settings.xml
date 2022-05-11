@@ -139,7 +139,28 @@
                 />
 
         </LinearLayout>
-
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="30dp"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/privacidad"
+                android:textSize="22sp"
+                android:fontFamily="@font/alegreya">
+            </TextView>
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switch_privacidad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:theme="@style/SwitchCompatTheme"
+                />
+        </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -160,7 +181,6 @@
                 android:fontFamily="@font/baloo"
                 android:textColor="@color/fonts"
                 />
-
         </LinearLayout>
     </LinearLayout>
 

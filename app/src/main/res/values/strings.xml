@@ -87,6 +87,7 @@
     <string name="settings_username">Cambiar nombre de usuario</string>
     <string name="settings_bio">Cambiar biografía</string>
     <string name="change_password">Cambiar contraseña</string>
+    <string name="privacidad">Cambiar privacidad</string>
     <string name="change_email">Cambiar correo electrónico</string>
     <string name="delete_account">Eliminar cuenta</string>
     <string name="settings_old_username">Nombre de usuario actual</string>

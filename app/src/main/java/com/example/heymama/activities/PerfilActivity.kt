@@ -24,6 +24,7 @@ import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.interfaces.Utils
 import com.example.heymama.models.FriendRequest
 import com.example.heymama.models.PostTimeline
+import com.example.heymama.models.User
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -39,7 +40,6 @@ import com.theartofdev.edmodo.cropper.CropImageView
 
 class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
 
-    // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
     private lateinit var currentUserUID: String
     private lateinit var firebaseStore: FirebaseStorage
@@ -55,6 +55,7 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
     private lateinit var btn_amigos : Button
     private lateinit var profileImage: ImageView
     private lateinit var layoutImage: ImageView
+    private lateinit var txt_username_perfil: TextView
     private lateinit var txt_user_perfil: TextView
     private lateinit var txt_user_biografia : TextView
     private lateinit var recyclerViewTimeline: RecyclerView
@@ -90,6 +91,7 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
         checkUserProfile()
 
         txt_user_perfil = binding.txtUserPerfil
+        txt_username_perfil = binding.txtUsernamePerfil
         txt_user_biografia = binding.txtBiografia
         profileImage = binding.profileImage
         if (profileImage.drawable == null) {
@@ -97,7 +99,9 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
         }
 
         firestore.collection("Usuarios").document(uid).addSnapshotListener { value, error ->
+            Log.i("PERFIL-USER-0",value!!.toObject(User::class.java).toString())
             txt_user_perfil.text = value?.data?.get("name").toString()
+            txt_username_perfil.text = value?.data?.get("username").toString()
             txt_user_biografia.text = value?.data?.get("bio").toString()
         }
         // BOTÓN MENSAJES
@@ -120,7 +124,6 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
             request()
         }
         btn_amigos.setOnClickListener {
-            Log.i("TAG-amigos-perfil",btn_amigos.text.toString())
             checkButtonFriends(btn_amigos.text.toString())
         }
 
@@ -188,7 +191,6 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
         tabsAdapter.addFragment(likesFragment,"Likes")
         binding.viewPagerTimeline.adapter = tabsAdapter
         binding.tabs.setupWithViewPager(binding.viewPagerTimeline)
-
     }
 
     /**
@@ -268,9 +270,9 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
             if(task.isSuccessful) {
                 val document = task.result
                 if(document.exists()){
-                    if(document["state"]!!.equals("send")!!){
+                    if((document["state"]!! == "send")!!){
                         btn_amigos.text = "Solicitud enviada"
-                    } else if (document["state"]!!.equals("receive")) {
+                    } else if (document["state"]!! == "receive") {
                         btn_amigos.text = "Responder solicitud"
                     }
                 } else {
@@ -346,8 +348,7 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
 
         var friendRequest_send = FriendRequest(uid,currentUserUID,"send")
         var friendRequest_receive = FriendRequest(uid,currentUserUID,"receive")
-        Log.i("sendFriendRequest",friendRequest_send.friend_send_uid)
-        Log.i("sendFriendRequest-2",friendRequest_receive.friend_receive_uid)
+
         firestore.collection("Friendship").document(currentUserUID).collection("FriendRequest")
             .document(uid).set(friendRequest_send)
         firestore.collection("Friendship").document(uid).collection("FriendRequest")
@@ -384,12 +385,6 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
             .into(image)
     }
 
-    /*fun Context.goToActivity(activity: Activity, classs: Class<*>?) {
-        val intent = Intent(activity, classs)
-        startActivity(intent)
-        activity.finish()
-    }*/
-
     /**
      *
      * @param storageReference StorageReference
@@ -404,6 +399,7 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
         storageReference.putFile(uri).
                 addOnSuccessListener {
                     //binding.imageView14.setImageURI(ImageUri)
+
                     Toast.makeText(this,"Foto subida",Toast.LENGTH_SHORT).show()
                     if(progressDialog.isShowing) progressDialog.dismiss()
                 }.addOnFailureListener{

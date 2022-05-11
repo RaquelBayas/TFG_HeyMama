@@ -1,5 +1,6 @@
 package com.example.heymama.activities
 
+import PreferencesManager
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
@@ -29,9 +30,9 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var user: FirebaseUser
     private lateinit var uid: String
     private lateinit var rol: String
-
+    private lateinit var prefs: PreferencesManager
     private lateinit var binding: ActivitySettingsBinding
-
+    private var protected: Boolean = false
     /**
      *
      * @param savedInstanceState Bundle
@@ -41,6 +42,11 @@ class SettingsActivity : AppCompatActivity() {
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        prefs = PreferencesManager(this)
+
+        if(prefs.isProtected()) {
+            protected = prefs!!.preferences!!.getBoolean("IS_PROTECTED",false)
+        }
         database = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
@@ -68,6 +74,8 @@ class SettingsActivity : AppCompatActivity() {
         binding.settingsPassword.setOnClickListener {
             changePassword()
         }
+
+        changePrivacidad()
     }
 
     /**
@@ -87,6 +95,18 @@ class SettingsActivity : AppCompatActivity() {
                 //TO DO("Not yet implemented")
             }
         })
+    }
+
+    private fun changePrivacidad() {
+        val switch = binding.switchPrivacidad
+        switch.setOnCheckedChangeListener { compoundButton, b ->
+            if(b) {
+                firestore.collection("Usuarios").document(uid).update("protected", b)
+                database.getReference("Usuarios").child(uid).child("protected").setValue(b)
+                prefs.switchPrivacidad(b)
+            }
+        }
+
     }
 
     private fun changeBio() {

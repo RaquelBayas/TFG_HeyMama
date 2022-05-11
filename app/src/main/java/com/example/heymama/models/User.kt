@@ -6,6 +6,7 @@ data class User(
     var username: String? = "",
     var email: String? = "",
     var rol: String? = "",
+    var protected: Boolean? = false,
     var status: String = "offline",
     var bio: String? = "",
     var profilePhoto: String? = ""

@@ -27,6 +27,10 @@
         <item name="colorPrimary">@color/white</item>
     </style>
 
+    <style name="SwitchCompatTheme" parent="">
+        <item name="colorControlActivated">@color/purple_700</item>
+    </style>
+
     <style name="CustomBtnCerrarConsulta" >
         <item name="android:background">@drawable/rectangle_purple</item>
     </style>

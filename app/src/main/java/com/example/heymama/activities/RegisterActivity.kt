@@ -10,13 +10,9 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import com.example.heymama.R
-import com.example.heymama.models.User
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
-import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -134,7 +130,6 @@ class RegisterActivity : AppCompatActivity() {
                             Log.i("user-new",it.toString())
                         }
                         //firebaseStore.collection("Usuarios").document(auth.uid.toString()).set(usuario)
-
                     } else{
                         Toast.makeText(this,"Ocurrió un error al enviar el email de verificación.",Toast.LENGTH_SHORT).show()
                     }
