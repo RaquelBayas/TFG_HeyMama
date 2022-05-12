@@ -1,4 +1,12 @@
 <resources>
+    <string name="autor">Raquel Bayas</string>
+    <string name="versionApp">Versión 1.0</string>
+    <string name="version">Version</string>
+    <string name="acerca">Acerca de Hey, Mama!</string>
+    <string name="infoApp">Información de la aplicación:</string>
+    <string name="tutorial">Tutorial</string>
+    <string name="terminos">Términos de Servicio</string>
+    <string name="politicas">Políticas de Privacidad</string>
     <string name="app_name">Hey,\nmama!</string>
     <string name="login">Iniciar sesión</string>
     <string name="logup">Registrarse</string>

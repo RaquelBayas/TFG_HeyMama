@@ -111,6 +111,7 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
                 likeCount_post.text = post_tl.likeCount.toString()
                 id_post = post_tl.postId.toString()
                 var timestamp = post_tl.timestamp
+                Log.i("POSTTL-TIME",timestamp.toString())
                 val dateFormat = SimpleDateFormat("dd/MM/yy \n  HH:mm")
                 time_post.text = dateFormat.format(timestamp)
                 commentButton.setOnClickListener {

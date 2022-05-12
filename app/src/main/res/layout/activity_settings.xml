@@ -167,21 +167,31 @@
             android:layout_marginLeft="20dp"
             android:layout_marginTop="30dp"
             android:layout_marginRight="20dp"
-
             android:orientation="horizontal"
             >
-            <Button
-                android:id="@+id/btn_delete_account"
+            <TextView
+                android:id="@+id/txt_acercade"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/delete_account"
-                android:textSize="20sp"
-                android:padding="10dp"
-                android:background="@drawable/rectangle_edit_article"
-                android:fontFamily="@font/baloo"
-                android:textColor="@color/fonts"
-                />
+                android:fontFamily="@font/alegreya"
+                android:textSize="22sp"
+                android:text="@string/acerca"/>
+
         </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_delete_account"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rectangle_edit_article"
+            android:fontFamily="@font/baloo"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="30dp"
+            android:padding="10dp"
+            android:text="@string/delete_account"
+            android:textColor="@color/fonts"
+            android:textSize="20sp" />
     </LinearLayout>
 
 </LinearLayout>

@@ -75,6 +75,9 @@ class SettingsActivity : AppCompatActivity() {
             changePassword()
         }
 
+        binding.txtAcercade.setOnClickListener {
+            startActivity(Intent(this,InfoAppActivity::class.java))
+        }
         changePrivacidad()
     }
 

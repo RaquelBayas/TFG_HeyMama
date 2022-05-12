@@ -7,6 +7,7 @@ class PreferencesManager(context: Context) {
 
     private val PREF_NAME = "SharedPreferences"
     private val IS_LOGIN = "is_login"
+    private val IS_PROTECTED = "is_protected"
 
     val preferences: SharedPreferences? = context.getSharedPreferences(PREF_NAME,PRIVATE_MODE)
     val editor: SharedPreferences.Editor? = preferences?.edit()
@@ -19,8 +20,16 @@ class PreferencesManager(context: Context) {
         editor?.commit()
     }
 
+    fun switchPrivacidad(protected: Boolean) {
+        editor?.putBoolean(IS_PROTECTED,protected)
+    }
+
     fun isLogin() : Boolean {
         return preferences!!.getBoolean(IS_LOGIN,false)
+    }
+
+    fun isProtected() : Boolean {
+        return preferences!!.getBoolean(IS_PROTECTED,false)
     }
 
 

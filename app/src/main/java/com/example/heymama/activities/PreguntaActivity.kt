@@ -53,6 +53,7 @@ class PreguntaActivity : AppCompatActivity() {
 
         // Usuario
         val user: FirebaseUser? = auth.currentUser
+
         // ID en la BBDD
         val userDB: DatabaseReference = dataBaseReference.child(user!!.uid)
 

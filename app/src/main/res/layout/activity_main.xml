@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/corben_bold"
         android:text="@string/app_name"
+        android:textAlignment="center"
         android:textColor="@color/wine_1"
         android:textSize="55sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -58,9 +59,12 @@
         android:id="@+id/imageView"
         android:layout_width="121dp"
         android:layout_height="204dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintStart_toStartOf="@+id/appname"
+        app:layout_constraintBottom_toBottomOf="@+id/appname"
+        app:layout_constraintEnd_toEndOf="@+id/appname"
+        app:layout_constraintHorizontal_bias="0.25"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.3"
         app:srcCompat="@drawable/iconohome" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
