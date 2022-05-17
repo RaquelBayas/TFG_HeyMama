@@ -18,6 +18,7 @@ class MoodActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
+    private lateinit var pieEntries: ArrayList<PieEntry>
 
     /**
      *
@@ -30,7 +31,7 @@ class MoodActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
-
+        pieEntries = arrayListOf()
         setPieChartData()
     }
 
@@ -40,7 +41,7 @@ class MoodActivity : AppCompatActivity() {
      *
      */
     private fun setPieChartData() {
-        var pieEntries = arrayListOf<PieEntry>()
+        pieEntries.clear()
         var count_feliz : Float = 0.0f
         var count_bien : Float = 0.0f
         var count_regular : Float = 0.0f
@@ -54,35 +55,38 @@ class MoodActivity : AppCompatActivity() {
                 return@addSnapshotListener
             }
             var docs = value!!.documents
+            var map : Map<String,Float>
+            Log.i("docs-mood",docs.toString())
             for(doc in docs) {
                 when(doc["id"].toString()) {
                     "0" -> {
                         count_feliz++
-                        count = (count_feliz * 100) / docs.size
-                        pieEntries.add(PieEntry(count,MoodType.FELIZ.name))
                     }
                     "1" -> {
                         count_bien++
-                        count = (count_bien * 100) / docs.size
-                        pieEntries.add(PieEntry(count,MoodType.BIEN.name))
                     }
                     "2" -> {
                         count_regular++
-                        count = (count_regular * 100) / docs.size
-                        pieEntries.add(PieEntry(count,MoodType.REGULAR.name))
                     }
                     "3" -> {
                         count_mal++
-                        count = (count_mal * 100) / docs.size
-                        pieEntries.add(PieEntry(count,MoodType.MAL.name))
                     }
                     "4" -> {
                         count_triste++
-                        count = (count_triste * 100) / docs.size
-                        pieEntries.add(PieEntry(count,MoodType.TRISTE.name))
                     }
                 }
+
             }
+            count = (count_feliz * 100) / docs.size
+            if(count!= (0.0).toFloat()) pieEntries.add(PieEntry(count,MoodType.FELIZ.name))
+            count = (count_bien * 100) / docs.size
+            if(count!= (0.0).toFloat())pieEntries.add(PieEntry(count,MoodType.BIEN.name))
+            count = (count_regular * 100) / docs.size
+            if(count!= (0.0).toFloat())pieEntries.add(PieEntry(count,MoodType.REGULAR.name))
+            count = (count_mal * 100) / docs.size
+            if(count!=(0.0).toFloat())pieEntries.add(PieEntry(count,MoodType.MAL.name))
+            count = (count_triste * 100) / docs.size
+            if(count!=(0.0).toFloat())pieEntries.add(PieEntry(count,MoodType.TRISTE.name))
 
             var pieChart = findViewById<PieChart>(R.id.pie_chart)
             pieChart.animateXY(1000,1000)
@@ -113,4 +117,5 @@ class MoodActivity : AppCompatActivity() {
             pieChart.data = pieData
         }
     }
+
 }

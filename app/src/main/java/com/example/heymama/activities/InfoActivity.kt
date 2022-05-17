@@ -65,10 +65,24 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 startActivity(intent)
             }
         }
+
+        initFirebase()
+        initRecycler()
+        getArticlesData()
+        searchView()
+
+        binding.swipeRefreshTL.setOnRefreshListener {
+            getArticlesData()
+        }
+    }
+
+    private fun initFirebase() {
         //Instancias para la base de datos y la autenticación
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         auth = FirebaseAuth.getInstance()
+    }
 
+    private fun initRecycler() {
         recyclerView = findViewById(R.id.articles_recyclerView)
         recyclerView.layoutManager = GridLayoutManager(this,2)
         recyclerView.setHasFixedSize(true)
@@ -77,11 +91,7 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
         idArticlesArrayList = arrayListOf()
         adapter = InfoArticleAdapter(this,articlesArraylist,this)
         recyclerView.adapter = adapter
-        getArticlesData()
-
-        searchView()
     }
-
     /**
      * Este método permite obtener los artículos publicados
      *
@@ -89,6 +99,10 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
      *
      */
     private fun getArticlesData() {
+        if(binding.swipeRefreshTL.isRefreshing) {
+            binding.swipeRefreshTL.isRefreshing = false
+        }
+
         firestore = FirebaseFirestore.getInstance()
 
         firestore.collection("Artículos").addSnapshotListener { snapshots, e ->

@@ -10,7 +10,7 @@
         <item
             android:title="@string/nav_item_timeline"
             android:id="@+id/nav_item_timeline"
-            android:icon="@drawable/casa"/>
+            android:icon="@drawable/menu"/>
 
         <item
             android:id="@+id/nav_item_logout"

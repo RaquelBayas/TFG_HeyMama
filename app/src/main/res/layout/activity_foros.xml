@@ -58,13 +58,13 @@
                 android:fontFamily="@font/alegreya"
                 android:text="@string/depresion"
                 android:textColor="@color/fonts"
-                android:textSize="30sp"
+                android:textSize="34sp"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView6"
                 app:layout_constraintEnd_toEndOf="@+id/imageView6"
-                app:layout_constraintHorizontal_bias="0.10"
+                app:layout_constraintHorizontal_bias="0.15"
                 app:layout_constraintStart_toStartOf="@+id/imageView6"
                 app:layout_constraintTop_toTopOf="@+id/imageView6"
-                app:layout_constraintVertical_bias="0.20" />
+                app:layout_constraintVertical_bias="0.25" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -92,13 +92,13 @@
                 android:fontFamily="@font/alegreya"
                 android:text="@string/posparto"
                 android:textColor="@color/fonts"
-                android:textSize="30sp"
+                android:textSize="34sp"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView10"
                 app:layout_constraintEnd_toEndOf="@+id/imageView10"
-                app:layout_constraintHorizontal_bias="0.10"
+                app:layout_constraintHorizontal_bias="0.15"
                 app:layout_constraintStart_toStartOf="@+id/imageView10"
                 app:layout_constraintTop_toTopOf="@+id/imageView10"
-                app:layout_constraintVertical_bias="0.20" />
+                app:layout_constraintVertical_bias="0.25" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -126,13 +126,13 @@
                 android:fontFamily="@font/alegreya"
                 android:text="@string/embarazo"
                 android:textColor="@color/fonts"
-                android:textSize="30sp"
+                android:textSize="34sp"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView12"
                 app:layout_constraintEnd_toEndOf="@+id/imageView12"
-                app:layout_constraintHorizontal_bias="0.10"
+                app:layout_constraintHorizontal_bias="0.15"
                 app:layout_constraintStart_toStartOf="@+id/imageView12"
                 app:layout_constraintTop_toTopOf="@+id/imageView12"
-                app:layout_constraintVertical_bias="0.20" />
+                app:layout_constraintVertical_bias="0.25" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -159,15 +159,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/alegreya"
-                android:text="@string/posparto"
+                android:text="@string/otros"
                 android:textColor="@color/fonts"
-                android:textSize="30sp"
+                android:textSize="34sp"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView7"
                 app:layout_constraintEnd_toEndOf="@+id/imageView7"
-                app:layout_constraintHorizontal_bias="0.10"
+                app:layout_constraintHorizontal_bias="0.15"
                 app:layout_constraintStart_toStartOf="@+id/imageView7"
                 app:layout_constraintTop_toTopOf="@+id/imageView7"
-                app:layout_constraintVertical_bias="0.20" />
+                app:layout_constraintVertical_bias="0.25" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 

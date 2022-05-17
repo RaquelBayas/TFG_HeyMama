@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.example.heymama.GlideApp
 import com.example.heymama.R
 import com.example.heymama.Utils
 import com.example.heymama.interfaces.ItemRecyclerViewListener
@@ -33,7 +35,7 @@ class ListChatItemAdapter(private val context: Context, private val listChatItem
     private lateinit var firestore: FirebaseFirestore
 
     private lateinit var idUser: String
-    private val ONE_MEGABYTE: Long = 1024 * 1024
+
     private lateinit var listener: ItemRecyclerViewListener
 
     fun setOnItemRecyclerViewListener(listener: ItemRecyclerViewListener) {
@@ -61,15 +63,12 @@ class ListChatItemAdapter(private val context: Context, private val listChatItem
             idUser = listChatItemsList[position].idUser
 
             storageReference = firebaseStorage.getReference("Usuarios/"+idUser+"/images/perfil")
-            Log.i("listitem",idUser)
-            storageReference
-                .getBytes(8 * ONE_MEGABYTE).
-                addOnSuccessListener { bytes ->
-                    val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                    img_chat_item.setImageBitmap(bmp)
-                }.addOnFailureListener {
-                    Log.e(ContentValues.TAG, "Se produjo un error al descargar la imagen.", it)
-                }
+            GlideApp.with(context)
+                .load(storageReference)
+                .error(R.drawable.wallpaper_profile)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .into(img_chat_item)
 
             txt_msg_chat_item.text = listChatItemsList[position].lastMessage
             var status = listChatItemsList[position].status

@@ -49,8 +49,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var storageReference: StorageReference
 
     private lateinit var textView: TextView
-    private lateinit var email: String
-    private lateinit var name: String
     private lateinit var viewNav: View
     private lateinit var txt_name_nav_header: TextView
     private lateinit var drawer: DrawerLayout
@@ -96,24 +94,23 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val navigationView: NavigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
 
-        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
-        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+        binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when(item.itemId) {
-                R.id.nav_bottom_item_foros -> {goToActivity(this,ForosActivity::class.java)
+                R.id.nav_bottom_item_foros -> {
+                    startActivity(Intent(this,ForosActivity::class.java))
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.nav_bottom_item_ajustes -> {
-                    goToActivity(this,SettingsActivity::class.java)
+                    startActivity(Intent(this,SettingsActivity::class.java))
                     return@setOnNavigationItemSelectedListener true
                 }
             }
             return@setOnNavigationItemSelectedListener false
         }
 
-        drawer = findViewById(R.id.drawer_layout)
+        drawer = binding.drawerLayout
         viewNav = navigationView.getHeaderView(0)
         toggle = object : ActionBarDrawerToggle(this,drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close){
-
             override fun onDrawerStateChanged(newState: Int) {
                 var profileImage_nav = viewNav.findViewById<ImageView>(R.id.nav_header_icon)
 
@@ -121,31 +118,24 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                 GlideApp.with(applicationContext)
                     .load(storageReference)
+                    .error(R.drawable.wallpaper_profile)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
                     .into(profileImage_nav)
             }
         }
         drawer.addDrawerListener(toggle)
-
-        /*user?.let {
-            for(profile in it.providerData) {
-                val providerId = profile.providerId
-                val uid = profile.uid
-                email = profile.email.toString()
-                //name = profile.displayName.toString()
-
-            }
-        }*/
         //getMoodStatus()
-        getUserName(user!!)
+        getUserName()
 
         binding.btnForosHome.setOnClickListener{
-            onClick(R.id.btn_foros_home)
+            startActivity(Intent(this,ForosActivity::class.java))
         }
 
         binding.btnInfoHome.setOnClickListener{
-            onClick(R.id.btn_info_home)
+            val intent = Intent(this, InfoActivity::class.java)
+            intent.putExtra("Rol","Usuario")
+            startActivity(intent)
         }
 
         notification()
@@ -223,16 +213,18 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      * @param user FirebaseUser
      *
      */
-    private fun getUserName(user:FirebaseUser) {
-        // NOMBRE
+    private fun getUserName() {
         textView = findViewById(R.id.textView)
-        firestore.collection("Usuarios").whereEqualTo("email",
-            user!!.email).addSnapshotListener { value, error ->
-            textView.text = "Bienvenida " + value!!.documents.get(0).get("name").toString()
-            txt_name_nav_header = viewNav.findViewById(R.id.txt_name_nav_header)
-            txt_name_nav_header.text = value!!.documents.get(0).get("name").toString()
-        }
-
+        dataBase.reference.child("Usuarios").child(auth.uid.toString()).child("name").addValueEventListener(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                textView.text = "Bienvenida " + snapshot.value.toString()
+                txt_name_nav_header = viewNav.findViewById(R.id.txt_name_nav_header)
+                txt_name_nav_header.text = snapshot.value.toString()
+            }
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
     }
 
     /**
@@ -243,10 +235,14 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun notification() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
-                return@OnCompleteListener
+               return@OnCompleteListener
             }
             // Get new FCM registration token
-            //val token = task.result
+            val token = task.result
+
+            // Log and toast
+            Log.d("token", token)
+
         })
     }
 
@@ -261,12 +257,12 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val intent = Intent(this, PerfilActivity::class.java)
                 startActivity(intent)
             }
-            R.id.nav_item_respirar -> onClick(R.id.nav_item_respirar)
-            R.id.nav_item_moodregister -> goToActivity(this,MoodActivity::class.java)
-            R.id.nav_item_consultas -> goToActivity(this,ContactoActivity::class.java)
-            R.id.nav_item_messages -> goToActivity(this,TimelineActivity::class.java)
-            R.id.nav_item_solicitudes -> goToActivity(this,SolicitudesActivity::class.java)
-            R.id.nav_item_ajustes -> goToActivity(this,SettingsActivity::class.java)
+            R.id.nav_item_respirar -> startActivity(Intent(this,RespirarActivity::class.java))
+            R.id.nav_item_moodregister -> startActivity(Intent(this,MoodActivity::class.java))
+            R.id.nav_item_consultas -> startActivity(Intent(this,ContactoActivity::class.java))
+            R.id.nav_item_messages -> startActivity(Intent(this,TimelineActivity::class.java))
+            R.id.nav_item_solicitudes -> startActivity(Intent(this,SolicitudesActivity::class.java))
+            R.id.nav_item_ajustes -> startActivity(Intent(this,SettingsActivity::class.java))
             R.id.nav_item_logout -> logOut()
         }
         drawer.closeDrawer(GravityCompat.START)
@@ -314,25 +310,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return super.onOptionsItemSelected(item)
     }
 
-    /**
-     *
-     * @param view Int
-     *
-     */
-    override fun onClick(view: Int) {
-        when(view) {
-            R.id.nav_item_respirar -> goToActivity(this, RespirarActivity::class.java)
-            R.id.nav_bottom_item_respirar -> goToActivity(this, RespirarActivity::class.java)
-            R.id.nav_bottom_item_ajustes -> goToActivity(this,SettingsActivity::class.java)
-            R.id.btn_foros_home -> goToActivity(this, ForosActivity::class.java)
-            R.id.btn_info_home -> {
-                val intent = Intent(this, InfoActivity::class.java)
-                intent.putExtra("Rol","Usuario")
-                startActivity(intent)
-            }
-        }
-    }
-
     override fun onBackPressed() {
         super.onBackPressed()
         finish()
@@ -342,6 +319,14 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return super.onKeyDown(keyCode, event)
     }
 
+    override fun onPause() {
+        super.onPause()
+        com.example.heymama.Utils.updateStatus("offline")
+    }
 
+    override fun onResume() {
+        super.onResume()
+        com.example.heymama.Utils.updateStatus("online")
+    }
 
 }

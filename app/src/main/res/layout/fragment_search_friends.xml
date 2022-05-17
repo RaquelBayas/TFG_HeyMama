@@ -1,39 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.MisConsultasActivity">
+    tools:context=".fragments.SearchFriendsFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_margin="10dp"
         >
-
-        <TextView
+        <SearchView
+            android:id="@+id/searchView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Mis consultas"
-            android:textColor="@color/fonts"
-            android:textSize="20sp"
-            android:padding="5dp"
-            android:fontFamily="@font/alegreya"
+            android:layout_margin="10dp"
+            tools:layout_editor_absoluteX="1dp"
+            tools:layout_editor_absoluteY="62dp"
+            android:background="@drawable/rectangle_edit_article"
+            android:queryHint="@string/buscar"
             />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView_mis_consultas"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
-            android:padding="10dp"
+            android:layout_margin="10dp"
+            android:id="@+id/recyclerViewSearchFriends"
             >
 
         </androidx.recyclerview.widget.RecyclerView>
-
     </LinearLayout>
 
 
-</RelativeLayout>
+</FrameLayout>

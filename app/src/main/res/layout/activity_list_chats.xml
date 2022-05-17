@@ -19,14 +19,19 @@
         tools:layout_editor_absoluteX="56dp"
         tools:layout_editor_absoluteY="4dp" />
 
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:id="@+id/swipeRefreshTL"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        >
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView_listChats"
         android:layout_width="match_parent"
-        android:layout_height="754dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="1dp" />
-
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </LinearLayout>

@@ -61,7 +61,6 @@ class ListaUsuariosActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 listaUsuariosArraylist.add(user!!)
                 adapter = ListaUsuariosAdapter(applicationContext,listaUsuariosArraylist)
                 recyclerView.adapter = adapter
-
                 Log.i("listausers-1",user.toString())
             }
             Log.i("listausers",usuario.toString())

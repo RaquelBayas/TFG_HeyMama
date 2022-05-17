@@ -5,6 +5,7 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 
 object Utils {
 
@@ -16,7 +17,7 @@ object Utils {
         return FirebaseAuth.getInstance().uid.toString()
     }
 
-    fun updateStatus(status: String) {
+    fun  updateStatus(status: String) {
         val reference : DatabaseReference = FirebaseDatabase.getInstance().getReference("Usuarios").child(getUID())
         val map = HashMap<String, Any>()
         map["status"] = status

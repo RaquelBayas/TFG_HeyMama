@@ -86,7 +86,7 @@ class Login : AppCompatActivity() {
                     }
                 })
 
-                logIn(UserInfo.listaMails)
+                logIn()
             }
         }
     }
@@ -97,7 +97,7 @@ class Login : AppCompatActivity() {
      * @param mutableList MutableList<String>
      *
      */
-    private fun logIn(mutableList: MutableList<String>?) {
+    private fun logIn() {
         val email: String = txt_email.text.toString()
         val password: String = txt_password.text.toString()
 
@@ -107,19 +107,13 @@ class Login : AppCompatActivity() {
                     if (task.isSuccessful) {
                         val emailFireBase = auth.currentUser!!
                         val mailVerified = emailFireBase.isEmailVerified
-                        dataBaseReference.child(auth.currentUser!!.uid).child("Verified").setValue(mailVerified.toString())
+
                         auth.currentUser?.reload()
                         if(mailVerified) {
                             checkRol(email,password)
                         } else {
                             checkRegister(emailFireBase,mailVerified)
                             Toast.makeText(this, "Debes registrarte primero.", Toast.LENGTH_LONG).show()
-                        }
-                    }else {
-                        if(mutableList!!.contains(email)) {
-                            Toast.makeText(this, "La contraseña es incorrecta.", Toast.LENGTH_LONG).show()
-                        } else {
-                            Toast.makeText(this, "No existe este email.", Toast.LENGTH_LONG).show()
                         }
                     }
                 }
@@ -157,11 +151,10 @@ class Login : AppCompatActivity() {
      *
      */
     private fun  checkRol(email:String, password:String)  {
-
         dataBaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for(s in snapshot.children) {
-                    if (s.child("email").value.toString().equals(email)) {
+                    if (s.child("email").value.toString() == email) {
                         rol = s.child("rol").value.toString()
                         prefs.createLoginSession(email,password,rol)
                         goHomeActivity(rol)
@@ -181,8 +174,6 @@ class Login : AppCompatActivity() {
                 val intent = Intent(applicationContext, HomeActivityProf::class.java)
                 intent.putExtra("Rol","Profesional")
                 startActivity(intent)
-
-                Log.d("TAG Profesional: ", rol)
             }
             "Admin" -> {
                 val intent = Intent(applicationContext, HomeActivityAdmin::class.java)
@@ -194,7 +185,6 @@ class Login : AppCompatActivity() {
                 intent.putExtra("Rol","Usuario")
                 finish()
                 startActivity(intent)
-                Log.d("TAG Usuario: ", rol)
             }
         }
     }

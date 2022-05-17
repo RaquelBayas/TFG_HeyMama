@@ -8,6 +8,7 @@ data class Post(
     var title: String = "",
     var post: String = "",
     var userID: String = "",
+    var protected: String = "",
                 @ServerTimestamp
     var timestamp: Date? = null) : Comparable<Post> {
 

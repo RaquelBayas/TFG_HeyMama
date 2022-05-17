@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import com.example.heymama.R
 import com.example.heymama.Utils
 import com.example.heymama.databinding.ActivitySettingsBinding
+import com.example.heymama.models.Message
 import com.example.heymama.models.User
 import com.google.firebase.auth.*
 import com.google.firebase.database.*
@@ -27,7 +28,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var database: FirebaseDatabase
     private lateinit var firestore: FirebaseFirestore
 
-    private lateinit var user: FirebaseUser
+    private lateinit var currentUser: FirebaseUser
     private lateinit var uid: String
     private lateinit var rol: String
     private lateinit var prefs: PreferencesManager
@@ -50,7 +51,7 @@ class SettingsActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
-        user = auth.currentUser!!
+        currentUser = auth.currentUser!!
         uid = auth.uid.toString()
 
         getDataUser()
@@ -91,7 +92,8 @@ class SettingsActivity : AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 var user : User? = snapshot.getValue(User::class.java)
                 rol = user!!.rol.toString()
-                binding.settingsName.text = user!!.name.toString()
+                binding.settingsEmail.text = user!!.email.toString()
+                binding.settingsName.text = user!!.username.toString()
                 binding.settingsBio.text = user!!.bio.toString()
             }
             override fun onCancelled(error: DatabaseError) {
@@ -126,16 +128,22 @@ class SettingsActivity : AppCompatActivity() {
         val new_bio = view.findViewById<EditText>(R.id.edt_settings_username)
         val old_bio = view.findViewById<TextView>(R.id.settings_old_name)
 
-        var user_ref = firestore.collection("Usuarios").document(uid)
-        user_ref.addSnapshotListener { value, error ->
-            old_bio.text = value!!.data!!.get("bio").toString()
-        }
+        var user_ref = database.reference.child("Usuarios").child(uid)
+        user_ref.child("bio").addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                old_bio.text = snapshot.value.toString()
+            }
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
 
         builder.setPositiveButton("Confirmar"){ dialogInterface : DialogInterface, which ->
             if(new_bio.text.isEmpty()) {
                 return@setPositiveButton
             } else {
-                user_ref.update("bio",new_bio.text.toString())
+                var bio: Map<String, String> = mapOf("bio" to new_bio.text.toString())
+                user_ref.updateChildren(bio)
                 database.getReference("Usuarios").child(uid).child("bio").setValue(new_bio.text.toString())
             }
         }
@@ -163,11 +171,11 @@ class SettingsActivity : AppCompatActivity() {
             if(old_password.text.isNotEmpty() && new_password.text.isNotEmpty() && confirm_new_password.text.isNotEmpty()) {
                 if(new_password.text.toString().equals(confirm_new_password.text.toString())) {
                     Toast.makeText(this,"Contraseñas iguales",Toast.LENGTH_SHORT).show()
-                    val credential : AuthCredential = EmailAuthProvider.getCredential(user.email!!,old_password.text.toString())
-                    user?.reauthenticate(credential).addOnCompleteListener { task ->
+                    val credential : AuthCredential = EmailAuthProvider.getCredential(currentUser.email!!,old_password.text.toString())
+                    currentUser?.reauthenticate(credential).addOnCompleteListener { task ->
                         if(task.isSuccessful) {
                             Log.d("TAG","Re-Authentication success")
-                            user?.updatePassword(new_password.text.toString()).addOnCompleteListener { task ->
+                            currentUser?.updatePassword(new_password.text.toString()).addOnCompleteListener { task ->
                                 if(task.isSuccessful) {
                                     Toast.makeText(this,"Contraseña actualizada correctamente",Toast.LENGTH_SHORT).show()
                                 } else {
@@ -197,7 +205,7 @@ class SettingsActivity : AppCompatActivity() {
      */
     private fun changeEmail() {
         val builder = AlertDialog.Builder(this)
-        val view = layoutInflater.inflate(R.layout.dialog_change_username,null)
+        val view = layoutInflater.inflate(R.layout.dialog_change_email,null)
         builder.setView(view)
 
         //Obtenemos el editText del nombre de usuario
@@ -206,33 +214,52 @@ class SettingsActivity : AppCompatActivity() {
         txt_old.text = "Correo electrónico actual"//R.string.settings_old_email
         txt_new.text = "Nuevo correo electrónico" //R.string.settings_new_email.toString()
 
-        val new_email = view.findViewById<EditText>(R.id.edt_settings_username)
-        val old_email = view.findViewById<TextView>(R.id.settings_old_name)
+        val new_email = view.findViewById<EditText>(R.id.edt_settings_email)
+        val current_password = view.findViewById<EditText>(R.id.edt_settings_password)
+        val old_email = view.findViewById<TextView>(R.id.settings_old_email)
 
-        var user_ref = firestore.collection("Usuarios").document(uid)
-        user_ref.addSnapshotListener { value, error ->
-            old_email.text = value!!.data!!.get("email").toString()
-        }
+        var user_ref = database.reference.child("Usuarios").child(uid)
+        user_ref.child("email").ref.addValueEventListener(object:ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                old_email.text = snapshot.value.toString()
+            }
+            override fun onCancelled(error: DatabaseError) {
 
+            }
+        })
 
         builder.setPositiveButton("Confirmar"){ dialogInterface : DialogInterface, which ->
-            if(new_email.text.isEmpty()) {
+            if(new_email.text.isEmpty() || current_password.text.isEmpty()) {
                 return@setPositiveButton
             } else {
                 var users_ref = database.getReference("Usuarios")
-                user_ref.addSnapshotListener { value, error ->
-                    var data = value!!.data
-                   if (data!!.get("email")!!.equals(new_email.text.toString())) {
-                        Log.i("email",data.get("email").toString())
+                users_ref.addValueEventListener(object:ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val user = snapshot.getValue(User::class.java)
+                        if(user!!.email == new_email.text.toString()) {
+                            Toast.makeText(applicationContext,"Ya existe un usuario con ese correo electrónico",Toast.LENGTH_SHORT).show()
+                        } else {
+                            Log.i("newemail",new_email.text.toString())
+                            val credential : AuthCredential = EmailAuthProvider.getCredential(currentUser.email!!,current_password.text.toString())
+                            currentUser?.reauthenticate(credential).addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    auth.currentUser!!.updateEmail(new_email.text.toString()).addOnSuccessListener {
+                                        var email: Map<String, String> = mapOf("email" to new_email.text.toString())
+                                        user_ref.updateChildren(email)
+                                        Toast.makeText(applicationContext,R.string.email_updated,Toast.LENGTH_SHORT).show()
+                                    }.addOnFailureListener{
+                                        Log.i("email-up",it.message.toString())
+                                        Toast.makeText(applicationContext,"Se ha producido un error",Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+
+                        }
                     }
-                }
-                /*auth.currentUser!!.updateEmail(new_email.text.toString()).addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Toast.makeText(this,R.string.email_updated,Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(this,task.exception!!.message.toString(),Toast.LENGTH_SHORT).show()
+                    override fun onCancelled(error: DatabaseError) {
+                        TODO("Not yet implemented")
                     }
-                }*/
+                })
             }
         }
         builder.setNegativeButton("Cancelar"){ dialogInterface : DialogInterface, which ->
@@ -256,19 +283,25 @@ class SettingsActivity : AppCompatActivity() {
         val new_username = view.findViewById<EditText>(R.id.edt_settings_username)
         val old_username = view.findViewById<TextView>(R.id.settings_old_name)
 
-        var user_ref = firestore.collection("Usuarios").document(uid)
-        user_ref.addSnapshotListener { value, error ->
-            old_username.text = value!!.data!!.get("username").toString()
-        }
+        var user_ref = database.reference.child("Usuarios").child(uid)
+        user_ref.child("username").ref.addValueEventListener(object:ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                old_username.text = snapshot.value.toString()
+            }
+            override fun onCancelled(error: DatabaseError) {
 
-        builder.setPositiveButton("Confirmar"){ dialogInterface : DialogInterface, which ->
+            }
+        })
+
+        builder.setPositiveButton("Confirmar"){ _: DialogInterface, _ ->
             if(new_username.text.isEmpty()) {
                 return@setPositiveButton
             } else {
                 var usernames_ref = database.getReference("Usernames")
                 usernames_ref.get().addOnSuccessListener { value ->
                     if(!value.child(new_username.text.toString()).exists()) {
-                        user_ref.update("username",new_username.text.toString())
+                        var username: Map<String, String> = mapOf("username" to new_username.text.toString())
+                        user_ref.updateChildren(username)
                         usernames_ref.child(old_username.text.toString()).removeValue()
                         usernames_ref.child(new_username.text.toString()).setValue(auth.currentUser!!.email)
                     } else {
@@ -278,8 +311,8 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        builder.setNegativeButton("Cancelar"){ dialogInterface : DialogInterface, which ->
-            //dialog.dismiss()
+        builder.setNegativeButton("Cancelar"){ _ : DialogInterface, _ ->
+            //
         }
         val dialog = builder.create()
         dialog.show()

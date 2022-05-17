@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.View
 import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,16 +26,13 @@ import com.example.heymama.interfaces.Utils
 import com.example.heymama.models.FriendRequest
 import com.example.heymama.models.PostTimeline
 import com.example.heymama.models.User
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.theartofdev.edmodo.cropper.CropImage
-import com.theartofdev.edmodo.cropper.CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE
 import com.theartofdev.edmodo.cropper.CropImageView
 
 
@@ -50,7 +48,7 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
     private lateinit var binding : ActivityPerfilBinding
     private lateinit var uid: String
     private var code: Int = 0
-
+    private lateinit var popupmenu: PopupMenu
     private lateinit var btn_mensajes: Button
     private lateinit var btn_amigos : Button
     private lateinit var profileImage: ImageView
@@ -97,13 +95,20 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
         if (profileImage.drawable == null) {
             loadPicture(uid!!)
         }
+        var user_ref = dataBase.reference.child("Usuarios").child(uid)
+        user_ref.addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+               val user = snapshot.getValue(User::class.java)
+                txt_username_perfil.text = user!!.username.toString()
+                txt_user_perfil.text = user.name.toString()
+                txt_user_biografia.text = user.bio.toString()
+                Log.i("data-user",user.toString())
+            }
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
 
-        firestore.collection("Usuarios").document(uid).addSnapshotListener { value, error ->
-            Log.i("PERFIL-USER-0",value!!.toObject(User::class.java).toString())
-            txt_user_perfil.text = value?.data?.get("name").toString()
-            txt_username_perfil.text = value?.data?.get("username").toString()
-            txt_user_biografia.text = value?.data?.get("bio").toString()
-        }
         // BOTÓN MENSAJES
         btn_mensajes = binding.btnMensajes
         if(uid == auth.currentUser!!.uid) {
@@ -204,48 +209,35 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
             uid = intent.getStringExtra("UserUID")!!
         } else {
             uid = auth.currentUser?.uid!!
-            binding.layoutImage.setOnClickListener { selectImage(100) } // Cambiar imagen layout
-            binding.profileImage.setOnClickListener { selectImage(200) } // Cambiar imagen de perfil
+            binding.btnMenuLayout.visibility = View.VISIBLE
+
+            binding.btnMenuLayout.setOnClickListener {
+                popupmenu = PopupMenu(this,binding.btnMenuLayout)
+                popupmenu.menuInflater.inflate(R.menu.menu_imagen, popupmenu.menu)
+                menuImagen(popupmenu,100)
+            // Cambiar imagen layout
+            }
+            binding.profileImage.setOnClickListener {
+                val popupmenu: PopupMenu = PopupMenu(this,binding.profileImage)
+                popupmenu.menuInflater.inflate(R.menu.menu_imagen, popupmenu.menu)
+                menuImagen(popupmenu, 200)
+            }  // Cambiar imagen de perfil
         }
     }
 
-    /**
-     *
-     * @param input
-     *
-     */
-    private fun loadPostsTL() {
-        recyclerViewTimeline = findViewById(R.id.recyclerView_perfil)
-        var layoutManager = LinearLayoutManager(this)
-        recyclerViewTimeline.layoutManager = layoutManager
-        recyclerViewTimeline.setHasFixedSize(true)
-        postsTLArraylist = arrayListOf()
+    private fun menuImagen(popupmenu: PopupMenu, code: Int) {
+        popupmenu.show()
+        popupmenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.menu_verImagen -> {
 
-        firestore.collection("Timeline").whereEqualTo("userId",uid).addSnapshotListener { snapshots, e ->
-            if (e!= null) {
-                return@addSnapshotListener
-            }
-            for (dc in snapshots!!.documentChanges) {
-                when (dc.type) {
-                    DocumentChange.Type.ADDED -> {
-                        postsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
-                    }
-                    DocumentChange.Type.MODIFIED -> postsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
-                    DocumentChange.Type.REMOVED -> postsTLArraylist.remove(dc.document.toObject(
-                        PostTimeline::class.java))
+                }
+                R.id.menu_cambiarImagen -> {
+                    selectImage(code)
                 }
             }
-            postsTLArraylist.sort()
-            adapterPostsTL = PostTimelineAdapter(this,postsTLArraylist,this)
-
-            adapterPostsTL.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
-                override fun onItemClicked(position: Int) {
-                    Toast.makeText(this@PerfilActivity,"Item number: $position",Toast.LENGTH_SHORT).show()
-                }
-            })
-            recyclerViewTimeline.adapter = adapterPostsTL
-            recyclerViewTimeline.setHasFixedSize(true)
-        }
+            true
+        })
     }
 
     private fun cancelRequest() {
@@ -264,7 +256,6 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
 
     private fun request() {
         //Comprobamos que estamos en el perfil de otro usuario
-
         var requestReference = firestore.collection("Friendship").document(currentUserUID).collection("FriendRequest").document(uid)
         requestReference.get().addOnCompleteListener { task ->
             if(task.isSuccessful) {
@@ -292,7 +283,6 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
                     }
                 }
             } else {
-                Log.i("TAG-amigos-perfil-1",btn_amigos.text.toString())
                 Toast.makeText(this,"NO HAY SOLICITUD",Toast.LENGTH_SHORT).show()
             }
         }
@@ -380,6 +370,7 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
 
         GlideApp.with(applicationContext)
             .load(storageReference)
+            .error(R.drawable.wallpaper_profile)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .skipMemoryCache(true)
             .into(image)
@@ -390,7 +381,7 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
      * @param storageReference StorageReference
      * @param uri Uri
      */
-    private fun uploadImage(storageReference: StorageReference, uri: Uri){
+    private fun uploadImage(storageReference: StorageReference, uri: Uri, code: Int){
         val progressDialog = ProgressDialog(this)
         progressDialog.setMessage("Subiendo foto...")
         progressDialog.setCancelable(false)
@@ -398,13 +389,15 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
 
         storageReference.putFile(uri).
                 addOnSuccessListener {
-                    //binding.imageView14.setImageURI(ImageUri)
-
+                    if(code == 200) {
+                        var profilePhoto: Map<String, String> = mapOf("profilePhoto" to storageReference.path)
+                        dataBase.getReference("Usuarios").child(uid).updateChildren(profilePhoto)
+                    }
                     Toast.makeText(this,"Foto subida",Toast.LENGTH_SHORT).show()
                     if(progressDialog.isShowing) progressDialog.dismiss()
                 }.addOnFailureListener{
                     if(progressDialog.isShowing) progressDialog.dismiss()
-                    Toast.makeText(this,"Hubo un error",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this,"Se ha producido un error",Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -459,12 +452,12 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
                 if((resultCode == Activity.RESULT_OK) && (code==100)) {
                     binding.layoutImage.setImageURI(result.uri)
                     storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").getReference("Usuarios/"+auth.currentUser?.uid+"/images/layout")
-                    uploadImage(storageReference,result.uri)
+                    uploadImage(storageReference,result.uri,code)
                     code = 0
                 } else if((resultCode == Activity.RESULT_OK) && (code==200)) {
                     binding.profileImage.setImageURI(result.uri)
                     storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").getReference("Usuarios/"+auth.currentUser?.uid+"/images/perfil")
-                    uploadImage(storageReference,result.uri)
+                    uploadImage(storageReference,result.uri,code)
                     code = 0
                 }
                 else if(resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
@@ -472,5 +465,15 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
                 }
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        com.example.heymama.Utils.updateStatus("offline")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        com.example.heymama.Utils.updateStatus("online")
     }
 }

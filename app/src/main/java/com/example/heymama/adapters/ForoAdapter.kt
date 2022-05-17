@@ -42,8 +42,10 @@ class ForoAdapter(private val context: Context, private val foroArrayList: Array
         database = FirebaseDatabase.getInstance()
 
         val tema_post: Post = foroArrayList[position] // get data at specific position
-        getDataUser(tema_post.userID,holder)
-        holder.titulo_foro.setText(tema_post.title)
+        if(tema_post.protected == "Público") {
+            getDataUser(tema_post.userID, holder)
+        }
+        holder.titulo_foro.text = tema_post.title
         //holder.img_tema_foro.setImageURI(tema_post)
         holder.titulo_foro.setOnClickListener{
             foroItemListener.onItemClicked(position)
@@ -54,7 +56,6 @@ class ForoAdapter(private val context: Context, private val foroArrayList: Array
     }
 
     private fun getDataUser(userID: String, holder: HolderForo) {
-
         database.reference.child("Usuarios").child(userID).addValueEventListener(object:
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {

@@ -5,13 +5,21 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
+import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.doOnTextChanged
 import com.example.heymama.R
+import com.example.heymama.databinding.ActivityRegisterBinding
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.SignInMethodQueryResult
 import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -20,11 +28,6 @@ import com.google.firebase.storage.StorageReference
 
 class RegisterActivity : AppCompatActivity() {
 
-    private lateinit var txt_email: EditText
-    private lateinit var txt_password: EditText
-    private lateinit var txt_user: EditText
-    private lateinit var txt_name: EditText
-    private lateinit var btn_registro: Button
     private lateinit var rol: String
 
     // FirebaseAuth object
@@ -34,11 +37,12 @@ class RegisterActivity : AppCompatActivity() {
 
     private lateinit var firebaseStore: FirebaseFirestore
     private lateinit var storageReference: StorageReference
-
+    private lateinit var binding: ActivityRegisterBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
+        binding = ActivityRegisterBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val bundle: Bundle? = intent.extras
         rol = intent.getStringExtra("Rol").toString()
@@ -49,14 +53,8 @@ class RegisterActivity : AppCompatActivity() {
         actionBar?.setDisplayHomeAsUpEnabled(true)
         actionBar?.setDisplayShowHomeEnabled(true)
 
-        txt_email = findViewById(R.id.txt_email)
-        txt_password = findViewById(R.id.txt_password)
-        txt_user = findViewById(R.id.txt_user)
-        txt_name = findViewById(R.id.txt_name)
-        btn_registro = findViewById(R.id.btn_crear_cuenta)
-
         //Instancias para la base de datos y la autenticación
-        dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
+        dataBase = FirebaseDatabase.getInstance()
         auth = FirebaseAuth.getInstance()
 
         //Dentro de la base de datos habrá un nodo "Usuarios" donde se guardan los usuarios de la aplicación
@@ -64,20 +62,136 @@ class RegisterActivity : AppCompatActivity() {
 
         storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").reference
 
-        findViewById<Button>(R.id.btn_crear_cuenta).setOnClickListener{
-            verifyUser(txt_user.text.toString(),txt_email.text.toString())
+        focusUsername()
+        focusEmail()
+        focusPassword()
+        focusName()
+        validUsername()
+
+        binding.btnCrearCuenta.setOnClickListener {
+            Toast.makeText(this,"BTN",Toast.LENGTH_SHORT).show()
+            validate()
+            //   verifyUser(txt_user.text.toString(),txt_email.text.toString())
         }
 
     }
-    private fun createAccount() {
-        val email: String = txt_email.text.toString()
-        val name: String = txt_name.text.toString()
-        val password: String = txt_password.text.toString()
-        val username: String = txt_user.text.toString()
 
-        if (!verifyPassword(password)) {
-            Toast.makeText(this,applicationContext.getString(R.string.ContraseñaInsegura),Toast.LENGTH_SHORT).show()
+    private fun validate() {
+        Toast.makeText(this,"VALIDATE",Toast.LENGTH_SHORT).show()
+        val validUser = binding.userLayout.helperText == null
+        val validName = binding.nameLayout.helperText == null
+        val validEmail = binding.email0Layout.helperText == null
+        val validPassword = binding.passwordLayout.helperText == null
+
+        if(validUser && validName && validEmail && validPassword) {
+            createAccount()
+            Toast.makeText(this,"CREATE",Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this,"ALERT",Toast.LENGTH_SHORT).show()
+           AlertDialog.Builder(this)
+               .setTitle("Error")
+               .setMessage("Rellena correctamente los datos")
+               .setPositiveButton("Okay"){ _,_ ->
+
+               }
+            Log.i("validate-1",binding.userLayout.helperText.toString())
+            Log.i("validate-2",binding.nameLayout.helperText.toString())
+            Log.i("validate-3",binding.email0Layout.helperText.toString())
+            Log.i("validate-4",binding.passwordLayout.helperText.toString())
         }
+    }
+
+    private fun focusUsername() {
+        binding.txtUser.setOnFocusChangeListener { view, focused ->
+            if(!focused) {
+                validUsername()
+            }
+        }
+    }
+
+    private fun validUsername() {
+        var username = binding.txtUser.text.toString()
+        var userRef = dataBase.getReference("Usernames")
+
+        userRef.get().addOnCompleteListener(this) { task ->
+            userRef.get().addOnSuccessListener { value ->
+
+                Log.i("validuser",value.children.toString())
+                if (!value.child(username.lowercase()).exists()) {
+                    //userRef.child(username).setValue(email)
+
+                    //createAccount()
+                    binding.userLayout.helperText = ""
+                } else{
+                    binding.userLayout.helperText = "Usuario no disponible"
+                }
+            }.addOnFailureListener {
+                binding.userLayout.helperText = "Usuario no disponible"
+                Toast.makeText(this, "Username no disponible", Toast.LENGTH_SHORT).show()
+            }
+        }.addOnFailureListener { Toast.makeText(this, "Username no disponible", Toast.LENGTH_SHORT).show() }
+
+    }
+
+    private fun focusName() {
+        binding.txtName.setOnFocusChangeListener { view, focused ->
+            if(!focused) {
+                binding.nameLayout.helperText = validName()
+            }
+        }
+    }
+
+    private fun validName(): String? {
+        var name = binding.txtName.text.toString()
+        if(name.isEmpty()){
+            return "Nombre inválido"
+        }
+        return null
+    }
+
+    private fun focusPassword() {
+        binding.txtPassword.doOnTextChanged { text, start, before, count ->
+            var password = binding.txtPassword.text.toString()
+            if(password == null || password.length < 7){
+                binding.passwordLayout.helperText = "Contraseña inválida"
+            }else{
+                binding.passwordLayout.helperText = null
+            }
+        }
+    }
+
+    private fun validPassword(): String? {
+        var password = binding.txtPassword.text.toString()
+        if(password == null || password.length < 7){
+            return "Contraseña inválida"
+        }
+        return null
+    }
+
+    private fun focusEmail() {
+        binding.txt0Email.setOnFocusChangeListener { view, focused ->
+            if(!focused) {
+                binding.email0Layout.helperText = validEmail()
+            }
+        }
+    }
+
+    private fun validEmail(): String? {
+        var email = binding.txt0Email.text.toString()
+        /*if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+            return "Correo electrónico inválido"
+        }*/
+        if(email.isEmpty()) {
+            return "Escribe un correo electrónico"
+        }
+        return null
+    }
+
+    private fun createAccount() {
+        val email: String = binding.txt0Email.text.toString()
+        val name: String = binding.txtName.text.toString()
+        val password: String = binding.txtPassword.text.toString()
+        val username: String = binding.txtUser.text.toString()
 
         firebaseStore = FirebaseFirestore.getInstance()
 
@@ -85,63 +199,56 @@ class RegisterActivity : AppCompatActivity() {
         Toast.makeText(this,password,Toast.LENGTH_SHORT).show()
         Toast.makeText(this,username,Toast.LENGTH_SHORT).show()
 
-        if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password) && !TextUtils.isEmpty(username)) {
+        auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(this) { task ->
+            if (task.isSuccessful) {
+                val user: FirebaseUser? = auth.currentUser
+                val uid = user?.uid
+                // ID en la BBDD
+                val userDB: DatabaseReference = dataBaseReference.child(uid!!)
+                verifyEmail(user)
 
+                dataBase.getReference("Usernames").child(username).setValue(email)
+                userDB.child("id").setValue(uid)
+                userDB.child("name").setValue(name)
+                userDB.child("username").setValue(username)
+                userDB.child("email").setValue(email)
+                userDB.child("rol").setValue(rol)
+                userDB.child("bio").setValue(binding.txtBio.text.toString())
+                userDB.child("profilePhoto").setValue("")
 
-            auth.createUserWithEmailAndPassword(email,password)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-
-                        Toast.makeText(this,"Here again",Toast.LENGTH_SHORT).show()
-
-                        // Usuario
-                        val user: FirebaseUser? = auth.currentUser
-                        val uid = user?.uid
-
-                        // ID en la BBDD
-                        val userDB: DatabaseReference = dataBaseReference.child(uid!!)
-
-                        verifyEmail(user)
-
-                        Toast.makeText(this,"Here again 2 !",Toast.LENGTH_SHORT).show()
-
-                        userDB.child("id").setValue(uid)
-                        userDB.child("name").setValue(name)
-                        userDB.child("username").setValue(username)
-                        userDB.child("email").setValue(email)
-                        userDB.child("rol").setValue(rol)
-                        userDB.child("bio").setValue("")
-                        userDB.child("profilePhoto").setValue("")
-
-                        val data = hashMapOf(
-                            "id" to uid,
-                            "name" to name,
-                            "username" to username,
-                            "email" to email,
-                            "rol" to rol,
-                            "bio" to "",
-                            "profilePhoto" to ""
-                        )
-
-                        //val usuario = User(auth.uid.toString(),name,username,email,"Usuario","","")
-                        firebaseStore.collection("Usuarios").document(uid).set(data).addOnSuccessListener {
-                            Log.i("user-new","USER NEW")
-                        }.addOnFailureListener {
-                            Log.i("user-new",it.toString())
-                        }
-                        //firebaseStore.collection("Usuarios").document(auth.uid.toString()).set(usuario)
-                    } else{
-                        Toast.makeText(this,"Ocurrió un error al enviar el email de verificación.",Toast.LENGTH_SHORT).show()
-                    }
+                val data = hashMapOf(
+                    "id" to uid,
+                    "name" to name,
+                    "username" to username,
+                    "email" to email,
+                    "rol" to rol,
+                    "bio" to binding.txtBio.text.toString(),
+                    "profilePhoto" to ""
+                )
+                firebaseStore.collection("Usuarios").document(uid).set(data).addOnSuccessListener {
+                    Log.i("user-new","USER NEW")
+                }.addOnFailureListener {
+                    Log.i("user-new",it.toString())
                 }
-        } else {
-            Toast.makeText(this, "Rellena los datos por favor.",Toast.LENGTH_SHORT).show()
+            } else{
+                auth.fetchSignInMethodsForEmail(binding.txt0Email.text.toString()).addOnCompleteListener(object:OnCompleteListener<SignInMethodQueryResult> {
+                    override fun onComplete(p0: Task<SignInMethodQueryResult>) {
+                        if(p0.isSuccessful) {
+                            val checkEmail : Boolean = p0.result.signInMethods!!.isEmpty()
+                            if(!checkEmail) {
+                                Toast.makeText(applicationContext,"Ya existe una cuenta registrada con este correo electrónico",Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                })
+                //Toast.makeText(this,"Ocurrió un error al enviar el email de verificación.",Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
     private fun verifyUser(username:String,email:String) {
         var userRef = dataBase.getReference("Usernames")
-
+        var verified : Boolean = false
         userRef.get().addOnCompleteListener(this) { task ->
             userRef.get().addOnSuccessListener { value ->
                 if (!value.child(username).exists()) {
@@ -149,35 +256,27 @@ class RegisterActivity : AppCompatActivity() {
                     Toast.makeText(applicationContext, "Username registrado", Toast.LENGTH_SHORT)
                         .show()
                     createAccount()
-                } else {
-                    Toast.makeText(this, "Username no disponible", Toast.LENGTH_SHORT).show()
+                    verified = true
                 }
             }.addOnFailureListener {
                 Toast.makeText(this, "Username no disponible", Toast.LENGTH_SHORT).show()
             }
         }.addOnFailureListener { Toast.makeText(this, "Username no disponible", Toast.LENGTH_SHORT).show() }
+        Log.i("verify user",verified.toString())
     }
 
     private fun verifyEmail(user: FirebaseUser?) {
-        user?.sendEmailVerification()
-            ?.addOnCompleteListener(this) { task ->
-                if (task.isComplete) {
-                    Toast.makeText(this, "Comprueba tu email.",Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this, "Oh, algo ha ido mal.", Toast.LENGTH_SHORT).show()
-                }
-                finish()
-
-                //intent.putExtra("Usuario","Usuario")
-                startActivity(Intent(this, MainActivity::class.java))
+        user?.sendEmailVerification()?.addOnCompleteListener(this) { task ->
+            if (task.isComplete) {
+                Toast.makeText(this, "Comprueba tu email.",Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Oh, algo ha ido mal.", Toast.LENGTH_SHORT).show()
             }
-        Toast.makeText(this, "VerifyEmail 2",Toast.LENGTH_SHORT).show()
+            finish()
+            startActivity(Intent(this, MainActivity::class.java))
+        }
     }
 
-    // Comprobar la contraseña
-    private fun verifyPassword(password: String) : Boolean{
-        return (password != null && password.length >= 7)
-    }
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed() //go previous activity

@@ -37,6 +37,7 @@ class ConsultaAdapter(private val context: Context, private val consultasArrayLi
         with(holder) {
 
             consulta.text = consultasArrayList[position].consulta.toString()
+
             holder.btn_menu_consulta_.visibility = View.VISIBLE
             btn_menu_consulta_.setOnClickListener {
                 menuBtnConsulta(holder,consultasArrayList[position])
@@ -60,10 +61,11 @@ class ConsultaAdapter(private val context: Context, private val consultasArrayLi
             val data = value!!.data
             holder.name_consulta.text = data!!["name"].toString()
             holder.userc_consulta.text = data!!["username"].toString()
+
         }
     }
 
-    private fun menuBtnConsulta(holder: HolderConsulta, consulta: Consulta,) {
+    private fun menuBtnConsulta(holder: HolderConsulta, consulta: Consulta) {
         val popupMenu: PopupMenu = PopupMenu(context,holder.btn_menu_consulta_)
         popupMenu.menuInflater.inflate(R.menu.post_tl_menu,popupMenu.menu)
         popupMenu.show()

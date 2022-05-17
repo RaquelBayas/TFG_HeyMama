@@ -25,10 +25,6 @@
             android:screenOrientation="portrait"
             android:exported="true" />
         <activity
-            android:name=".activities.MisConsultasActivity"
-            android:screenOrientation="portrait"
-            android:exported="true" />
-        <activity
             android:name=".activities.ListChatsActivity"
             android:screenOrientation="portrait"
             android:exported="true" />
@@ -121,10 +117,6 @@
             android:screenOrientation="portrait"
             android:exported="true" />
         <activity
-            android:name=".activities.RegisterProfesionalActivity"
-            android:screenOrientation="portrait"
-            android:exported="true" />
-        <activity
             android:name=".activities.RegisterAsActivity"
             android:screenOrientation="portrait"
             android:exported="true" />
@@ -178,9 +170,17 @@
 
         <service
             android:name=".MyFirebaseMessagingService"
-            android:exported="false">
+            android:exported="false"
+            android:enabled="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".MyFirebaseInstanceIdService"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
     </application>

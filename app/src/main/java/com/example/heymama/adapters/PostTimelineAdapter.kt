@@ -12,6 +12,8 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.example.heymama.GlideApp
 import com.example.heymama.R
 import com.example.heymama.activities.CommentPostTLActivity
 import com.example.heymama.interfaces.ItemRecyclerViewListener
@@ -94,13 +96,14 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
             with(holder) {
                 name_post.text = docs!!["name"].toString()
 
-                FirebaseStorage.getInstance().getReference("Usuarios/"+post_tl.userId+"/images/perfil")
-                    .getBytes(8 * ONE_MEGABYTE).addOnSuccessListener { bytes ->
-                        val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                        holder.photo_post.setImageBitmap(bmp)
-                    }.addOnFailureListener {
-                        Log.e(TAG, "Se produjo un error al descargar la imagen."+it.message, it)
-                    }
+                storageReference = firebaseStore.getReference("Usuarios/"+post_tl.userId+"/images/perfil")
+                GlideApp.with(context)
+                    .load(storageReference)
+                    .error(R.drawable.wallpaper_profile)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .into(holder.photo_post)
+
                 photo_post.setOnClickListener {
                     postTimelineListener.onItemClicked(position)
                 }
@@ -111,7 +114,7 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
                 likeCount_post.text = post_tl.likeCount.toString()
                 id_post = post_tl.postId.toString()
                 var timestamp = post_tl.timestamp
-                Log.i("POSTTL-TIME",timestamp.toString())
+
                 val dateFormat = SimpleDateFormat("dd/MM/yy \n  HH:mm")
                 time_post.text = dateFormat.format(timestamp)
                 commentButton.setOnClickListener {
@@ -122,35 +125,7 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
         }
 
         holder.likeButton.setOnClickListener {
-            firestore.collection("Timeline").addSnapshotListener { value, error ->
-                if (error != null) {
-                    return@addSnapshotListener
-                }
-                firestore.collection("Timeline").document(post_tl.postId.toString()).collection("Likes")
-                    .document(auth.uid.toString()).get().addOnCompleteListener {
-                        if (!it.result.exists()) {
-                            val likesMap: HashMap<String, String> = HashMap()
-                            likesMap?.put("timestap", Date().toString())
-                            firestore.collection("Timeline").document(post_tl.postId.toString())
-                                .collection("Likes").document(auth.uid.toString()).set(
-                                    likesMap!!
-                                )
-                        } else {
-                            firestore.collection("Timeline").document(post_tl.postId.toString()).collection("Likes")
-                                .document(auth.uid.toString()).delete()
-                        }
-                    }
-            }
-            var likesReference =  firestore.collection("Likes").document(auth.uid.toString()).collection("Likes").document(post_tl.postId.toString())
-            likesReference.get().addOnCompleteListener {
-                if(!it.result.exists()) {
-                    val likesMap: HashMap<String, String> = HashMap()
-                    likesMap?.put("timestap", Date().toString())
-                    likesReference.set(likesMap!!)
-                } else {
-                    likesReference.delete()
-                }
-            }
+           like(post_tl)
         }
 
         likeCounter(holder,position)
@@ -158,6 +133,36 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
         commentsCounter(holder,position)
 
         changeButtonColors(holder, post_tl)
+    }
+
+    private fun like(post_tl: PostTimeline) {
+        firestore.collection("Timeline").addSnapshotListener { value, error ->
+            if (error != null) {
+                return@addSnapshotListener
+            }
+            firestore.collection("Timeline").document(post_tl.postId.toString()).collection("Likes")
+                .document(auth.uid.toString()).get().addOnCompleteListener {
+                    if (!it.result.exists()) {
+                        val likesMap: HashMap<String, String> = HashMap()
+                        likesMap?.put("timestap", Date().toString())
+                        firestore.collection("Timeline").document(post_tl.postId.toString())
+                            .collection("Likes").document(auth.uid.toString()).set(likesMap!!)
+                    } else {
+                        firestore.collection("Timeline").document(post_tl.postId.toString()).collection("Likes")
+                            .document(auth.uid.toString()).delete()
+                    }
+                }
+        }
+        var likesReference =  firestore.collection("Likes").document(auth.uid.toString()).collection("Likes").document(post_tl.postId.toString())
+        likesReference.get().addOnCompleteListener {
+            if(!it.result.exists()) {
+                val likesMap: HashMap<String, String> = HashMap()
+                likesMap?.put("timestap", Date().toString())
+                likesReference.set(likesMap!!)
+            } else {
+                likesReference.delete()
+            }
+        }
     }
 
     private fun menuBtnPostTL(holder: PostTimelineAdapter.Holder,post_tl: PostTimeline) {

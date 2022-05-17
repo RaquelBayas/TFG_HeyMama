@@ -3,6 +3,7 @@ package com.example.heymama.models
 import com.google.firebase.firestore.ServerTimestamp
 
 data class Message(
+    var messageID: String = "",
     var senderUID: String = "",
     var receiverUID: String = "",
     var message: String = "",

@@ -77,21 +77,34 @@ class PreguntaActivity : AppCompatActivity() {
         txt_descripcion_foro = binding.txtDescripcionForo
         txt_titulo_foro = binding.txtTituloForo
 
+        var publico = binding.btnPublico
+        var privado = binding.btnPrivado
+        var protected : String = ""
+        when {
+            publico.isChecked -> {
+                protected = publico.text.toString()
+            }
+            privado.isChecked -> {
+                protected = privado.text.toString()
+            }
+            else -> {
+                Toast.makeText(this,"Selecciona el nivel de privacidad",Toast.LENGTH_SHORT).show()
+            }
+        }
+
         var ref = firestore.collection("Foros").document("SubForos").collection(foroName).document()
         var id_ref = ref.id
 
-        if(!txt_titulo_foro.text.isEmpty() && !txt_descripcion_foro.text.isEmpty()) {
+        if(txt_titulo_foro.text.isNotEmpty() && txt_descripcion_foro.text.isNotEmpty() && (publico.isChecked || privado.isChecked)) {
 
-            var post = Post(id_ref,txt_titulo_foro.text.toString(),txt_descripcion_foro.text.toString(),user.uid,
+            var post = Post(id_ref,txt_titulo_foro.text.toString(),txt_descripcion_foro.text.toString(),user.uid,protected,
                 Date())
             addPost(post,ref)
             Toast.makeText(this,"Correcto.",Toast.LENGTH_SHORT).show()
             finish()
-
         } else {
             Utils.showError(this,"Rellena la información.")
         }
-
     }
 
     /**

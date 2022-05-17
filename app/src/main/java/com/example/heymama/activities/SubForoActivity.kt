@@ -65,6 +65,9 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
         idTemasArrayList = arrayListOf()
         getTemasData(foroName)
 
+        binding.swipeRefreshTL.setOnRefreshListener {
+            getTemasData(foroName)
+        }
 
         // Add question
         binding.btnAddQuestion.setOnClickListener { view ->
@@ -82,6 +85,9 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
      *
      */
     private fun getTemasData(foroName: String?) {
+        if(binding.swipeRefreshTL.isRefreshing) {
+            binding.swipeRefreshTL.isRefreshing = false
+        }
         temasArraylist.clear()
         firestore = FirebaseFirestore.getInstance()
 

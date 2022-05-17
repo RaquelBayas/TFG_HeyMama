@@ -19,6 +19,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <Button
+                android:id="@+id/btn_menu_layout"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:visibility="invisible"
+                android:background="@drawable/ic_more"
+                app:layout_constraintEnd_toEndOf="@+id/layout_image"
+                app:layout_constraintTop_toTopOf="parent"></Button>
+
             <ImageView
                 android:id="@+id/layout_image"
                 android:layout_width="match_parent"
@@ -70,6 +81,7 @@
                 app:layout_constraintHorizontal_bias="0.11"
                 app:layout_constraintStart_toEndOf="@+id/profile_image" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </LinearLayout>
 
     <LinearLayout
@@ -81,13 +93,14 @@
             android:id="@+id/txt_biografia"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
             android:layout_marginRight="20dp"
             android:layout_marginBottom="10dp"
-            android:hint="bio"
+            android:fontFamily="@font/montserrat"
+            android:text=""
+            android:maxLength="200"
             android:textSize="16sp"
-            android:fontFamily="@font/montserrat_bold"
             tools:ignore="SpeakableTextPresentCheck" />
 
         <LinearLayout
@@ -97,10 +110,11 @@
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:orientation="horizontal">
+
             <Button
                 android:id="@+id/btn_amigos"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="match_parent"
                 android:layout_weight="0.5"
 
                 android:background="@drawable/rectangle_orange"
@@ -111,17 +125,15 @@
             <Button
                 android:id="@+id/btn_mensajes"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="0.5"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
+                android:layout_weight="0.5"
 
                 android:background="@drawable/rectangle_orange"
                 android:fontFamily="@font/alegreya"
                 android:text="@string/mensajes"
                 android:textSize="18sp" />
         </LinearLayout>
-
-
        </LinearLayout>
 
 
@@ -167,8 +179,6 @@
 
     </androidx.viewpager.widget.ViewPager>
 
-
-
     <View
         android:id="@+id/view"
         android:layout_width="417dp"
@@ -178,8 +188,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent" />
-
-
-
 
 </LinearLayout>

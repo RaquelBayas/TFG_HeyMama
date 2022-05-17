@@ -79,8 +79,9 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
         getComments(foroName,id)
         getDataUser()
 
-
-
+        binding.swipeRefreshTL.setOnRefreshListener {
+            getComments(foroName,id)
+        }
     }
 
     private fun initExtras() {
@@ -124,7 +125,7 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
      */
 
     private fun getDataUser(){
-        database.reference.child("Usuarios").child(uid).addValueEventListener(object:
+        database.reference.child("Usuarios").child(userID).addValueEventListener(object:
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 var user : User? = snapshot.getValue(User::class.java)
@@ -189,12 +190,27 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
         val builder = AlertDialog.Builder(this,R.style.CustomForoCommentsLayout).create()
         val inflater: LayoutInflater = layoutInflater
         val dialogLayout: View = inflater.inflate(R.layout.add_comment_foro_layout,null)
+        val btnPublico : RadioButton = dialogLayout.findViewById(R.id.btn_publico)
+        val btnPrivado : RadioButton = dialogLayout.findViewById(R.id.btn_privado)
+
         val editText: EditText = dialogLayout.findViewById(R.id.edt_add_comment)
         val btn_add_comment: Button = dialogLayout.findViewById(R.id.btn_add_comment_foro)
         builder.setView(dialogLayout)
         btn_add_comment.setOnClickListener {
-            if(editText.text.isNotEmpty()) {
-                add_comment(editText.text.toString(),user,foroName,urlTema,id)
+            var protected : String = ""
+            when {
+                btnPublico.isChecked -> {
+                    protected = btnPublico.text.toString()
+                }
+                btnPrivado.isChecked -> {
+                    protected = btnPrivado.text.toString()
+                }
+                else -> {
+                    Toast.makeText(this,"Selecciona el nivel de privacidad",Toast.LENGTH_SHORT).show()
+                }
+            }
+            if(editText.text.isNotEmpty() && (btnPublico.isChecked || btnPrivado.isChecked)) {
+                add_comment(editText.text.toString(),user,foroName,protected,id)
                 builder.dismiss()
             } else {
                 Toast.makeText(this,"Escribe un comentario",Toast.LENGTH_SHORT).show()
@@ -211,8 +227,8 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
      * @param foroName String
      * @param id String
      */
-    private fun add_comment(edt_comment:String, user:FirebaseUser, foroName:String, idTema:String, id:String) {
-        var comment = Comment(edt_comment,user.uid, Date())
+    private fun add_comment(edt_comment:String, user:FirebaseUser, foroName:String, protected:String, id:String) {
+        var comment = Comment(edt_comment,user.uid,protected,Date())
         addCommentFB(comment,foroName,id)
     }
 
@@ -236,6 +252,10 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
      *
      */
     private fun getComments(foroName: String, id: String) {
+        if(binding.swipeRefreshTL.isRefreshing) {
+            binding.swipeRefreshTL.isRefreshing = false
+        }
+
         firestore = FirebaseFirestore.getInstance()
         firestore.collection("Foros").document("SubForos").collection(foroName).document(id).collection("Comentarios")
             .addSnapshotListener { snapshots, e ->
@@ -253,7 +273,7 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
                             Comment::class.java))
                     }
                 }
-                Collections.sort(commentsArraylist)
+                commentsArraylist.sort()
                 adapterComments = CommentsForoAdapter(this,commentsArraylist,this)
 
                 adapterComments.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {

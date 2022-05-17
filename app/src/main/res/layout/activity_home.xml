@@ -5,6 +5,7 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:context=".activities.HomeActivity"
     tools:ignore="SpeakableTextPresentCheck">
 
 
@@ -65,42 +66,42 @@
 
                     <ImageButton
                         android:id="@+id/btn_mood_home_feliz"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:backgroundTint="@color/mood_feliz"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_margin="5dp"
+                        android:background="@color/mood_bien"
                         android:src="@drawable/mood_feliz"
                         ></ImageButton>
                     <ImageButton
                         android:id="@+id/btn_mood_home_bien"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:backgroundTint="@color/mood_bien"
-                        android:layout_height="wrap_content"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_margin="5dp"
+                        android:background="@color/pink"
                         android:src="@drawable/mood_bien"
                         ></ImageButton>
                     <ImageButton
                         android:id="@+id/btn_mood_home_regular"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:backgroundTint="@color/mood_regular"
-                        android:layout_height="wrap_content"
+                        android:layout_width="60dp"
+                        android:background="@color/mood_regular"
+                        android:layout_height="60dp"
+                        android:layout_margin="5dp"
                         android:src="@drawable/mood_regular"
                         ></ImageButton>
                     <ImageButton
                         android:id="@+id/btn_mood_home_mal"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:backgroundTint="@color/mood_mal"
-                        android:layout_height="wrap_content"
+                        android:layout_width="60dp"
+                        android:background="@color/mood_mal"
+                        android:layout_height="60dp"
+                        android:layout_margin="5dp"
                         android:src="@drawable/mood_mal"
                         ></ImageButton>
                     <ImageButton
                         android:id="@+id/btn_mood_hom_triste"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:backgroundTint="@color/mood_triste"
-                        android:layout_height="wrap_content"
+                        android:layout_width="60dp"
+                        android:background="@color/mood_triste"
+                        android:layout_height="60dp"
+                        android:layout_margin="5dp"
                         android:src="@drawable/mood_triste"
                         ></ImageButton>
 

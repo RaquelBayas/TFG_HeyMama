@@ -5,6 +5,7 @@ import java.util.*
 
 data class Comment(var post: String = "",
               var userID: String = "",
+                   var protected: String = "",
               @ServerTimestamp
               var timestamp: Date? = null) : Comparable<Comment> {
 

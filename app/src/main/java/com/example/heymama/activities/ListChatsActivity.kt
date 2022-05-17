@@ -57,13 +57,19 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
         chatsArraylist = arrayListOf()
         adapterChats = ListChatItemAdapter(applicationContext, chatsArraylist, this)
         adapterChats.notifyDataSetChanged()
+
+        binding.swipeRefreshTL.setOnRefreshListener {
+            setChats()
+        }
         setChats()
 
     }
 
     private fun setChats() {
+        if(binding.swipeRefreshTL.isRefreshing) {
+            binding.swipeRefreshTL.isRefreshing = false
+        }
         chatsArraylist.clear()
-    //var ref_two = ref_one.collection("Chats").document("3nLuKE4icCVSzvGrMbD0xukDs5l1").collection("Chats").orderBy("timestamp",Query.Direction.DESCENDING).limit(1)
         var ref = dataBase.reference.child("Chats").child(auth.uid.toString()).child("Messages")
         ref.addValueEventListener(object:
             ValueEventListener {
@@ -82,9 +88,7 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     }
                 }
             }
-
             override fun onCancelled(error: DatabaseError) {
-
             }
         })
     }
@@ -98,36 +102,46 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
      */
     private fun getUserData(userUid: String, msg: Message, datasn: DataSnapshot) {
         chatsArraylist.clear()
-        var ref = firestore.collection("Usuarios").document(userUid)
-        ref.addSnapshotListener { value, error ->
-            val user = value!!.toObject(User::class.java)
-            idUser = user!!.id.toString()
-            receiver_name = user.name.toString()
-            receiver_username = user.username.toString()
-            var status = user.status
+        var ref = dataBase.reference.child("Usuarios").child(userUid)
+        ref.addValueEventListener(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val user = snapshot.getValue(User::class.java)
+                idUser = user!!.id.toString()
+                receiver_name = user!!.name.toString()
+                receiver_username = user.username.toString()
+                var status = user.status
+                var chatItem = ListChatItem(datasn.key.toString(), idUser, receiver_name, receiver_username, msg.message, status, Date())
+                Log.i("chatitem-status",status)
+                chatsArraylist.clear()
+                chatsArraylist.add(chatItem)
 
-            var chatItem = ListChatItem(datasn.key.toString(), idUser, receiver_name, receiver_username, msg.message, status, Date())
-            Log.i("chatitem-status",status)
-            chatsArraylist.clear()
-            chatsArraylist.add(chatItem)
-
-            recyclerViewChats.adapter = adapterChats
-            adapterChats.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
-                override fun onItemClicked(position: Int) {
-                    val intent = Intent(applicationContext, ChatActivity::class.java)
-                    intent.putExtra("friendUID", chatsArraylist[position].idUser)
-                    startActivity(intent)
-                }
-            })
-        }
-
-        ref.get().addOnSuccessListener {
-
-        }
+                recyclerViewChats.adapter = adapterChats
+                adapterChats.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
+                    override fun onItemClicked(position: Int) {
+                        val intent = Intent(applicationContext, ChatActivity::class.java)
+                        intent.putExtra("friendUID", chatsArraylist[position].idUser)
+                        startActivity(intent)
+                    }
+                })
+            }
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
     }
 
     override fun onPause() {
         super.onPause()
+        Utils.updateStatus("offline")
+    }
+    
+    override fun onStop() {
+        super.onStop()
+        Utils.updateStatus("offline")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
         Utils.updateStatus("offline")
     }
 

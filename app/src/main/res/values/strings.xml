@@ -16,15 +16,15 @@
     <string name="profesional">Profesional</string>
     <string name="si">Sí</string>
     <string name="no">No</string>
+    <string name="obligatorio">Obligatorio</string>
     <string name="crear_cuenta">Crear cuenta</string>
     <string name="acceder">Acceder</string>
     <string name="recordar_contraseña">Recordar contraseña</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
+    <string name="correoElectronico">Correo Electrónico</string>
+    <string name="contraseña">Contraseña</string>
     <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-
     <string name="ContraseñaInsegura">Contraseña insegura</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
@@ -39,14 +39,20 @@
     <string name="depresion">Depresión</string>
     <string name="posparto">Posparto</string>
     <string name="embarazo">Embarazo</string>
+    <string name="otros">Otros</string>
 
     <!-- Post foro -->
     <string name="enviar">Enviar</string>
     <string name="foro">Foro</string>
+    <string name="publico">Público</string>
+    <string name="privado">Privado</string>
 
     <!-- Perfil -->
     <string name="amigos">Amigos</string>
     <string name="mensajes">Mensajes</string>
+    <string name="verImagen">Ver imagen</string>
+    <string name="cambiarImagen">Cambiar imagen</string>
+
 
     <string name="aceptar">Aceptar</string>
     <string name="rechazar">Rechazar</string>
@@ -104,7 +110,7 @@
     <string name="settings_new_email">Nuevo correo electrónico</string>
     <string name="email_updated">Correo electrónico actualizado</string>
     <string name="settings_empty_input_password">Introduce la contraseña</string>
-    <string name="txt_settings_current_password">Introduce la contraseña actual</string>
+    <string name="txt_settings_current_password">Introduce tu contraseña actual</string>
     <string name="txt_settings_new_password">Introduce la nueva contraseña</string>
     <string name="txt_settings_confirm_new_password">Confirma la nueva contraseña</string>
 

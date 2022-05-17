@@ -33,7 +33,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:layout_width="match_parent"
+            android:id="@+id/swipeRefreshTL"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="20dp"
+            >
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/articles_recyclerView"
             android:layout_width="match_parent"
@@ -43,7 +48,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
         <Button
             android:id="@+id/btn_add_article"
             android:layout_width="wrap_content"

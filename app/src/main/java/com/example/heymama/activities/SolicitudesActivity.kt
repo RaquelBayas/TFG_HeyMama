@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 import com.example.heymama.R
 import com.example.heymama.adapters.FriendRequestAdapter
+import com.example.heymama.databinding.ActivitySolicitudesBinding
+import com.example.heymama.fragments.*
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.FriendRequest
 import com.google.firebase.auth.FirebaseAuth
@@ -29,10 +31,8 @@ class SolicitudesActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     private lateinit var uid: String
 
-    private lateinit var recyclerViewRequests: RecyclerView
-    private lateinit var requestsArraylist: ArrayList<FriendRequest>
-    private lateinit var adapterRequests: FriendRequestAdapter
 
+    private lateinit var binding: ActivitySolicitudesBinding
     /**
      *
      * @param savedInstanceState Bundle
@@ -40,7 +40,8 @@ class SolicitudesActivity : AppCompatActivity(), ItemRecyclerViewListener {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_solicitudes)
+        binding = ActivitySolicitudesBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // Usuario
         auth = FirebaseAuth.getInstance()
@@ -53,41 +54,26 @@ class SolicitudesActivity : AppCompatActivity(), ItemRecyclerViewListener {
         firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
         storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").reference
 
-
-        // Recycler View de las solicitudes
-        recyclerViewRequests = findViewById(R.id.recyclerView_requests)
-        recyclerViewRequests.layoutManager = LinearLayoutManager(this)
-        recyclerViewRequests.setHasFixedSize(true)
-        requestsArraylist = arrayListOf()
-
-        getFriendRequest()
-
+        setUpTabs()
     }
 
+    private fun setUpTabs() {
+        val tabsAdapter = ViewPagerAdapter(supportFragmentManager)
+        val solicitudesFragment = RequestsFragment()
+        val searchFriends = SearchFriendsFragment()
+        val bundle = Bundle()
+        bundle.putString("uid",uid)
+        solicitudesFragment.arguments = bundle
+        searchFriends.arguments = bundle
+
+        tabsAdapter.addFragment(solicitudesFragment,"Solicitudes de amistad")
+        tabsAdapter.addFragment(searchFriends,"Buscar amigos")
+        binding.viewPagerAmigos.adapter = tabsAdapter
+        binding.tabs.setupWithViewPager(binding.viewPagerAmigos)
+    }
     /**
      *
      * @param input
      *
      */
-    private fun getFriendRequest() {
-        firestore.collection("Friendship").document(auth.currentUser!!.uid).collection("FriendRequest")
-            .addSnapshotListener { value, error ->
-                if(value != null) {
-                    val document = value.documents
-                    document.forEach { d ->
-                        d.reference.addSnapshotListener { value, error ->
-                            if (value != null) {
-                                var friendRequest = value.toObject(FriendRequest::class.java)
-                                if ((friendRequest != null) && (friendRequest.state == "receive")) { // SÓLO SE MUESTRAN LOS QUE HAN ENVIADO LA SOLICITUD
-                                    requestsArraylist.add(friendRequest)
-                                    adapterRequests = FriendRequestAdapter(applicationContext,requestsArraylist)
-                                    recyclerViewRequests.adapter = adapterRequests
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-    }
-
 }

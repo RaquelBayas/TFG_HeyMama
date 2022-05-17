@@ -23,9 +23,10 @@
         android:id="@+id/txt_name_nav_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="16dp"
+        android:text="Name"
+        android:fontFamily="@font/open_sans"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:text="Name" />
+        android:textSize="16sp" />
 
 
 </LinearLayout>

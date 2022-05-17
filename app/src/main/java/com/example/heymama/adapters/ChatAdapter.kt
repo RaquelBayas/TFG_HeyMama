@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.heymama.GlideApp
@@ -114,6 +116,25 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
 
     override fun getItemCount(): Int {
         return chatArrayList.size
+    }
+
+    private fun deleteMsg() {
+        val dialog = AlertDialog.Builder(context)
+            .setTitle(R.string.eliminar)
+            .setMessage(R.string.alert_eliminar)
+            .setNegativeButton("Cancelar") { view, _ ->
+                Toast.makeText(context, "Cancel button pressed", Toast.LENGTH_SHORT).show()
+                view.dismiss()
+            }
+            .setPositiveButton("Eliminar") { view, _ ->
+
+                Toast.makeText(context,"Artículo eliminado", Toast.LENGTH_SHORT).show()
+                view.dismiss()
+
+            }
+            .setCancelable(false)
+            .create()
+        dialog.show()
     }
 
     inner class SendHolder(itemView: View, listener:ItemRecyclerViewListener) : RecyclerView.ViewHolder(itemView) {

@@ -2,6 +2,7 @@ package com.example.heymama.adapters
 
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,7 +13,10 @@ import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.example.heymama.GlideApp
 import com.example.heymama.R
+import com.example.heymama.activities.PerfilActivity
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.User
 import com.google.firebase.auth.EmailAuthCredential
@@ -24,7 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
-class ListaUsuariosAdapter(private val context: Context, private val listaUsuarios: ArrayList<User>
+class ListaUsuariosAdapter(private val context: Context, private var listaUsuarios: ArrayList<User>
 ) : RecyclerView.Adapter<ListaUsuariosAdapter.Holder>() {
 
     private lateinit var listener: ItemRecyclerViewListener
@@ -34,6 +38,7 @@ class ListaUsuariosAdapter(private val context: Context, private val listaUsuari
     private lateinit var firebaseStore: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageReference: StorageReference
+    private lateinit var rol: String
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListaUsuariosAdapter.Holder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.tema_friend,parent,false)
@@ -50,11 +55,32 @@ class ListaUsuariosAdapter(private val context: Context, private val listaUsuari
         dataBaseReference = database.getReference("Usuarios")
 
         getUsuarios(holder,position)
-        holder.btn_menu_user.visibility = View.VISIBLE
-        holder.btn_menu_user.setOnClickListener {
-            menuUser(holder,listaUsuarios[position])
-        }
+        getDataUser(holder,position)
 
+    }
+
+    private fun getDataUser(holder: Holder, position: Int) {
+        database.reference.child("Usuarios").child(auth.uid.toString()).addValueEventListener(object:
+            ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                var user : User? = snapshot.getValue(User::class.java)
+                rol = user!!.rol.toString()
+                if(rol == "Admin") {
+                    holder.btn_menu_user.visibility = View.VISIBLE
+                    holder.btn_menu_user.setOnClickListener {
+                        menuUser(holder,listaUsuarios[position])
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                //TO DO("Not yet implemented")
+            }
+        })
+    }
+
+    fun filterList(list: ArrayList<User>) {
+        this.listaUsuarios = list
+        notifyDataSetChanged()
     }
 
     private fun menuUser(holder: Holder, user: User,) {
@@ -197,16 +223,20 @@ class ListaUsuariosAdapter(private val context: Context, private val listaUsuari
             txt_nombre_user.text = user.name
             txt_username_user.text = user.username
             var uid = user.id
-            storageReference = firebaseStore.getReference("/Usuarios/"+uid+"/images/perfil")
-            val ONE_MEGABYTE: Long = 1024 * 1024
-            storageReference
-                .getBytes(8 * ONE_MEGABYTE).
-                addOnSuccessListener { bytes ->
-                    val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                    img_user.setImageBitmap(bmp)
-                }.addOnFailureListener {
-                    Log.e(ContentValues.TAG, "Se produjo un error al descargar la imagen.", it)
-                }
+            storageReference = firebaseStore.getReference("/Usuarios/" + uid + "/images/perfil")
+            GlideApp.with(context)
+                .load(storageReference)
+                .error(R.drawable.wallpaper_profile)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .into(img_user)
+
+            img_user.setOnClickListener {
+                val intent = Intent(context, PerfilActivity::class.java)
+                intent.putExtra("UserUID", uid)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                context.startActivity(intent)
+            }
         }
     }
 

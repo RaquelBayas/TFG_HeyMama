@@ -2,6 +2,7 @@ package com.example.heymama.adapters
 
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,9 +11,15 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.example.heymama.GlideApp
 import com.example.heymama.R
+import com.example.heymama.activities.PerfilActivity
 import com.example.heymama.models.FriendRequest
+import com.example.heymama.models.User
+import com.google.android.datatransport.runtime.scheduling.jobscheduling.SchedulerConfig
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.firestore.CollectionReference
@@ -73,24 +80,27 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
 
 
         storageReference = firebaseStore.getReference("/Usuarios/"+friendRequest+"/images/perfil")
-        val ONE_MEGABYTE: Long = 1024 * 1024
-        storageReference
-            .getBytes(8 * ONE_MEGABYTE).
-            addOnSuccessListener { bytes ->
-                val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                holder.img_solicitud.setImageBitmap(bmp)
-            }.addOnFailureListener {
-                Log.e(ContentValues.TAG, "Se produjo un error al descargar la imagen.", it)
-            }
+        GlideApp.with(context)
+            .load(storageReference)
+            .error(R.drawable.wallpaper_profile)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
+            .into(holder.img_solicitud)
+        holder.img_solicitud.setOnClickListener {
+            val intent = Intent(context,PerfilActivity::class.java)
+            intent.putExtra("UserUID",friendRequest)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            context.startActivity(intent)
+        }
 
         // BOTÓN ACEPTAR SOLICITUD
         holder.btn_aceptar_solicitud.setOnClickListener {
-            acceptFriendRequest(holder)
+            acceptDenyFriendRequest(holder,"aceptar")
         }
 
         // BOTÓN RECHAZAR SOLICITUD
         holder.btn_rechazar_solicitud.setOnClickListener {
-            denyFriendRequest(holder)
+            acceptDenyFriendRequest(holder,"rechazar")
         }
     }
 
@@ -168,53 +178,22 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
      * @param holder FriendRequestAdapter.HolderForo
      *
      */
-    private fun acceptFriendRequest(holder: FriendRequestAdapter.Holder) {
-        Log.i("ACCESS1",holder.txt_user_solicitud.text.toString())
+    private fun acceptDenyFriendRequest(holder: Holder, request: String) {
         var holder_username = holder.txt_user_solicitud.text.toString()
         //BUSCA EL ID DEL USERNAME CAPTURADO EN EL HOLDER
-        firestore.collection("Usuarios").addSnapshotListener { value, error ->
-            if(value != null) {
-                var documents = value.documents
-                documents.forEach { d ->
-                    //NO FUNCIONA CON SOLICITUD DE PROFESIONAL PORQUE LOS ATRIBUTOS DEL REGISTRO ESTAN CON MINUSCULAS
-                    if(d.data?.get("username").toString().equals(holder_username)) {
-                        var id = d.data?.get("id").toString()
-                        searchFriendRequest(id,"aceptar")
-                        Log.i("friendReqAdapt-accept0","here")
-                    }
-                    Log.i("friendReqAdapt-accept",d.toString())
-                }
-            }
-        }
-        /*firestore.collection("Usuarios").document(auth.currentUser?.uid.toString()).get().addOnSuccessListener(
-            OnSuccessListener<DocumentSnapshot> { documentSnapshot ->
-                var id = documentSnapshot.get("ID").toString()
-                searchFriendRequest(id)
-            })
-          */
-    }
-
-    /**
-     *
-     * @param holder FriendRequesAdapter.HolderForo
-     *
-     */
-    private fun denyFriendRequest(holder:FriendRequestAdapter.Holder) {
-        var holder_username = holder.txt_user_solicitud.text.toString()
-        //BUSCA EL ID DEL USERNAME CAPTURADO EN EL HOLDER
-        firestore.collection("Usuarios").addSnapshotListener { value, error ->
-            if(value != null) {
-                var documents = value.documents
-                documents.forEach { d ->
-                    //NO FUNCIONA CON SOLICITUD DE PROFESIONAL PORQUE LOS ATRIBUTOS DEL REGISTRO ESTAN CON MINUSCULAS
-                    if(d.data?.get("username").toString().equals(holder_username)) {
-                        var id = d.data?.get("id").toString()
-                        searchFriendRequest(id,"rechazar")
-                        Log.i("friendRequestAdapt-deny","here")
+        dataBase.reference.child("Usuarios").addValueEventListener(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                snapshot.children.iterator().forEach {
+                    val user = it.getValue(User::class.java)
+                    if(user!!.username == holder_username) {
+                        searchFriendRequest(user.id.toString(),request)
                     }
                 }
             }
-        }
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
     }
 
     /**

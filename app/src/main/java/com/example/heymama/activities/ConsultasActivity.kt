@@ -13,16 +13,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
 import com.example.heymama.adapters.ConsultaAdapter
-import com.example.heymama.adapters.ForoAdapter
-import com.example.heymama.adapters.PostTimelineAdapter
 import com.example.heymama.databinding.ActivityConsultasBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.Consulta
-import com.example.heymama.models.Post
-import com.example.heymama.models.PostTimeline
 import com.example.heymama.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.ArrayList
@@ -40,31 +37,40 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private lateinit var database: FirebaseDatabase
     private lateinit var rol: String
     private lateinit var binding: ActivityConsultasBinding
-    private var data: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityConsultasBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        auth = FirebaseAuth.getInstance()
-        database = FirebaseDatabase.getInstance()
-        firestore = FirebaseFirestore.getInstance()
+        initFirebase()
         getDataUser()
-
-        recyclerView = binding.recyclerViewConsultas
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.setHasFixedSize(true)
-
-        consultasArraylist = arrayListOf()
+        initRecycler()
 
         spinnerConsultas = binding.spinnerConsultasProf
         temas = resources.getStringArray(R.array.temasConsultas)
         val adapter = ArrayAdapter(this,R.layout.spinner_item,temas)
         spinnerConsultas.adapter = adapter
 
+        //binding.swipeRefreshTL.setOnRefreshListener { getDataUser() }
     }
 
+    private fun initFirebase() {
+        auth = FirebaseAuth.getInstance()
+        database = FirebaseDatabase.getInstance()
+        firestore = FirebaseFirestore.getInstance()
+    }
+
+    private fun initRecycler() {
+        recyclerView = binding.recyclerViewConsultas
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.setHasFixedSize(true)
+
+        consultasArraylist = arrayListOf()
+        adapter = ConsultaAdapter(this, consultasArraylist, this)
+        adapter.setHasStableIds(true)
+        recyclerView.adapter = adapter
+    }
 
     private fun getDataUser(){
         database.reference.child("Usuarios").child(auth.uid.toString()).addValueEventListener(object: ValueEventListener {
@@ -79,18 +85,18 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
         })
     }
 
-    fun getSpinner() {
+    private fun getSpinner() {
         var selectedItem = spinnerConsultas.selectedItem.toString()
 
         spinnerConsultas.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, id: Long) {
                 //if(temas[position] != temas[0]) {
-                    if (rol == "Usuario") {
-                        getMisConsultas(temas[position])
-                    } else {
-                        getConsultas(temas[position])
-                    }
+                if (rol == "Usuario") {
+                    getMisConsultas(temas[position])
+                } else {
+                    getConsultas(temas[position])
+                }
                 //}
             }
 
@@ -181,6 +187,7 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 recyclerView.setHasFixedSize(true)
             }
     }
+
 
     /**
      * Método para abrir una nueva actividad en la cual el profesional puede responder la consulta seleccionada.

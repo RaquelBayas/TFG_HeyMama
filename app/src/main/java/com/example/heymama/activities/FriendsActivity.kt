@@ -144,8 +144,7 @@ class FriendsActivity : AppCompatActivity() {
     }
 
     private fun getDataUser(uid: String) {
-        database.reference.child("Usuarios").child(uid).addValueEventListener(object:
-            ValueEventListener {
+        database.reference.child("Usuarios").child(uid).addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 var user : User? = snapshot.getValue(User::class.java)
                 friendsArraylist.add(user!!)
