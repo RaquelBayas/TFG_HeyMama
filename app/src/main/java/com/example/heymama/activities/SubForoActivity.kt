@@ -8,7 +8,9 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +18,7 @@ import com.example.heymama.R
 import com.example.heymama.adapters.ForoAdapter
 import com.example.heymama.databinding.ActivitySubForoBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
+import com.example.heymama.models.Article
 import com.example.heymama.models.Post
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -75,8 +78,33 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
             intent.putExtra("ForoName",foroName)
             startActivity(intent)
         }
+
+        searchView()
     }
 
+    private fun searchView() {
+        binding.searchViewForos.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+               return false
+            }
+
+            override fun onQueryTextChange(p0: String?): Boolean {
+                filter(p0!!)
+                return true
+            }
+
+        })
+    }
+
+    private fun filter(text: String) {
+        var postSearchArrayList = ArrayList<Post>()
+        for(post in temasArraylist) {
+            if(post.title!!.lowercase().contains(text.lowercase())) {
+                postSearchArrayList.add(post)
+            }
+        }
+        adapter.filterList(postSearchArrayList)
+    }
 
     /**
      * Este método sirve para obtener los datos del respectivo tema seleccionado.

@@ -42,6 +42,7 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private lateinit var adapterPostsTL: PostTimelineAdapter
     private lateinit var friendsIds: ArrayList<String>
     private lateinit var edt_post_tl: String
+    private lateinit var rol: String
     private lateinit var binding : ActivityTimelineBinding
     /**
      * @constructor
@@ -52,12 +53,9 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
         binding = ActivityTimelineBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //Instancias para la base de datos y la autenticación
         database = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         auth = FirebaseAuth.getInstance()
-
         user = auth.currentUser!!
-
         firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
         firestore = FirebaseFirestore.getInstance()
 
@@ -73,9 +71,6 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
         recyclerViewTimeline.setHasFixedSize(false)
         recyclerViewTimeline.recycledViewPool.setMaxRecycledViews(0,0)
 
-        binding.swipeRefreshTL.setOnRefreshListener {
-            getCommentsTL()
-        }
         binding.btnAddPostTl.setOnClickListener {
             if(!findViewById<EditText>(R.id.edt_post_tl).text.isEmpty()) {
                 edt_post_tl = binding.edtPostTl.text.toString()
@@ -85,9 +80,67 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
             binding.edtPostTl.setText("")
         }
 
-        getCommentsTL()
+        getUserData()
+        //getCommentsTL()
     }
 
+    private fun getUserData() {
+        var ref = database.reference.child("Usuarios").child(auth.uid.toString()).child("rol")
+        ref.addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                rol = snapshot.value.toString()
+                if(rol == "Admin"){
+                    getCommentsTLAdmin()
+                } else {
+                    getCommentsTL()
+                }
+                binding.swipeRefreshTL.setOnRefreshListener {
+                    if(rol == "Admin"){
+                        getCommentsTLAdmin()
+                    } else {
+                        getCommentsTL()
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
+    }
+
+    private fun getCommentsTLAdmin() {
+        if(binding.swipeRefreshTL.isRefreshing){
+            binding.swipeRefreshTL.isRefreshing = false
+        }
+
+        postsTLArraylist.clear()
+        firestore.collection("Timeline").addSnapshotListener { snapshots, e ->
+            if (e!= null) {
+                return@addSnapshotListener
+            }
+            for (dc in snapshots!!.documentChanges) {
+                when (dc.type) {
+                    DocumentChange.Type.ADDED -> {
+                        postsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
+                    }
+                    // DocumentChange.Type.MODIFIED -> postsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
+                    DocumentChange.Type.REMOVED -> postsTLArraylist.remove(dc.document.toObject(
+                        PostTimeline::class.java))
+                }
+            }
+            if(postsTLArraylist.size > 1) {
+                postsTLArraylist.sort()
+            }
+
+            adapterPostsTL.notifyDataSetChanged()
+            adapterPostsTL.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
+                override fun onItemClicked(position: Int) {
+                    Toast.makeText(this@TimelineActivity,"Item number: $position",Toast.LENGTH_SHORT).show()
+                }
+            })
+
+        }
+    }
     /**
      * Este método añade el comentario en la base de datos.
      *
@@ -117,58 +170,14 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
             binding.swipeRefreshTL.isRefreshing = false
         }
         //friendsIds.add(auth.uid.toString()) //El usuario verá sus propios posts en la tl
-         /*firestore.collection("Friendship").document(auth.uid.toString()).collection("Friends")
-            .addSnapshotListener { value, error ->
-                value!!.documents.iterator().forEach {
-                    if(it["friend_receive_uid"] == auth.uid.toString()) {
-                        friendsIds.add(it["friend_send_uid"].toString())
-                    } else {
-                        friendsIds.add(it["friend_receive_uid"].toString())
-                    }
 
-                    friendsIds.iterator().forEach {
-                        firestore.collection("Timeline").whereEqualTo("userId",it).addSnapshotListener { snapshots, e ->
-                            if (e!= null) {
-                                return@addSnapshotListener
-                            }
-                            for (dc in snapshots!!.documentChanges) {
-                                when (dc.type) {
-                                    DocumentChange.Type.ADDED -> {
-                                        postsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
-                                    }
-                                    // DocumentChange.Type.MODIFIED -> postsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
-                                    DocumentChange.Type.REMOVED -> postsTLArraylist.remove(dc.document.toObject(
-                                        PostTimeline::class.java))
-                                }
-                            }
-                            if(postsTLArraylist.size > 1) {
-                                postsTLArraylist.sort()
-                            }
-
-                            adapterPostsTL.notifyDataSetChanged()
-                            adapterPostsTL.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
-                                override fun onItemClicked(position: Int) {
-                                    Toast.makeText(this@TimelineActivity,"Item number: $position",Toast.LENGTH_SHORT).show()
-                                }
-                            })
-
-                        }
-
-                    }
-                    Log.i("timeline-friends",it["friend_receive_uid"].toString())
-                }
-
-                if(value.documents.isEmpty()){
-                    friendsIds.add(auth.uid.toString())
-                }
-            }*/
         firestore.collection("Friendship").document(auth.uid.toString()).collection("Friends").get().addOnSuccessListener { it ->
             val documents = it.documents
             if(documents.isEmpty()){
                 friendsIds.add(auth.uid.toString())
             } else {
+                friendsIds.add(auth.uid.toString())
                 documents.iterator().forEach {
-                    friendsIds.add(auth.uid.toString())
                     if(it["friend_receive_uid"] == auth.uid.toString()) {
                         friendsIds.add(it["friend_send_uid"].toString())
                     } else {
@@ -201,7 +210,6 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
                             Toast.makeText(this@TimelineActivity,"Item number: $position",Toast.LENGTH_SHORT).show()
                         }
                     })
-
                 }
 
             }

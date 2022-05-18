@@ -63,7 +63,7 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
         binding = ActivityTemaForoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        database = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
+        database = FirebaseDatabase.getInstance()
         auth = FirebaseAuth.getInstance()
 
         user = auth.currentUser!!

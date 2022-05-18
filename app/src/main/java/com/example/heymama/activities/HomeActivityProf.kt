@@ -6,6 +6,7 @@ import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
@@ -59,19 +60,23 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
         firebaseStorage = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
         storageReference = firebaseStorage.reference
 
-        toolbar = binding.toolbarMain
+        toolbar = findViewById(R.id.toolbar_main)
         setSupportActionBar(toolbar)
 
-        navigationView = binding.navView
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu_bar)
+        supportActionBar?.setHomeButtonEnabled(true)
+
+        val navigationView: NavigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
+
         drawer = binding.drawerLayoutHomeProf
         viewNav = navigationView.getHeaderView(0)
         toggle = object : ActionBarDrawerToggle(this,drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close){
             override fun onDrawerStateChanged(newState: Int) {
                 var profileImageNav = viewNav.findViewById<ImageView>(R.id.nav_header_icon)
-
                 storageReference = firebaseStorage.getReference("/Usuarios/"+auth.currentUser?.uid+"/images/perfil")
-
                 GlideApp.with(applicationContext)
                     .load(storageReference)
                     .error(R.drawable.wallpaper_profile)
@@ -80,9 +85,7 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
                     .into(profileImageNav)
             }
         }
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeButtonEnabled(true)
+        drawer.addDrawerListener(toggle)
 
         getUserName()
         initBottomNav()
@@ -92,11 +95,12 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
 
     private fun initBottomNav() {
         bottomNavigationView = binding.bottomNavigationView
-        bottomNavigationView.setOnNavigationItemReselectedListener { item ->
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when(item.itemId) {
                 R.id.nav_bottom_item_foros -> startActivity(Intent(this,ForosActivity::class.java))
                 R.id.nav_bottom_item_ajustes ->  startActivity(Intent(this,SettingsActivity::class.java))
             }
+            return@setOnNavigationItemSelectedListener false
         }
     }
     private fun initButtons() {
@@ -126,7 +130,6 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
                 val intent = Intent(this, PerfilActivity::class.java)
                 startActivity(intent)
             }
-            R.id.nav_item_respirar -> startActivity(Intent(this,RespirarActivity::class.java))
             R.id.nav_item_consultas -> startActivity(Intent(this,ContactoActivity::class.java))
             R.id.nav_item_timeline -> startActivity(Intent(this,TimelineActivity::class.java))
             R.id.nav_item_ajustes -> startActivity(Intent(this,SettingsActivity::class.java))
@@ -150,9 +153,9 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
         database.reference.child("Usuarios").child(auth.uid.toString()).child("name").addValueEventListener(object:
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                //textView.text = "Bienvenida " + snapshot.value.toString()
                 txt_name_nav_header = viewNav.findViewById(R.id.txt_name_nav_header)
                 txt_name_nav_header.text = snapshot.value.toString()
+
             }
             override fun onCancelled(error: DatabaseError) {
                 TODO("Not yet implemented")

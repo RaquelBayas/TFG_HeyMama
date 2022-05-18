@@ -63,10 +63,13 @@
     <string name="contacto">Contacto</string>
     <string name="consulta">Consulta</string>
     <string name="unounodos">112</string>
+    <string name="cerodoscuatro">024</string>
+    <string name="prevencionSuicidio">Número de Prevención del Suicidio</string>
     <string name="NNE">Número Nacional de Emergencia</string>
     <string name="hint_edt_consulta">Introduce tu consulta</string>
+    <string name="misConsultas">Mis \nConsultas</string>
     <string-array name="temasConsultas">
-        <item>Selecciona un tema</item>
+        <item>Elige un tema</item>
         <item>Embarazo</item>
         <item>Parto</item>
         <item>Posparto</item>

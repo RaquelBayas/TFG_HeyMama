@@ -174,7 +174,6 @@ class SettingsActivity : AppCompatActivity() {
                     val credential : AuthCredential = EmailAuthProvider.getCredential(currentUser.email!!,old_password.text.toString())
                     currentUser?.reauthenticate(credential).addOnCompleteListener { task ->
                         if(task.isSuccessful) {
-                            Log.d("TAG","Re-Authentication success")
                             currentUser?.updatePassword(new_password.text.toString()).addOnCompleteListener { task ->
                                 if(task.isSuccessful) {
                                     Toast.makeText(this,"Contraseña actualizada correctamente",Toast.LENGTH_SHORT).show()
@@ -208,7 +207,6 @@ class SettingsActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.dialog_change_email,null)
         builder.setView(view)
 
-        //Obtenemos el editText del nombre de usuario
         var txt_old = view.findViewById<TextView>(R.id.settings_txt_old)
         var txt_new = view.findViewById<TextView>(R.id.settings_txt_new)
         txt_old.text = "Correo electrónico actual"//R.string.settings_old_email
@@ -239,7 +237,6 @@ class SettingsActivity : AppCompatActivity() {
                         if(user!!.email == new_email.text.toString()) {
                             Toast.makeText(applicationContext,"Ya existe un usuario con ese correo electrónico",Toast.LENGTH_SHORT).show()
                         } else {
-                            Log.i("newemail",new_email.text.toString())
                             val credential : AuthCredential = EmailAuthProvider.getCredential(currentUser.email!!,current_password.text.toString())
                             currentUser?.reauthenticate(credential).addOnCompleteListener { task ->
                                 if (task.isSuccessful) {

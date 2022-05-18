@@ -8,16 +8,20 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
+import com.example.heymama.Token
 import com.example.heymama.Utils
 import com.example.heymama.adapters.ListChatItemAdapter
 import com.example.heymama.databinding.ActivityListChatsBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
+import com.example.heymama.models.ListChat
 import com.example.heymama.models.ListChatItem
 import com.example.heymama.models.Message
 import com.example.heymama.models.User
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.util.*
@@ -31,7 +35,7 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private lateinit var dataBase: FirebaseDatabase
 
     private lateinit var recyclerViewChats: RecyclerView
-    private lateinit var chatsArraylist: ArrayList<ListChatItem>
+    private lateinit var chatsArraylist: ArrayList<ListChat>
     private lateinit var adapterChats: ListChatItemAdapter
 
     private lateinit var receiver_name: String
@@ -52,96 +56,69 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         recyclerViewChats = binding.recyclerViewListChats
         recyclerViewChats.layoutManager = LinearLayoutManager(this)
+        recyclerViewChats.recycledViewPool.setMaxRecycledViews(0,0)
         recyclerViewChats.setHasFixedSize(true)
 
         chatsArraylist = arrayListOf()
         adapterChats = ListChatItemAdapter(applicationContext, chatsArraylist, this)
-        adapterChats.notifyDataSetChanged()
+        recyclerViewChats.adapter = adapterChats
 
         binding.swipeRefreshTL.setOnRefreshListener {
             setChats()
         }
         setChats()
 
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener { task: Task<String?> ->
+                if (!task.isSuccessful) {
+                    Log.w("TAG", "Fetching FCM registration token failed", task.exception)
+                    return@addOnCompleteListener
+                }
+
+                // Get new FCM registration token
+                val token = task.result
+                updateToken(token.toString())
+            }
+
+    }
+
+    private fun updateToken(token: String) {
+        val reference = FirebaseDatabase.getInstance().getReference("Tokens")
+        val token1 = Token(token)
+        reference.child(auth.uid.toString()).setValue(token1)
     }
 
     private fun setChats() {
         if(binding.swipeRefreshTL.isRefreshing) {
             binding.swipeRefreshTL.isRefreshing = false
         }
-        chatsArraylist.clear()
-        var ref = dataBase.reference.child("Chats").child(auth.uid.toString()).child("Messages")
-        ref.addValueEventListener(object:
-            ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                chatsArraylist.clear()
-                for(datasnapshot in snapshot.children) {
-                    for(datasn in datasnapshot.children) {
-                        if(datasn.key.equals("LastMessage")) {
-                            var msg: Message? = datasn.getValue(Message::class.java)
-                            var userUid = msg!!.receiverUID
-                            if(userUid == auth.uid.toString()) {
-                                userUid = msg!!.senderUID
-                            }
-                            getUserData(userUid, msg, datasn)
-                        }
-                    }
-                }
-            }
-            override fun onCancelled(error: DatabaseError) {
-            }
-        })
-    }
-
-    /**
-     *
-     * @param userUid String
-     * @param msg Message
-     * @param datasn DataSnapshot
-     *
-     */
-    private fun getUserData(userUid: String, msg: Message, datasn: DataSnapshot) {
-        chatsArraylist.clear()
-        var ref = dataBase.reference.child("Usuarios").child(userUid)
+        var ref = dataBase.reference.child("ChatList").child(auth.uid.toString())
         ref.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                val user = snapshot.getValue(User::class.java)
-                idUser = user!!.id.toString()
-                receiver_name = user!!.name.toString()
-                receiver_username = user.username.toString()
-                var status = user.status
-                var chatItem = ListChatItem(datasn.key.toString(), idUser, receiver_name, receiver_username, msg.message, status, Date())
-                Log.i("chatitem-status",status)
                 chatsArraylist.clear()
-                chatsArraylist.add(chatItem)
-
-                recyclerViewChats.adapter = adapterChats
-                adapterChats.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
-                    override fun onItemClicked(position: Int) {
-                        val intent = Intent(applicationContext, ChatActivity::class.java)
-                        intent.putExtra("friendUID", chatsArraylist[position].idUser)
-                        startActivity(intent)
-                    }
-                })
+                for(snapshot in snapshot.children) {
+                    val chatlist = snapshot.getValue(ListChat::class.java)
+                    chatsArraylist.add(chatlist!!)
+                    adapterChats.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
+                        override fun onItemClicked(position: Int) {
+                            val intent = Intent(applicationContext, ChatActivity::class.java)
+                            intent.putExtra("friendUID", chatsArraylist[position].id)
+                            startActivity(intent)
+                        }
+                    })
+                }
+                adapterChats.notifyDataSetChanged()
             }
+
             override fun onCancelled(error: DatabaseError) {
                 TODO("Not yet implemented")
             }
+
         })
     }
-
+   
     override fun onPause() {
         super.onPause()
-        Utils.updateStatus("offline")
-    }
-    
-    override fun onStop() {
-        super.onStop()
-        Utils.updateStatus("offline")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
         Utils.updateStatus("offline")
     }
 

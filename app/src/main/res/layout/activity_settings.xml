@@ -7,40 +7,33 @@
     android:orientation="vertical"
     tools:context=".activities.SettingsActivity">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:text="@string/nav_item_ajustes"
-            android:fontFamily="@font/alegreya"
-            android:textColor="@color/fonts"
-            android:layout_margin="20dp"
-            />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        >
+        android:layout_height="wrap_content">
 
         <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:orientation="vertical"
-        >
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                android:text="@string/nav_item_ajustes"
+                android:fontFamily="@font/alegreya"
+                android:textColor="@color/fonts"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="20dp"
+                />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/settings_username"
                 android:textSize="22sp"
+                android:layout_marginStart="30dp"
                 android:fontFamily="@font/alegreya"
                 />
             <TextView
@@ -49,25 +42,18 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:layout_marginTop="10dp"
-                android:layout_marginLeft="20dp"
+                android:layout_marginStart="30dp"
                 android:hint="@string/nombre"
                 android:fontFamily="@font/alegreya_black"
                 />
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="30dp"
-            android:layout_marginRight="20dp"
-            android:orientation="vertical"
-            >
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/settings_bio"
                 android:textSize="22sp"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="20dp"
                 android:fontFamily="@font/alegreya"
                 />
             <TextView
@@ -76,25 +62,18 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:layout_marginTop="10dp"
-                android:layout_marginLeft="20dp"
+                android:layout_marginStart="30dp"
                 android:hint="@string/bio"
                 android:fontFamily="@font/alegreya_black"
                 />
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:orientation="vertical"
-            >
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/change_email"
                 android:textSize="22sp"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="30dp"
                 android:fontFamily="@font/alegreya"
                 />
             <TextView
@@ -103,26 +82,18 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:layout_marginTop="10dp"
-                android:layout_marginLeft="20dp"
+                android:layout_marginStart="30dp"
                 android:hint="Correo@correo.com"
                 android:fontFamily="@font/alegreya_black"
                 />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:orientation="vertical"
-            >
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/change_password"
                 android:textSize="22sp"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="30dp"
                 android:fontFamily="@font/alegreya"
                 />
 
@@ -132,66 +103,52 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:layout_marginTop="10dp"
-                android:layout_marginLeft="20dp"
+                android:layout_marginStart="30dp"
                 android:inputType="numberPassword|textPassword"
                 android:hint="***********"
                 android:fontFamily="@font/alegreya_black"
                 />
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="30dp"
-            android:orientation="vertical"
-            >
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/privacidad"
                 android:textSize="22sp"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="30dp"
                 android:fontFamily="@font/alegreya">
             </TextView>
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/switch_privacidad"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="30dp"
                 android:theme="@style/SwitchCompatTheme"
                 />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="30dp"
-            android:layout_marginRight="20dp"
-            android:orientation="horizontal"
-            >
             <TextView
                 android:id="@+id/txt_acercade"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/alegreya"
                 android:textSize="22sp"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="30dp"
                 android:text="@string/acerca"/>
+            <Button
+                android:id="@+id/btn_delete_account"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rectangle_edit_article"
+                android:fontFamily="@font/baloo"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="30dp"
+                android:padding="10dp"
+                android:text="@string/delete_account"
+                android:textColor="@color/fonts"
+                android:textSize="20sp" />
 
         </LinearLayout>
-
-        <Button
-            android:id="@+id/btn_delete_account"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/rectangle_edit_article"
-            android:fontFamily="@font/baloo"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="30dp"
-            android:padding="10dp"
-            android:text="@string/delete_account"
-            android:textColor="@color/fonts"
-            android:textSize="20sp" />
-    </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

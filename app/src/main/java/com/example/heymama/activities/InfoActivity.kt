@@ -34,7 +34,6 @@ import java.util.ArrayList
 
 class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
-    // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var firestore: FirebaseFirestore

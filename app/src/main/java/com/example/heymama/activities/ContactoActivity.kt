@@ -1,18 +1,13 @@
 package com.example.heymama.activities
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import android.widget.*
 import com.example.heymama.*
 import com.example.heymama.databinding.ActivityContactoBinding
 import com.example.heymama.models.Consulta
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
@@ -57,7 +52,11 @@ class ContactoActivity : AppCompatActivity() {
         }
 
         binding.txt112.setOnClickListener {
-            call()
+            call(binding.txt112.text.toString())
+        }
+
+        binding.txt024.setOnClickListener {
+            call(binding.txt024.text.toString())
         }
     }
 
@@ -65,9 +64,9 @@ class ContactoActivity : AppCompatActivity() {
      * Este método permite marcar un número telefónico
      * @param input
      */
-    private fun call() {
+    private fun call(number: String) {
         val dialIntent = Intent(Intent.ACTION_DIAL)
-        dialIntent.data = Uri.parse("tel:" + "" )
+        dialIntent.data = Uri.parse("tel:$number")
         startActivity(dialIntent)
     }
 

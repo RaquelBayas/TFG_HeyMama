@@ -228,7 +228,6 @@ class RegisterActivity : AppCompatActivity() {
                 firebaseStore.collection("Usuarios").document(uid).set(data).addOnSuccessListener {
                     Log.i("user-new","USER NEW")
                 }.addOnFailureListener {
-                    Log.i("user-new",it.toString())
                 }
             } else{
                 auth.fetchSignInMethodsForEmail(binding.txt0Email.text.toString()).addOnCompleteListener(object:OnCompleteListener<SignInMethodQueryResult> {
@@ -241,7 +240,6 @@ class RegisterActivity : AppCompatActivity() {
                         }
                     }
                 })
-                //Toast.makeText(this,"Ocurrió un error al enviar el email de verificación.",Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -262,7 +260,6 @@ class RegisterActivity : AppCompatActivity() {
                 Toast.makeText(this, "Username no disponible", Toast.LENGTH_SHORT).show()
             }
         }.addOnFailureListener { Toast.makeText(this, "Username no disponible", Toast.LENGTH_SHORT).show() }
-        Log.i("verify user",verified.toString())
     }
 
     private fun verifyEmail(user: FirebaseUser?) {

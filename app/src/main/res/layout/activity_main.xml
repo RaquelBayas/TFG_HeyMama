@@ -49,19 +49,19 @@
         android:layout_height="wrap_content"
         android:background="@drawable/edittext_pink_home"
         android:fontFamily="@font/alegreya"
+        android:paddingStart="25dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="25dp"
+        android:paddingBottom="5dp"
         android:text="@string/logup"
         android:textColor="@color/wine_1"
         android:textSize="40sp"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:paddingStart="25dp"
-        android:paddingEnd="25dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.8" />
+        app:layout_constraintTop_toBottomOf="@+id/btnLogin"
+        app:layout_constraintVertical_bias="0.13999999" />
 
     <ImageView
         android:id="@+id/imageView"

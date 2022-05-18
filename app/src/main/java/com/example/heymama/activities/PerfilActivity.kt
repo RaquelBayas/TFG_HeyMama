@@ -56,9 +56,7 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
     private lateinit var txt_username_perfil: TextView
     private lateinit var txt_user_perfil: TextView
     private lateinit var txt_user_biografia : TextView
-    private lateinit var recyclerViewTimeline: RecyclerView
-    private lateinit var postsTLArraylist: ArrayList<PostTimeline>
-    private lateinit var adapterPostsTL: PostTimelineAdapter
+
 
     /**
      * @constructor
@@ -472,6 +470,10 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
         com.example.heymama.Utils.updateStatus("offline")
     }
 
+    override fun onStart() {
+        super.onStart()
+        com.example.heymama.Utils.updateStatus("online")
+    }
     override fun onResume() {
         super.onResume()
         com.example.heymama.Utils.updateStatus("online")

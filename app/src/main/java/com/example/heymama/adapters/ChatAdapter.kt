@@ -1,6 +1,7 @@
 package com.example.heymama.adapters
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.heymama.GlideApp
 import com.example.heymama.R
+import com.example.heymama.activities.ViewFullImageActivity
 import com.example.heymama.databinding.ItemChatLeftBinding
 import com.example.heymama.databinding.ItemChatRightBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
@@ -64,14 +66,20 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
                     .into(holder.itemView.findViewById(R.id.img_chat))
                 var timeMessage = getTime(message)
                 viewHolder.binding_send.itemChatTime.text = timeMessage
-                Log.i("CHAT-MSG",message.message + " - " + position)
+
+                viewHolder.itemView.findViewById<ImageView>(R.id.img_chat).setOnClickListener {
+                    val intent = Intent(context, ViewFullImageActivity::class.java)
+                    intent.putExtra("url",message.imageUrl)
+                    Log.i("PATH",storageReference!!.path)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    context.startActivity(intent)
+                }
             } else {
                 viewHolder.binding_send.txtMessageChat.visibility = View.VISIBLE
                 viewHolder.binding_send.txtMessageChat.text = message.message
                 viewHolder.binding_send.imgChat.visibility = View.GONE
                 var timeMessage = getTime(message)
                 viewHolder.binding_send.itemChatTime.text = timeMessage
-                Log.i("CHAT-MSG-2",message.message + " - " + position)
             }
         } else {
             val viewHolder = holder as ReceiveHolder
@@ -86,14 +94,19 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
                     .into(holder.itemView.findViewById(R.id.img_chat))
                 var timeMessage = getTime(message)
                 viewHolder.binding_receive.itemChatTime.text = timeMessage
-                Log.i("CHAT-MSG-3",message.message + " - " + position)
+
+                viewHolder.itemView.findViewById<ImageView>(R.id.img_chat).setOnClickListener {
+                    val intent = Intent(context, ViewFullImageActivity::class.java)
+                    intent.putExtra("url",message.imageUrl)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    context.startActivity(intent)
+                }
             } else {
                 viewHolder.binding_receive.txtMessageChat.visibility = View.VISIBLE
                 viewHolder.binding_receive.txtMessageChat.text = message.message
                 viewHolder.binding_receive.imgChat.visibility = View.GONE
                 var timeMessage = getTime(message)
                 viewHolder.binding_receive.itemChatTime.text = timeMessage
-                Log.i("CHAT-MSG-4",message.message + " - " + position)
             }
         }
     }
@@ -140,6 +153,9 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
     inner class SendHolder(itemView: View, listener:ItemRecyclerViewListener) : RecyclerView.ViewHolder(itemView) {
         var binding_send: ItemChatRightBinding = ItemChatRightBinding.bind(itemView)
         init {
+            itemView.setOnClickListener {
+                return@setOnClickListener
+            }
             itemView.setOnLongClickListener {
                 Log.i("ONCLICK: ",listener.onItemLongClicked(adapterPosition).toString())
                 return@setOnLongClickListener true
@@ -149,6 +165,7 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
     inner class ReceiveHolder(itemView: View, listener:ItemRecyclerViewListener) : RecyclerView.ViewHolder(itemView){
         var binding_receive: ItemChatLeftBinding = ItemChatLeftBinding.bind(itemView)
         init {
+            itemView.setOnClickListener { return@setOnClickListener }
             itemView.setOnLongClickListener {
                 Log.i("ONCLICK: ",listener.onItemLongClicked(adapterPosition).toString())
                 return@setOnLongClickListener true

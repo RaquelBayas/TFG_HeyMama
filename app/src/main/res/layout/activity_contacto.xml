@@ -25,7 +25,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
-
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginTop="10dp"
@@ -35,8 +34,6 @@
                 android:textSize="24sp"
                 android:textStyle="bold"
                 />
-
-
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -50,12 +47,11 @@
                     android:id="@+id/btn_mis_consultas"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="Mis&#10;consultas"
                     android:layout_margin="5dp"
-                    android:textColor="@color/white"
-                    android:fontFamily="@font/baloo"
                     android:background="@drawable/btn_enviar_consulta"
-                    >
+                    android:fontFamily="@font/baloo"
+                    android:text="@string/misConsultas"
+                    android:textColor="@color/white">
 
                 </Button>
                 <Spinner
@@ -64,7 +60,6 @@
                     android:layout_height="match_parent"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
-
                     android:background="@drawable/spinner_consultas"
                     tools:ignore="SpeakableTextPresentCheck" />
                 <Button
@@ -101,7 +96,7 @@
                 android:paddingRight="10dp"
                 android:paddingBottom="10dp"
                 android:textColor="@color/fonts"
-                android:textSize="16sp" />ç
+                android:textSize="18sp" />ç
 
         </LinearLayout>
 
@@ -117,7 +112,9 @@
                 android:id="@+id/txt_contacto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="10dp"
+                android:padding="5dp"
                 android:fontFamily="@font/alegreya"
                 android:text="@string/contacto"
                 android:textColor="@color/fonts"
@@ -128,26 +125,53 @@
 
             <TextView
                 android:id="@+id/txt_nne"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
                 android:fontFamily="@font/alegreya"
                 android:text="@string/NNE"
                 android:textAlignment="textStart"
                 android:textColor="@color/fonts"
-                android:textSize="22sp"
+                android:textSize="24sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/txt_112"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="20dp"
                 android:fontFamily="@font/alegreya"
                 android:text="@string/unounodos"
                 android:textColor="@color/fonts"
+                android:textSize="28sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.13"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_nne" />
+
+            <TextView
+                android:id="@+id/txt_numsuicidio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="15dp"
+                android:fontFamily="@font/alegreya"
+                android:text="@string/prevencionSuicidio"
+                android:textAlignment="textStart"
+                android:textColor="@color/fonts"
                 android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txt_024"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:fontFamily="@font/alegreya"
+                android:text="@string/cerodoscuatro"
+                android:textColor="@color/fonts"
+                android:textSize="28sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.13"
                 app:layout_constraintStart_toStartOf="parent"

@@ -21,7 +21,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 
 class ForosActivity : AppCompatActivity(), Utils{
-    // FirebaseAuth object
+
     private lateinit var auth: FirebaseAuth
     private lateinit var user: FirebaseUser
     private lateinit var database: FirebaseDatabase
@@ -42,31 +42,30 @@ class ForosActivity : AppCompatActivity(), Utils{
         binding = ActivityForosBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //Instancias para la base de datos y la autenticación
         database = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         auth = FirebaseAuth.getInstance()
 
-        // Usuario
         user = auth.currentUser!!
         firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
 
         getDataUser()
 
+        initForos()
+    }
+
+    private fun initForos() {
         txt_depresion = binding.txtDepresion
         binding.txtDepresion.setOnClickListener{
-            //onClick(R.id.txt_depresion,txt_depresion.text.toString())
             goToActivity(this,SubForoActivity::class.java,txt_depresion.text.toString())
         }
 
         txt_embarazo = binding.txtEmbarazo
         txt_embarazo.setOnClickListener{
-            //onClick(R.id.txt_embarazo,txt_embarazo.text.toString())
             goToActivity(this,SubForoActivity::class.java,txt_embarazo.text.toString())
         }
 
         txt_posparto = binding.txtPosparto
         txt_posparto.setOnClickListener{
-            //onClick(R.id.txt_posparto,txt_posparto.text.toString())
             goToActivity(this,SubForoActivity::class.java,txt_posparto.text.toString())
         }
 
@@ -74,9 +73,7 @@ class ForosActivity : AppCompatActivity(), Utils{
         txt_otros.setOnClickListener {
             goToActivity(this,SubForoActivity::class.java,txt_otros.text.toString())
         }
-
     }
-
     /**
      * Obtener el rol del usuario
      *
@@ -102,10 +99,9 @@ class ForosActivity : AppCompatActivity(), Utils{
      * @param foroName String
      *
      */
-     fun Context.goToActivity(activity: Activity, classs: Class<*>?, foroName: String) {
-        val intent = Intent(activity, classs)
+    private fun Context.goToActivity(activity: Activity, nameclass: Class<*>?, foroName: String) {
+        val intent = Intent(activity, nameclass)
         intent.putExtra("ForoName",foroName)
         startActivity(intent)
-        //activity.finish()
     }
 }

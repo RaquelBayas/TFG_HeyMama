@@ -76,16 +76,11 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         //Dentro de la base de datos habrá un nodo "Usuarios" donde se guardan los usuarios de la aplicación
         dataBaseReference = dataBase.getReference("Usuarios")
-
-        // Usuario
-        val user: FirebaseUser? = auth.currentUser
-
         firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
         storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").reference
 
         val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar_main)
         setSupportActionBar(toolbar)
-
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu_bar);
@@ -115,7 +110,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 var profileImage_nav = viewNav.findViewById<ImageView>(R.id.nav_header_icon)
 
                 storageReference = firebaseStore.getReference("/Usuarios/"+auth.currentUser?.uid+"/images/perfil")
-
+                Log.i("toggle-0",storageReference.path)
                 GlideApp.with(applicationContext)
                     .load(storageReference)
                     .error(R.drawable.wallpaper_profile)
@@ -143,36 +138,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mood()
     }
 
-    /**
-     *
-     * @param input
-     *
-     */
-    private fun getMoodStatus() {
-        var btn_mood_status : Button = findViewById(R.id.btn_mood_status)
-        var date = Date().time
-        var simpleDateFormat = SimpleDateFormat("dd MM yyyy")
-        var dateString = simpleDateFormat.format(date)
-        firestore.collection("Mood").document(auth.uid.toString()).collection("Historial").addSnapshotListener { value, error ->
-            if(error != null) {
-                return@addSnapshotListener
-            }
-            var docs = value!!.documents
-            for(doc in docs) {
-                if (doc.id == dateString) {
-                    btn_mood_status.setOnClickListener {
-                        Toast.makeText(this,"Ya has registrado cómo te sientes hoy.",Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-        }
-        btn_mood_status.setOnClickListener {
-            //var moodfragment = MoodFragment()
-            MoodDialog().show(supportFragmentManager,"MoodDialog")
-        //moodfragment.show(supportFragmentManager,"moodDialog")
-        }
-    }
-
     private fun mood() {
         var btn_mood_feliz = binding.btnMoodHomeFeliz
         var btn_mood_bien = binding.btnMoodHomeBien
@@ -189,6 +154,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             button.setOnClickListener{
                 var mood = Mood(listMoodsTypes[index].ordinal.toString(), listMoodsTypes[index].name, Date())
                 firestore.collection("Mood").document(auth.uid.toString()).collection("Historial").document(dateString).set(mood)
+                Toast.makeText(this,"Has registrado tu estado de ánimo correctamente.",Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -202,7 +168,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     for(button in listMoods){
                         button.isClickable = false
                     }
-                    Toast.makeText(this,"Ya has registrado cómo te sientes hoy.",Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -239,10 +204,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             // Get new FCM registration token
             val token = task.result
-
-            // Log and toast
             Log.d("token", token)
-
         })
     }
 

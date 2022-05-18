@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
 import com.example.heymama.interfaces.ItemRecyclerViewListener
+import com.example.heymama.models.Article
 import com.example.heymama.models.Post
 import com.example.heymama.models.User
 import com.google.firebase.database.DataSnapshot
@@ -16,10 +17,15 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 
-class ForoAdapter(private val context: Context, private val foroArrayList: ArrayList<Post>, private val foroItemListener: ItemRecyclerViewListener
+class ForoAdapter(private val context: Context, private var foroArrayList: ArrayList<Post>, private val foroItemListener: ItemRecyclerViewListener
     ) : RecyclerView.Adapter<ForoAdapter.HolderForo>() {
 
     private lateinit var database: FirebaseDatabase
+
+    fun filterList(list: ArrayList<Post>) {
+        this.foroArrayList = list
+        notifyDataSetChanged()
+    }
 
     /**
      *

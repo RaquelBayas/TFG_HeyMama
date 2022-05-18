@@ -3,12 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:id="@+id/nav_header_menu"
-    android:layout_width="match_parent"
-    android:layout_height="160dp"
+    android:layout_width="wrap_content"
+    android:layout_height="150dp"
     android:clickable="true"
     android:focusable="true"
     android:gravity="bottom"
-    android:padding="16dp">
+    android:padding="16dp"
+    >
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/nav_header_icon"
@@ -16,17 +17,22 @@
         android:layout_height="64dp"
         app:civ_border_color="@color/wine_1"
         app:civ_border_width="2dp"
+        android:layout_marginStart="5dp"
         android:src="@drawable/profile_picture"
         />
 
     <TextView
         android:id="@+id/txt_name_nav_header"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Name"
+        android:text=""
+        android:padding="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="5dp"
         android:fontFamily="@font/open_sans"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textSize="16sp" />
+        android:textSize="18sp" />
 
 
 </LinearLayout>
