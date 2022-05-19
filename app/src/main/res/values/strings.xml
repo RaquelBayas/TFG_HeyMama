@@ -86,7 +86,7 @@
     <string name="nav_item_perfil">Perfil</string>
     <string name="nav_item_messages">Mensajes</string>
     <string name="nav_item_solicitudes">Solicitudes</string>
-    <string name="nav_item_mood">Registro de emociones</string>
+    <string name="nav_item_mood">Emociones</string>
     <string name="nav_item_respirar">Respirar</string>
     <string name="nav_item_consultas">Consultas</string>
     <string name="nav_item_ajustes">Ajustes</string>

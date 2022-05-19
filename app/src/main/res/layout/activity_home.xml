@@ -27,18 +27,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
-                android:layout_marginTop="80dp"
+                android:layout_marginTop="70dp"
+                android:inputType="textMultiLine"
                 android:fontFamily="@font/alegreya"
                 android:textColor="@color/fonts"
                 android:textSize="26sp" />
 
             <TextView
                 android:id="@+id/txt_howdoyoufeel"
-                android:layout_width="196dp"
-                android:layout_height="30dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
-                android:layout_marginEnd="230dp"
                 android:fontFamily="@font/alegreya"
                 android:text="@string/comotesientes"
                 android:textColor="@color/fonts"
@@ -63,7 +63,7 @@
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_margin="5dp"
-                        android:background="@color/mood_bien"
+                        android:background="@color/mood_feliz"
                         android:src="@drawable/mood_feliz"
                         ></ImageButton>
                     <ImageButton
@@ -71,7 +71,7 @@
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_margin="5dp"
-                        android:background="@color/pink"
+                        android:background="@color/mood_bien"
                         android:src="@drawable/mood_bien"
                         ></ImageButton>
                     <ImageButton
@@ -116,7 +116,7 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginRight="20dp"
                     android:layout_weight="0.3"
-                    android:background="@drawable/rectangle_orange"
+                    android:background="@drawable/rectangle_pink"
                     android:capitalize="none"
                     android:fontFamily="@font/alegreya"
                     android:text="@string/foros"
@@ -132,7 +132,7 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginRight="20dp"
                     android:layout_weight="0.3"
-                    android:background="@drawable/rectangle_pink"
+                    android:background="@drawable/rectangle_orange"
                     android:fontFamily="@font/alegreya"
                     android:text="@string/informacion"
                     android:textAlignment="gravity"

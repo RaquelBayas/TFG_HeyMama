@@ -108,9 +108,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle = object : ActionBarDrawerToggle(this,drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close){
             override fun onDrawerStateChanged(newState: Int) {
                 var profileImage_nav = viewNav.findViewById<ImageView>(R.id.nav_header_icon)
-
                 storageReference = firebaseStore.getReference("/Usuarios/"+auth.currentUser?.uid+"/images/perfil")
-                Log.i("toggle-0",storageReference.path)
                 GlideApp.with(applicationContext)
                     .load(storageReference)
                     .error(R.drawable.wallpaper_profile)
@@ -187,7 +185,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 txt_name_nav_header.text = snapshot.value.toString()
             }
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
             }
         })
     }
@@ -204,7 +201,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             // Get new FCM registration token
             val token = task.result
-            Log.d("token", token)
         })
     }
 

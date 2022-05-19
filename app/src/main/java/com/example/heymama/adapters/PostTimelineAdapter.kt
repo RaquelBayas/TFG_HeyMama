@@ -39,10 +39,8 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
     private lateinit var firebaseStore: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageReference: StorageReference
-    private val ONE_MEGABYTE: Long = 1024 * 1024
     private lateinit var id_post: String
     private lateinit var id_user: String
-
     private lateinit var listener: ItemRecyclerViewListener
 
     /**

@@ -20,6 +20,7 @@ import com.example.heymama.models.User
 import com.google.firebase.auth.*
 import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -27,7 +28,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var firestore: FirebaseFirestore
-
+    private lateinit var firebaseStore: FirebaseStorage
     private lateinit var currentUser: FirebaseUser
     private lateinit var uid: String
     private lateinit var rol: String
@@ -48,9 +49,10 @@ class SettingsActivity : AppCompatActivity() {
         if(prefs.isProtected()) {
             protected = prefs!!.preferences!!.getBoolean("IS_PROTECTED",false)
         }
-        database = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
+        database = FirebaseDatabase.getInstance()
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
+        firebaseStore = FirebaseStorage.getInstance()
         currentUser = auth.currentUser!!
         uid = auth.uid.toString()
 
@@ -83,21 +85,23 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     /**
-     * Obtener el rol del usuario y el nombre
+     * Obtener el rol del usuario, el nombre de usuario, email y biografía.
      *
      */
     private fun getDataUser(){
         database.reference.child("Usuarios").child(uid).addValueEventListener(object:
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                var user : User? = snapshot.getValue(User::class.java)
-                rol = user!!.rol.toString()
-                binding.settingsEmail.text = user!!.email.toString()
-                binding.settingsName.text = user!!.username.toString()
-                binding.settingsBio.text = user!!.bio.toString()
+                if(snapshot.exists()) {
+                    var user: User? = snapshot.getValue(User::class.java)
+                    rol = user!!.rol.toString()
+                    binding.settingsEmail.text = user!!.email.toString()
+                    binding.settingsName.text = user!!.username.toString()
+                    binding.settingsBio.text = user!!.bio.toString()
+                }
             }
             override fun onCancelled(error: DatabaseError) {
-                //TO DO("Not yet implemented")
+                Log.i("TAG",error.toString())
             }
         })
     }
@@ -131,10 +135,12 @@ class SettingsActivity : AppCompatActivity() {
         var user_ref = database.reference.child("Usuarios").child(uid)
         user_ref.child("bio").addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                old_bio.text = snapshot.value.toString()
+                if(snapshot.exists()) {
+                    old_bio.text = snapshot.value.toString()
+                }
             }
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+                Log.i("TAG",error.toString())
             }
         })
 
@@ -219,10 +225,12 @@ class SettingsActivity : AppCompatActivity() {
         var user_ref = database.reference.child("Usuarios").child(uid)
         user_ref.child("email").ref.addValueEventListener(object:ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                old_email.text = snapshot.value.toString()
+                if(snapshot.exists()){
+                    old_email.text = snapshot.value.toString()
+                }
             }
             override fun onCancelled(error: DatabaseError) {
-
+                Log.i("TAG",error.toString())
             }
         })
 
@@ -254,7 +262,7 @@ class SettingsActivity : AppCompatActivity() {
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        TODO("Not yet implemented")
+                        Log.i("TAG",error.toString())
                     }
                 })
             }
@@ -283,10 +291,12 @@ class SettingsActivity : AppCompatActivity() {
         var user_ref = database.reference.child("Usuarios").child(uid)
         user_ref.child("username").ref.addValueEventListener(object:ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                old_username.text = snapshot.value.toString()
+                if(snapshot.exists()){
+                    old_username.text = snapshot.value.toString()
+                }
             }
             override fun onCancelled(error: DatabaseError) {
-
+                Log.i("TAG",error.toString())
             }
         })
 
@@ -321,8 +331,6 @@ class SettingsActivity : AppCompatActivity() {
      *
      */
     private fun deleteAccount() {
-        //firestore.collection("Chats").document(auth.uid.toString()).delete()
-
         var temasForos = arrayListOf<String>("Depresión","Embarazo","Posparto","Otros")
         for(temaForo in temasForos) {
             firestore.collection("Foros").document("SubForos").collection(temaForo).whereEqualTo("userID",auth.uid.toString())
@@ -335,30 +343,122 @@ class SettingsActivity : AppCompatActivity() {
                                }
                             }
                         }.addOnFailureListener {
-
+                            Log.i("TAG",it.toString())
                         }
                     }
-                    Log.i("DELETE",value!!.documents.toString())
                 }
-        }
-
-        firestore.collection("Mood").document(auth.uid.toString()).collection("Historial")
-            .addSnapshotListener { value, error ->
-                for(doc in value!!.documents) {
-                    doc.reference.delete()
-                }
-            }
-        firestore.collection("Timeline").whereEqualTo("userId",auth.uid.toString()).addSnapshotListener { value, error ->
-            for(doc in value!!.documents) {
-                doc.reference.delete()
-            }
         }
 
         firestore.collection("Usuarios").document(auth.uid.toString()).delete().addOnSuccessListener {
             Toast.makeText(this,"Cuenta eliminada correctamente",Toast.LENGTH_SHORT).show()
         }.addOnFailureListener {
-            Utils.showError(this,"Se ha producido un error")
+            Log.i("TAG",it.toString())
         }
+
+        var arrayTemas = arrayListOf<String>("Embarazo","Familia","Parto","Posparto","Otros")
+        for(tema in arrayTemas) {
+            firestore.collection("Consultas").document(tema).collection("Consultas").addSnapshotListener { value, error ->
+                value!!.documents.iterator().forEach {
+                    it.reference.collection("Respuestas").addSnapshotListener { value, error ->
+                        value!!.documents.iterator().forEach { it.reference.delete() }
+                    }
+                    it.reference.delete()
+                }
+            }
+        }
+
+        database.reference.child("ChatList").child(uid).removeValue()
+        database.reference.child("Chats").child(uid).child("Messages").addValueEventListener(object:ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if(snapshot.exists()) {
+                    snapshot.children.iterator().forEach { it.ref.removeValue() }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Log.i("TAG",error.toString())
+            }
+        })
+
+        deleteUserMood(uid)
+        deleteUserPosts(uid)
+        deleteUserPhotos(uid)
+        deleteUserLikes(uid)
+        deleteUserFriends(uid)
+
+        var username = binding.settingsName.text.toString()
+        database.reference.child("Usernames").child(username).removeValue()
+        database.reference.child("Usuarios").child(uid).removeValue()
+
+        currentUser.delete().addOnCompleteListener { task ->
+            if(task.isSuccessful) {
+                Toast.makeText(this,"Cuenta eliminada correctamente",Toast.LENGTH_SHORT).show()
+                Log.d("TAG", "Cuenta eliminada correctamente")
+                logOut()
+            } else {
+                Toast.makeText(this,"Se ha producido un error.",Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun deleteUserMood(userId: String) {
+        firestore.collection("Mood").document(userId).collection("Historial").addSnapshotListener { value, error ->
+            value!!.documents.iterator().forEach {
+                it.reference.delete()
+            }
+        }
+    }
+
+    private fun deleteUserPosts(userId: String) {
+        firestore.collection("Timeline").whereEqualTo("userId",userId).addSnapshotListener { value, error ->
+            value!!.documents.iterator().forEach {
+                it.reference.delete()
+            }
+        }
+        firestore.collection("Timeline").addSnapshotListener { value, error ->
+            value!!.documents.iterator().forEach {
+                it.reference.collection("Replies").whereEqualTo("userId",userId).addSnapshotListener { value, error ->
+                    value!!.documents.iterator().forEach { posts ->
+                        Log.i("listusers",posts.reference.path)
+                        posts.reference.delete()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun deleteUserPhotos(userId: String) {
+        firebaseStore.getReference("Usuarios/"+userId+"/images/perfil").delete()
+        firebaseStore.getReference("Usuarios/"+userId+"/images/layout").delete()
+    }
+
+    private fun deleteUserLikes(userId: String) {
+        firestore.collection("Likes").document(userId).collection("Likes").addSnapshotListener { value, error ->
+            value!!.documents.iterator().forEach {
+                firestore.collection("Timeline").document(it.id).collection("Likes").document(userId).delete()
+                it.reference.delete()
+            }
+        }
+    }
+
+    private fun deleteUserFriends(userId: String){
+        var reference = firestore.collection("Friendship")
+        reference.document(userId).collection("Friends").addSnapshotListener { value, error ->
+            value!!.documents.iterator().forEach {
+                reference.document(it.id).collection("Friends").document(userId).delete()
+                it.reference.delete()
+            }
+        }
+        reference.document(userId).delete()
+    }
+
+    private fun logOut() {
+        prefs.editor?.clear()
+        prefs.editor?.commit()
+        finish()
+        val intent = Intent(this, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
     }
 
 

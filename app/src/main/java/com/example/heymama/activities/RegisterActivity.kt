@@ -66,12 +66,12 @@ class RegisterActivity : AppCompatActivity() {
         focusEmail()
         focusPassword()
         focusName()
-        validUsername()
 
+        binding.btnCheckUsername.setOnClickListener {
+            validUsername()
+        }
         binding.btnCrearCuenta.setOnClickListener {
-            Toast.makeText(this,"BTN",Toast.LENGTH_SHORT).show()
             validate()
-            //   verifyUser(txt_user.text.toString(),txt_email.text.toString())
         }
 
     }
@@ -87,17 +87,13 @@ class RegisterActivity : AppCompatActivity() {
             createAccount()
             Toast.makeText(this,"CREATE",Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(this,"ALERT",Toast.LENGTH_SHORT).show()
+            Toast.makeText(this,"Rellena los datos.",Toast.LENGTH_SHORT).show()
            AlertDialog.Builder(this)
                .setTitle("Error")
                .setMessage("Rellena correctamente los datos")
                .setPositiveButton("Okay"){ _,_ ->
 
                }
-            Log.i("validate-1",binding.userLayout.helperText.toString())
-            Log.i("validate-2",binding.nameLayout.helperText.toString())
-            Log.i("validate-3",binding.email0Layout.helperText.toString())
-            Log.i("validate-4",binding.passwordLayout.helperText.toString())
         }
     }
 
@@ -208,6 +204,7 @@ class RegisterActivity : AppCompatActivity() {
                 verifyEmail(user)
 
                 dataBase.getReference("Usernames").child(username).setValue(email)
+
                 userDB.child("id").setValue(uid)
                 userDB.child("name").setValue(name)
                 userDB.child("username").setValue(username)

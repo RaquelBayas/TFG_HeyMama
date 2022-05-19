@@ -5,33 +5,26 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
 import com.example.heymama.adapters.PostTimelineAdapter
-import com.example.heymama.databinding.ActivityPerfilBinding
 import com.example.heymama.databinding.ActivityTimelineBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.PostTimeline
-import com.example.heymama.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.google.firebase.firestore.DocumentChange
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import java.util.*
 import kotlin.collections.ArrayList
 
 class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
-    // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var firebaseStore: FirebaseStorage
@@ -79,9 +72,7 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
             Toast.makeText(this, "Post add", Toast.LENGTH_SHORT).show()
             binding.edtPostTl.setText("")
         }
-
         getUserData()
-        //getCommentsTL()
     }
 
     private fun getUserData() {

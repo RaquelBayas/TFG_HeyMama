@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.example.heymama.R
+import com.example.heymama.databinding.ActivityMoodBinding
+import com.example.heymama.fragments.RegistroMoodFragment
+import com.example.heymama.fragments.VersionAppFragment
 import com.example.heymama.models.MoodType
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.Legend
@@ -19,7 +22,7 @@ class MoodActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
     private lateinit var pieEntries: ArrayList<PieEntry>
-
+    private lateinit var binding: ActivityMoodBinding
     /**
      *
      * @param savedInstanceState Bundle
@@ -27,12 +30,18 @@ class MoodActivity : AppCompatActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_mood)
+        binding = ActivityMoodBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
         pieEntries = arrayListOf()
         setPieChartData()
+
+        binding.btnConsultarRegistro.setOnClickListener {
+            val fragment = RegistroMoodFragment()
+            supportFragmentManager.beginTransaction().replace(R.id.moodActivity,fragment).addToBackStack(null).commit()
+        }
     }
 
     /**

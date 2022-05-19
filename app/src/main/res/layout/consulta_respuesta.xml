@@ -12,10 +12,11 @@
     <TextView
         android:id="@+id/txt_consulta_post"
         android:layout_width="match_parent"
-        android:layout_height="37dp"
+        android:layout_height="match_parent"
         android:layout_margin="15dp"
         android:fontFamily="@font/montserrat"
-        android:maxLength="300"
+        android:maxLength="200"
+        android:inputType="textMultiLine"
         android:text="Tweet"
         android:textColor="@color/black"
         android:textSize="14sp"

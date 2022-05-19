@@ -58,22 +58,19 @@ class ArticleActivity : AppCompatActivity() {
 
         firestore = FirebaseFirestore.getInstance()
 
-        getData()
-
         title_article = intent.getStringExtra("Title_Article")!!
         description_article = intent.getStringExtra("Description_Article")!!
         professional_article = intent.getStringExtra("Professional_Article")!!
         articlesArraylist = intent.getParcelableArrayListExtra<Article>("ArticlesArraylist")!!
 
-
         txt_title_article = binding.txtTitleArticle
-
         txt_description_article = binding.txtDescriptionArticle
         txt_description_article.text = description_article
 
+        txt_title_article.text = title_article
+        txt_description_article.text = description_article
 
         val rol = intent.getStringExtra("Rol")
-        Toast.makeText(this,rol,Toast.LENGTH_SHORT).show()
 
         if (rol.equals("Profesional")) {
             findViewById<CoordinatorLayout>(R.id.include_article).visibility = View.VISIBLE
@@ -81,30 +78,10 @@ class ArticleActivity : AppCompatActivity() {
             setSupportActionBar(toolbar)
         }
 
-
         //Instancias para la base de datos y la autenticación
         dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         auth = FirebaseAuth.getInstance()
-        // Usuario
-        val user: FirebaseUser? = auth.currentUser
 
-    }
-
-    /**
-     *
-     * @param input
-     *
-     */
-    private fun getData() {
-        firestore.collection("Artículos").document(id_article).addSnapshotListener { value, error ->
-            if(error!=null)  {
-                Log.w("TAG", "listen:error", error)
-                return@addSnapshotListener
-            }
-            var data = value!!.data
-            txt_title_article.text = data!!["title"].toString()
-            txt_description_article.text = data["article"].toString()
-        }
     }
 
     /**
@@ -117,6 +94,7 @@ class ArticleActivity : AppCompatActivity() {
         firestore.collection("Artículos").whereEqualTo("title",title_article).whereEqualTo("professionalID",professional_article).get().addOnSuccessListener {
             for (document in it.documents) {
                 firestore.collection("Artículos").document(document.id).delete()
+                finish()
             }
         }
         if (articlesArraylist.isNotEmpty()) {

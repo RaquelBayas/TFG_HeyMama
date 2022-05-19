@@ -160,6 +160,7 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
         intent.putExtra("Title_Tema", temasArraylist[position].title)
         intent.putExtra("Description_Tema", temasArraylist[position].post)
         intent.putExtra("Time",temasArraylist[position].timestamp!!.toString())
+        intent.putExtra("Privacidad",temasArraylist[position].protected)
         Log.i("TimeSUBFORO",temasArraylist[position].timestamp!!.toString())
         startActivity(intent)
     }

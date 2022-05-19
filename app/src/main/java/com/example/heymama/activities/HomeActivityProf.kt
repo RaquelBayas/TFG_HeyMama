@@ -130,7 +130,7 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
                 val intent = Intent(this, PerfilActivity::class.java)
                 startActivity(intent)
             }
-            R.id.nav_item_consultas -> startActivity(Intent(this,ContactoActivity::class.java))
+            R.id.nav_item_solicitudes -> startActivity(Intent(this,SolicitudesActivity::class.java))
             R.id.nav_item_timeline -> startActivity(Intent(this,TimelineActivity::class.java))
             R.id.nav_item_ajustes -> startActivity(Intent(this,SettingsActivity::class.java))
             R.id.nav_item_logout -> logOut()
@@ -158,7 +158,7 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
 
             }
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+
             }
         })
     }

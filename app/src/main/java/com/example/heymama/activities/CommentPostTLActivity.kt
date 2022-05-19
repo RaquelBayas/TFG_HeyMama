@@ -102,6 +102,10 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
         }
 
         getCommentsPostTL()
+        binding.swipeRefreshTLComments.setOnRefreshListener {
+            getCommentsPostTL()
+        }
+
     }
 
     /**
@@ -111,6 +115,7 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private fun getPictures(image: CircleImageView, storageReference: StorageReference){
         GlideApp.with(applicationContext)
             .load(storageReference)
+            .error(R.drawable.wallpaper_profile)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .skipMemoryCache(true)
             .into(image)
@@ -121,7 +126,6 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
      * @param uid String
      */
     private fun getUserData(databaseReference: DatabaseReference, uid: String) {
-        // REALTIME DATABASE
         val edt_comment : TextView = findViewById(R.id.edt_comment_posttl)
 
         databaseReference.child(uid).get().addOnSuccessListener {
@@ -149,7 +153,7 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
      * @param edt_comment String
      * @param user User
      */
-    private fun add_comment_to_posttl(uid:String, edt_comment:String, user:User/*iduser:String*/) {
+    private fun add_comment_to_posttl(uid:String, edt_comment:String, user:User) {
         var doctlfb = firestore.collection("Timeline").document(idpost).collection("Replies").document()
         var doc_id = doctlfb.id
 
@@ -165,6 +169,9 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
      * @param input
      */
     fun getCommentsPostTL() {
+        if(binding.swipeRefreshTLComments.isRefreshing){
+            binding.swipeRefreshTLComments.isRefreshing = false
+        }
         commentsPostsTLArraylist.clear()
         firestore.collection("Timeline").document(idpost).collection("Replies").addSnapshotListener { snapshots, e ->
             if (e != null) {
@@ -175,19 +182,16 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     DocumentChange.Type.ADDED -> {
                         commentsPostsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
                     }
-                    DocumentChange.Type.MODIFIED -> commentsPostsTLArraylist.add(
-                        dc.document.toObject(PostTimeline::class.java
-                        )
+                    DocumentChange.Type.MODIFIED -> commentsPostsTLArraylist.add(dc.document.toObject(PostTimeline::class.java)
                     )
-                    DocumentChange.Type.REMOVED -> commentsPostsTLArraylist.remove(
-                        dc.document.toObject(
-                            PostTimeline::class.java
-                        )
+                    DocumentChange.Type.REMOVED -> commentsPostsTLArraylist.remove(dc.document.toObject(PostTimeline::class.java)
                     )
                 }
             }
             adapterCommentsPostsTL.notifyDataSetChanged()
-            commentsPostsTLArraylist.sort()
+            if(commentsPostsTLArraylist.size>1) {
+                commentsPostsTLArraylist.sort()
+            }
 
         }
     }

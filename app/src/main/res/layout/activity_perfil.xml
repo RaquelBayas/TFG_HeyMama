@@ -50,10 +50,24 @@
                 android:layout_marginTop="52dp"
                 app:civ_border_color="@color/purple_700"
                 app:civ_border_width="2dp"
+
                 app:layout_constraintEnd_toEndOf="@+id/layout_image"
                 app:layout_constraintHorizontal_bias="0.108"
                 app:layout_constraintStart_toStartOf="@+id/layout_image"
                 app:layout_constraintTop_toTopOf="@+id/layout_image" />
+
+            <ImageView
+                android:id="@+id/verified"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="8dp"
+                android:src="@drawable/ic_check"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/profile_image">
+
+            </ImageView>
 
             <TextView
                 android:id="@+id/txt_user_perfil"
@@ -66,7 +80,7 @@
                 android:textColor="@color/fonts"
                 android:textSize="22sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.137"
+                app:layout_constraintHorizontal_bias="0.11"
                 app:layout_constraintStart_toEndOf="@+id/profile_image"
                 app:layout_constraintTop_toBottomOf="@+id/layout_image" />
 

@@ -100,10 +100,11 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
                 txt_username_perfil.text = user!!.username.toString()
                 txt_user_perfil.text = user.name.toString()
                 txt_user_biografia.text = user.bio.toString()
-                Log.i("data-user",user.toString())
+                if(user.rol == "Profesional") {
+                    binding.verified.visibility = View.VISIBLE
+                }
             }
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
             }
         })
 
@@ -224,11 +225,19 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
     }
 
     private fun menuImagen(popupmenu: PopupMenu, code: Int) {
+        var type = "perfil"
+        if(code == 100) {
+            type = "layout"
+        }
         popupmenu.show()
         popupmenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
             when (it.itemId) {
                 R.id.menu_verImagen -> {
-
+                    val intent = Intent(this,ViewFullImageActivity::class.java)
+                    storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").getReference("/Usuarios/"+uid+"/images/"+type)
+                    intent.putExtra("path",uid)
+                    Log.i("url",uid)
+                    startActivity(intent)
                 }
                 R.id.menu_cambiarImagen -> {
                     selectImage(code)

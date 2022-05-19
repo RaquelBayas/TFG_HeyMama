@@ -22,7 +22,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
 class FriendsAdapter(private val context: Context, private var friendsList: ArrayList<FriendRequest>, private val uidProfileFriends : String
-) : RecyclerView.Adapter<FriendsAdapter.HolderForo>(), Filterable {
+) : RecyclerView.Adapter<FriendsAdapter.Holder>(), Filterable {
 
     // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
@@ -34,15 +34,13 @@ class FriendsAdapter(private val context: Context, private var friendsList: Arra
     private val ONE_MEGABYTE : Long = 1024 * 1024
 
     override fun onCreateViewHolder(parent: ViewGroup,
-                                    viewType: Int
-    ): FriendsAdapter.HolderForo {
+                                    viewType: Int): FriendsAdapter.Holder {
 
-        // inflate layout tema_friend.xml
         val view = LayoutInflater.from(parent.context).inflate(R.layout.tema_friend, parent, false)
-        return HolderForo(view)
+        return Holder(view)
     }
 
-    override fun onBindViewHolder(holder: HolderForo, position: Int) {
+    override fun onBindViewHolder(holder: Holder, position: Int) {
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance() //CLOUD STORAGE
         firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
@@ -72,7 +70,7 @@ class FriendsAdapter(private val context: Context, private var friendsList: Arra
         }
     }
 
-    private fun getFriends(holder:HolderForo,position:Int) {
+    private fun getFriends(holder:Holder,position:Int) {
         if(friendsList[position].friend_receive_uid != uidProfileFriends) {
             uid = friendsList[position].friend_receive_uid
         } else {
@@ -102,7 +100,7 @@ class FriendsAdapter(private val context: Context, private var friendsList: Arra
         }
     }
 
-    private fun menuFriend(holder: HolderForo) {
+    private fun menuFriend(holder: Holder) {
         with(holder) {
             if (uidProfileFriends == auth.uid) {
                 btn_menu_friends.visibility = View.VISIBLE
@@ -171,7 +169,7 @@ class FriendsAdapter(private val context: Context, private var friendsList: Arra
     /**
      *
      */
-    inner class HolderForo(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var txt_nombre_amigo: TextView = itemView.findViewById(R.id.txt_nombre_amigo)
         var txt_user_amigo: TextView = itemView.findViewById(R.id.txt_user_amigo)
         var img_amigos: ImageView = itemView.findViewById(R.id.img_amigos)

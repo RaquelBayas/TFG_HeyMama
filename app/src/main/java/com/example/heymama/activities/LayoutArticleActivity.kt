@@ -2,6 +2,7 @@ package com.example.heymama.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.style.StyleSpan
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
@@ -17,12 +18,19 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
+import android.text.Spannable
+
+import android.graphics.Typeface
+import android.os.Build
+
+import android.text.SpannableString
+import androidx.annotation.RequiresApi
+
 
 class LayoutArticleActivity : AppCompatActivity() {
-    // FirebaseAuth object
+
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
-    private lateinit var dataBaseReference: DatabaseReference
     private lateinit var firestore: FirebaseFirestore
 
     private lateinit var title_article: String
@@ -41,6 +49,7 @@ class LayoutArticleActivity : AppCompatActivity() {
      * @param savedInstanceState Bundle
      *
      */
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLayoutArticleBinding.inflate(layoutInflater)
@@ -82,6 +91,18 @@ class LayoutArticleActivity : AppCompatActivity() {
                 Toast.makeText(this, "Correcto.", Toast.LENGTH_SHORT).show()
                 finish()
             }
+        }
+
+        binding.btnNegrita.setOnClickListener {
+
+            val startSelection: Int = binding.edtContenidoArticulo.selectionStart
+            val endSelection: Int = binding.edtContenidoArticulo.selectionEnd
+            val selectedText: String = binding.edtContenidoArticulo.text.substring(startSelection, endSelection)
+
+            var string = SpannableString(selectedText)
+            string.setSpan(StyleSpan(Typeface.BOLD), 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            //val styleSpan: StyleSpan(Typeface.)
+            //binding.edtContenidoArticulo.text.setSpan(StyleSpan(Typeface.BOLD), 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
     }
 

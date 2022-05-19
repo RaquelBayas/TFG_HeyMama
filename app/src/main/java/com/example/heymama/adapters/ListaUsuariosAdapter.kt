@@ -224,6 +224,7 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
             txt_username_user.text = user.username
             var uid = user.id
             storageReference = firebaseStore.getReference("/Usuarios/" + uid + "/images/perfil")
+            Log.i("url-user",storageReference.toString())
             GlideApp.with(context)
                 .load(storageReference)
                 .error(R.drawable.wallpaper_profile)
@@ -237,6 +238,10 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 context.startActivity(intent)
             }
+
+            if(user.rol == "Profesional") {
+                holder.verified.visibility = View.VISIBLE
+            }
         }
     }
 
@@ -249,6 +254,7 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
         var txt_username_user: TextView = itemView.findViewById(R.id.txt_user_amigo)
         var img_user: ImageView = itemView.findViewById(R.id.img_amigos)
         var btn_menu_user: Button = itemView.findViewById(R.id.btn_menu_friends)
+        var verified: ImageView = itemView.findViewById(R.id.verified)
     }
 
 }

@@ -51,6 +51,7 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
     private lateinit var rol: String
     private lateinit var uid: String
     private lateinit var time: String
+    private lateinit var privacidad: String
     private lateinit var user: FirebaseUser
     private lateinit var binding: ActivityTemaForoBinding
 
@@ -93,6 +94,7 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
         description_tema = intent.getStringExtra("Description_Tema").toString()
         foroName = intent.getStringExtra("ForoName").toString()
         time = intent.getStringExtra("Time").toString()
+        privacidad = intent.getStringExtra("Privacidad").toString()
 
         var timestamp = time
         var timestamp1 = Timestamp.parse(timestamp)
@@ -130,8 +132,9 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
             override fun onDataChange(snapshot: DataSnapshot) {
                 var user : User? = snapshot.getValue(User::class.java)
                 rol = user!!.rol.toString()
-                binding.txtForoUser.text = user.username
-
+                if(privacidad == "Público") {
+                    binding.txtForoUser.text = user.username
+                }
                 binding.txtForoUser.setOnClickListener {
                     finish()
                     val intent = Intent(applicationContext,PerfilActivity::class.java)
@@ -141,10 +144,9 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
                 btnMenuForo()
             }
             override fun onCancelled(error: DatabaseError) {
-                //TO DO("Not yet implemented")
             }
         })
-        //btnMenuForo()
+
     }
 
     /**

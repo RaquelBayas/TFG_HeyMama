@@ -311,9 +311,7 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
             }
-
         })
     }
 
@@ -343,7 +341,6 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
                                 }
                             }
                             override fun onFailure(call: Call<MyResponse?>, t: Throwable) {
-                                TODO("Not yet implemented")
                             }
                         })
                 }

@@ -10,7 +10,7 @@ data class Mood(
     var mood: String? = null,
     @ServerTimestamp
     var timestamp: Date? = null
-) : Parcelable {
+) : Parcelable, Comparable<Mood> {
     constructor(parcel: Parcel) : this(
         parcel.readString(),
         parcel.readString(),
@@ -36,6 +36,10 @@ data class Mood(
         override fun newArray(size: Int): Array<Mood?> {
             return arrayOfNulls(size)
         }
+    }
+
+    override fun compareTo(other: Mood): Int {
+        return other.timestamp?.compareTo(this.timestamp!!)!!
     }
 
 }

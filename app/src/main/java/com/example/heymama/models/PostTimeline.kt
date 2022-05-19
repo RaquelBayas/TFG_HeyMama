@@ -18,7 +18,6 @@ data class PostTimeline(
 ) : Parcelable, Comparable<PostTimeline> {
 
     override fun compareTo(other: PostTimeline): Int {
-
         return other.timestamp?.compareTo(this.timestamp!!)!!
     }
 

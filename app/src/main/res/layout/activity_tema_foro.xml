@@ -89,20 +89,19 @@
             >
             <TextView
                 android:id="@+id/txt_foro_hora"
-                android:layout_width="0dp"
-                android:layout_weight="0.5"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 android:text="12/01/2020 20:00"
                 />
             <TextView
                 android:id="@+id/txt_foro_user"
-                android:layout_width="0dp"
-                android:layout_weight="0.5"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
-                android:text="username"
-                android:gravity="right"
+                android:layout_marginEnd="5dp"
+                android:text=""
+                android:gravity="start"
                 />
         </LinearLayout>
 

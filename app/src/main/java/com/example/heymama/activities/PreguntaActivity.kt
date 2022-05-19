@@ -44,8 +44,7 @@ class PreguntaActivity : AppCompatActivity() {
         val intent = intent
         val foroName = intent.getStringExtra("ForoName")
 
-        //Instancias para la base de datos y la autenticación
-        dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
+        dataBase = FirebaseDatabase.getInstance()
         auth = FirebaseAuth.getInstance()
 
         //Dentro de la base de datos habrá un nodo "Usuarios" donde se guardan los usuarios de la aplicación
@@ -54,7 +53,6 @@ class PreguntaActivity : AppCompatActivity() {
         // Usuario
         val user: FirebaseUser? = auth.currentUser
 
-        // ID en la BBDD
         val userDB: DatabaseReference = dataBaseReference.child(user!!.uid)
 
         firestore = FirebaseFirestore.getInstance()
