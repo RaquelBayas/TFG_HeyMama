@@ -65,6 +65,8 @@ class TimelineFragment : Fragment(), ItemRecyclerViewListener {
         tabs = _perfilBinding!!.tabs
 
         recyclerViewTimeline = binding.recyclerViewPerfil
+        recyclerViewTimeline.layoutManager = LinearLayoutManager(context)
+        recyclerViewTimeline.setHasFixedSize(true)
         adapterPostsTL = PostTimelineAdapter(requireContext().applicationContext,postsTLArraylist,this)
         recyclerViewTimeline.adapter = adapterPostsTL
 
@@ -86,7 +88,6 @@ class TimelineFragment : Fragment(), ItemRecyclerViewListener {
                 }
             }
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
             }
         })
     }
@@ -114,9 +115,6 @@ class TimelineFragment : Fragment(), ItemRecyclerViewListener {
 
     private fun loadPostsTL() {
         postsTLArraylist.clear()
-        var layoutManager = LinearLayoutManager(context)
-        recyclerViewTimeline.layoutManager = layoutManager
-        recyclerViewTimeline.setHasFixedSize(true)
 
         firestore.collection("Timeline").whereEqualTo("userId",uid).addSnapshotListener { snapshots, e ->
             if (e!= null) {

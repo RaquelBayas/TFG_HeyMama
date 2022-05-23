@@ -33,7 +33,6 @@ import retrofit2.Response
 
 class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
-    // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
     private lateinit var firebaseStorage: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
@@ -43,7 +42,6 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private lateinit var uid: String
     private lateinit var friendUID: String
     private lateinit var txt_message_chat: EditText
-
     private lateinit var recyclerViewChats: RecyclerView
     private lateinit var chatsArraylist: ArrayList<Message>
     private lateinit var adapterChats: ChatAdapter
@@ -62,12 +60,12 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         auth = FirebaseAuth.getInstance()
         uid = auth.currentUser?.uid!!
-        // Firebase
-        database = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
+
+        database = FirebaseDatabase.getInstance()
         dataBaseReference = database.getReference("Usuarios")
-        firestore = FirebaseFirestore.getInstance() //CLOUD STORAGE
-        firebaseStorage = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
-        firebaseStorageRef = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").reference
+        firestore = FirebaseFirestore.getInstance()
+        firebaseStorage = FirebaseStorage.getInstance()
+        firebaseStorageRef = FirebaseStorage.getInstance().reference
 
         apiService = Client.Client.getClient("https://fcm.googleapis.com/")!!.create(APIService::class.java)
 
@@ -76,7 +74,7 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
        binding.txtChatFriendName.text = friendUID
 
-        // BOTÓN BACK
+
         binding.imgBackChat.setOnClickListener {
             onBackPressed()
         }
@@ -95,7 +93,6 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
         }
 
         recyclerViewChats = binding.recyclerViewChat
-
         chatsArraylist = arrayListOf()
         adapterChats = ChatAdapter(applicationContext, chatsArraylist,this)
         adapterChats.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
@@ -104,12 +101,13 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
             }
         })
 
-        var linearLayoutManager = LinearLayoutManager(this,LinearLayoutManager.VERTICAL,true)
-        linearLayoutManager.stackFromEnd = true
+        val linearLayoutManager = LinearLayoutManager(this,LinearLayoutManager.VERTICAL,true)
+        linearLayoutManager.stackFromEnd = false
 
         recyclerViewChats.layoutManager = linearLayoutManager
         recyclerViewChats.recycledViewPool.setMaxRecycledViews(0,0)
         recyclerViewChats.smoothScrollToPosition(adapterChats.itemCount)
+        recyclerViewChats.scrollToPosition(adapterChats.itemCount-1)
         recyclerViewChats.setHasFixedSize(false)
         recyclerViewChats.adapter = adapterChats
 
@@ -123,7 +121,7 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
     }
 
     private fun checkStatus() {
-        database.getReference("Usuarios/"+friendUID).addValueEventListener(object: ValueEventListener{
+        database.getReference("Usuarios/$friendUID").addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if(snapshot.exists()){
                     snapshot.children.iterator().forEach {
@@ -133,7 +131,6 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 }
             }
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
             }
         })
     }
@@ -169,9 +166,7 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
                             }
                         }
                     }
-
                     override fun onCancelled(error: DatabaseError) {
-                        TODO("Not yet implemented")
                     }
                 })
                 adapterChats.notifyDataSetChanged()
@@ -273,14 +268,11 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
                             chatListReceiverRef.child("id").setValue(senderUID)
                         }
                         override fun onCancelled(error: DatabaseError) {
-                            TODO("Not yet implemented")
                         }
                     })
-                    Toast.makeText(applicationContext, "El mensaje se ha enviado correctamente",
-                        Toast.LENGTH_SHORT).show()
                 }
         }
-        var lastMessage : Map<String, Message> = mapOf("LastMessage" to message)
+        val lastMessage : Map<String, Message> = mapOf("LastMessage" to message)
         database.reference.child("Chats").child(senderUID).child("Messages").child(receiverUID)
             .updateChildren(lastMessage)
             .addOnSuccessListener {
@@ -299,11 +291,10 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
         refNotify.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 val user = snapshot.getValue(User::class.java)
-                if (notify)
-                {
+                if (notify) {
                     if(imagePath=="") {
                         sendNotification(friendUID, user!!.name, txtMessage)
-                    } else {
+                    }else {
                         sendNotification(friendUID,user!!.name,"Te ha enviado una imagen")
                     }
                 }
@@ -316,10 +307,8 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
     }
 
     private fun sendNotification(receiverId: String?, userName: String?, message: String) {
-
-        val ref=FirebaseDatabase.getInstance().reference.child("Tokens")
-
-        val query=ref.orderByKey().equalTo(receiverId)
+        val ref = FirebaseDatabase.getInstance().reference.child("Tokens")
+        val query = ref.orderByKey().equalTo(receiverId)
 
         query.addValueEventListener(object :ValueEventListener{
             override fun onDataChange(p0: DataSnapshot) {
@@ -330,10 +319,7 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
                     apiService!!.sendNotification(sender)
                         ?.enqueue(object : Callback<MyResponse?> {
-                            override fun onResponse(
-                                call: Call<MyResponse?>,
-                                response: Response<MyResponse?>
-                            ) {
+                            override fun onResponse(call: Call<MyResponse?>, response: Response<MyResponse?>) {
                                 if(response.code()==200) {
                                     if(response.body()!!.success!==1) {
                                         Toast.makeText(this@ChatActivity,"Failed, Nothing happened.",Toast.LENGTH_SHORT).show()
@@ -346,7 +332,6 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 }
             }
             override fun onCancelled(p0: DatabaseError) {
-
             }
         })
     }
@@ -373,7 +358,6 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 adapterChats.notifyDataSetChanged()
             }
             override fun onCancelled(error: DatabaseError) {
-
             }
         })
     }
@@ -404,15 +388,13 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
      *
      */
     private fun glidePicture(uid: String, image: ImageView) {
-        firebaseStorageRef = firebaseStorage.getReference("/Usuarios/"+uid+"/images/perfil")
+        firebaseStorageRef = firebaseStorage.getReference("/Usuarios/$uid/images/perfil")
         GlideApp.with(applicationContext)
                 .load(firebaseStorageRef)
                 .error(R.drawable.wallpaper_profile)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
                 .into(image)
-
-
     }
 
     private fun currentUser(userid: String?) {
@@ -421,12 +403,18 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
         editor.apply()
     }
 
+    /**
+     * Cambia el estado del usuario a "offline".
+     */
     override fun onPause() {
         super.onPause()
         Utils.updateStatus("offline")
         currentUser(uid)
     }
 
+    /**
+     * Cambia el estado del usuario a "online".
+     */
     override fun onResume() {
         super.onResume()
         Utils.updateStatus("online")

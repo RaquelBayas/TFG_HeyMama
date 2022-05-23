@@ -13,7 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -63,21 +62,21 @@
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_margin="5dp"
-                        android:background="@color/mood_feliz"
-                        android:src="@drawable/mood_feliz"
+                        android:background="@color/white"
+                        android:src="@drawable/happy"
                         ></ImageButton>
                     <ImageButton
                         android:id="@+id/btn_mood_home_bien"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_margin="5dp"
-                        android:background="@color/mood_bien"
+                        android:background="@color/white"
                         android:src="@drawable/mood_bien"
                         ></ImageButton>
                     <ImageButton
                         android:id="@+id/btn_mood_home_regular"
                         android:layout_width="60dp"
-                        android:background="@color/mood_regular"
+                        android:background="@color/white"
                         android:layout_height="60dp"
                         android:layout_margin="5dp"
                         android:src="@drawable/mood_regular"
@@ -85,7 +84,7 @@
                     <ImageButton
                         android:id="@+id/btn_mood_home_mal"
                         android:layout_width="60dp"
-                        android:background="@color/mood_mal"
+                        android:background="@color/white"
                         android:layout_height="60dp"
                         android:layout_margin="5dp"
                         android:src="@drawable/mood_mal"
@@ -93,10 +92,10 @@
                     <ImageButton
                         android:id="@+id/btn_mood_hom_triste"
                         android:layout_width="60dp"
-                        android:background="@color/mood_triste"
+                        android:background="@color/white"
                         android:layout_height="60dp"
                         android:layout_margin="5dp"
-                        android:src="@drawable/mood_triste"
+                        android:src="@drawable/sad"
                         ></ImageButton>
 
                 </LinearLayout>

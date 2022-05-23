@@ -19,7 +19,6 @@ import com.example.heymama.models.Consulta
 import com.example.heymama.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.ArrayList
@@ -28,7 +27,6 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var consultasArraylist: ArrayList<Consulta>
-    private lateinit var idTemasArrayList: ArrayList<String>
     private lateinit var adapter: ConsultaAdapter
     private lateinit var spinnerConsultas: Spinner
     private lateinit var temas: Array<String>
@@ -61,6 +59,7 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
         firestore = FirebaseFirestore.getInstance()
     }
 
+
     private fun initRecycler() {
         recyclerView = binding.recyclerViewConsultas
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -72,6 +71,9 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
         recyclerView.adapter = adapter
     }
 
+    /**
+     * Este método permite obtener la información del usuario: concretamente el 'rol'
+     */
     private fun getDataUser(){
         database.reference.child("Usuarios").child(auth.uid.toString()).addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -80,24 +82,19 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 getSpinner()
             }
             override fun onCancelled(error: DatabaseError) {
-            //TO DO("Not yet implemented")
             }
         })
     }
 
     private fun getSpinner() {
-        var selectedItem = spinnerConsultas.selectedItem.toString()
-
         spinnerConsultas.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, id: Long) {
-                //if(temas[position] != temas[0]) {
                 if (rol == "Usuario") {
                     getMisConsultas(temas[position])
                 } else {
                     getConsultas(temas[position])
                 }
-                //}
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -109,22 +106,25 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
             }
         }
     }
+
+    /**
+     * Este método permite al propio usuario revisar las consultas que ha realizado a los profesionales.
+     * @param temaConsulta String : Tema de la consulta seleccionado.
+     */
     private fun getMisConsultas(temaConsulta: String) {
         consultasArraylist.clear()
 
         firestore.collection("Consultas").document(temaConsulta).collection("Consultas").whereEqualTo("userID",auth.uid.toString())
             .addSnapshotListener{ snapshot, error ->
-
-                Log.i("Misconsultas",snapshot!!.documents.toString())
+                if (error != null) {
+                    Log.e("ConsultasActivity",error.toString())
+                    return@addSnapshotListener
+                }
                 for (dc in snapshot!!.documentChanges) {
                     when (dc.type) {
-                        DocumentChange.Type.ADDED -> {
-                            consultasArraylist.add(dc.document.toObject(Consulta::class.java))
-                        }
-                        DocumentChange.Type.MODIFIED -> consultasArraylist.add(dc.document.toObject(
-                            Consulta::class.java))
-                        DocumentChange.Type.REMOVED -> consultasArraylist.remove(dc.document.toObject(
-                            Consulta::class.java))
+                        DocumentChange.Type.ADDED -> consultasArraylist.add(dc.document.toObject(Consulta::class.java))
+                        //DocumentChange.Type.MODIFIED -> consultasArraylist.add(dc.document.toObject(Consulta::class.java))
+                        DocumentChange.Type.REMOVED -> consultasArraylist.remove(dc.document.toObject(Consulta::class.java))
                     }
                 }
                 consultasArraylist.sort()
@@ -147,6 +147,11 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 recyclerView.setHasFixedSize(true)
             }
     }
+
+    /**
+     * Este método permite obtener las consultas realizadas por un usuario dependiendo del tema seleccionado.
+     * @param temaConsulta String : Tema seleccionado.
+     */
     private fun getConsultas(temaConsulta: String) {
         consultasArraylist.clear()
 
@@ -154,15 +159,15 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         firestore.collection("Consultas").document(temaConsulta).collection("Consultas")
             .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.e("ConsultasActivity",error.toString())
+                    return@addSnapshotListener
+                }
                 for (dc in snapshot!!.documentChanges) {
                     when (dc.type) {
-                        DocumentChange.Type.ADDED -> {
-                            consultasArraylist.add(dc.document.toObject(Consulta::class.java))
-                        }
-                        DocumentChange.Type.MODIFIED -> consultasArraylist.add(dc.document.toObject(
-                            Consulta::class.java))
-                        DocumentChange.Type.REMOVED -> consultasArraylist.remove(dc.document.toObject(
-                            Consulta::class.java))
+                        DocumentChange.Type.ADDED -> consultasArraylist.add(dc.document.toObject(Consulta::class.java))
+                        //DocumentChange.Type.MODIFIED -> consultasArraylist.add(dc.document.toObject(Consulta::class.java))
+                        DocumentChange.Type.REMOVED -> consultasArraylist.remove(dc.document.toObject(Consulta::class.java))
                     }
                 }
                 if(consultasArraylist.size > 1) {
@@ -188,13 +193,13 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
             }
     }
 
-
     /**
      * Método para abrir una nueva actividad en la cual el profesional puede responder la consulta seleccionada.
      *
-     * @param id_consulta String
-     *
-     *
+     * @param id_consulta String : ID de la consulta.
+     * @param tema_consulta String : Tema de la consulta.
+     * @param id_user_consulta String : ID del usuario que ha realizado la consulta.
+     * @param consulta String : Texto de la consulta.
      */
     private fun open(id_consulta: String,tema_consulta: String,id_user_consulta: String, consulta: String) {
         val intent = Intent(this, RespuestaConsultaActivity::class.java)
@@ -204,5 +209,4 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
         intent.putExtra("consulta",consulta)
         startActivity(intent)
     }
-
 }

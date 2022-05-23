@@ -15,16 +15,13 @@ import com.example.heymama.activities.PerfilActivity
 import com.example.heymama.models.FriendRequest
 import com.example.heymama.models.User
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
 class FriendsAdapter(private val context: Context, private var friendsList: ArrayList<FriendRequest>, private val uidProfileFriends : String
-) : RecyclerView.Adapter<FriendsAdapter.Holder>(), Filterable {
+) : RecyclerView.Adapter<FriendsAdapter.Holder>() {
 
-    // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
     private lateinit var firebaseStore: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
@@ -33,43 +30,24 @@ class FriendsAdapter(private val context: Context, private var friendsList: Arra
     private lateinit var uid: String
     private val ONE_MEGABYTE : Long = 1024 * 1024
 
-    override fun onCreateViewHolder(parent: ViewGroup,
-                                    viewType: Int): FriendsAdapter.Holder {
-
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FriendsAdapter.Holder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.tema_friend, parent, false)
         return Holder(view)
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         auth = FirebaseAuth.getInstance()
-        firestore = FirebaseFirestore.getInstance() //CLOUD STORAGE
-        firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
+        firestore = FirebaseFirestore.getInstance()
+        firebaseStore = FirebaseStorage.getInstance()
         storageReference = firebaseStore.reference
         getFriends(holder,position)
     }
 
-     fun filterList(list: ArrayList<FriendRequest>) {
-        this.friendsList = list
-    }
     /**
-     * Este método permite filtrar la búsqueda de amigos.
-     *
-     * @param friend String
+     * Este método permite obtener cada uno de los amigos que hemos agregado.
+     * @param holder Holder
+     * @param position Int
      */
-    override fun getFilter(): Filter {
-        TODO("Not yet implemented")
-    }
-
-    fun filter(friend: String) {
-        var newList = friendsList
-        friendsList.iterator().forEach {
-            if((it.friend_receive_uid.contains(friend)) || (it.friend_send_uid.contains(friend))){
-
-                newList.add(it)
-            }
-        }
-    }
-
     private fun getFriends(holder:Holder,position:Int) {
         if(friendsList[position].friend_receive_uid != uidProfileFriends) {
             uid = friendsList[position].friend_receive_uid
@@ -100,14 +78,17 @@ class FriendsAdapter(private val context: Context, private var friendsList: Arra
         }
     }
 
+    /**
+     * Este método permite añadir un PopUpMenu con la opción 'eliminar' para eliminar la amistad con un usuario.
+     * @param holder Holder
+     */
     private fun menuFriend(holder: Holder) {
         with(holder) {
             if (uidProfileFriends == auth.uid) {
                 btn_menu_friends.visibility = View.VISIBLE
                 btn_menu_friends.setOnClickListener {
                     val popupMenu: PopupMenu = PopupMenu(context, holder.btn_menu_friends)
-                    popupMenu.menuInflater.inflate(R.menu.post_tl_menu,
-                        popupMenu.menu) //Sólo tiene la opción de eliminar
+                    popupMenu.menuInflater.inflate(R.menu.post_tl_menu, popupMenu.menu)
                     popupMenu.show()
                     popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
                         when (it.itemId) {
@@ -122,7 +103,7 @@ class FriendsAdapter(private val context: Context, private var friendsList: Arra
         }
     }
     /**
-     *
+     * Este método permite obtener el uid del usuario a partir de su nombre de usuario.
      * @param username String
      */
     private fun getUIDFriend(username: String) {
@@ -130,16 +111,13 @@ class FriendsAdapter(private val context: Context, private var friendsList: Arra
             for (doc in it.documents) {
                 uidFriend = doc["ID"].toString()
                 removeFriend(uidFriend)
-                Log.i("friendadapter-2",doc["ID"].toString())
             }
-            Log.i("friendadapter",it.toString())
         }
     }
 
     /**
-     *
-     * @param uidFriend String
-     *
+     * Este método permite eliminar a un usuario de nuestra lista de amigos.
+     * @param uidFriend String : uid del usuario
      */
     private fun removeFriend(uidFriend: String) {
         firestore.collection("Friendship").document(auth.uid.toString()).collection("Friends").document(uidFriend).delete().addOnSuccessListener{
@@ -150,7 +128,8 @@ class FriendsAdapter(private val context: Context, private var friendsList: Arra
     }
 
     /**
-     *
+     * Este método permite acceder al perfil del amigo que hemos seleccionado.
+     * @param uid String : uid del usuario
      */
     private fun visitFriend(uid:String) {
         val intent = Intent(context, PerfilActivity::class.java)
@@ -160,14 +139,14 @@ class FriendsAdapter(private val context: Context, private var friendsList: Arra
     }
 
     /**
-     *
+     * Devuelve la cantidad de elementos del arraylist "friendsList"
      */
     override fun getItemCount(): Int {
         return friendsList.size
     }
 
     /**
-     *
+     * ViewHolder
      */
     inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var txt_nombre_amigo: TextView = itemView.findViewById(R.id.txt_nombre_amigo)

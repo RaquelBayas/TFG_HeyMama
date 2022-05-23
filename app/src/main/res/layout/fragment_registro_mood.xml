@@ -7,13 +7,29 @@
     android:id="@+id/registroMoodFragment"
     tools:context=".fragments.RegistroMoodFragment">
 
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView_mood"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/alegreya"
+            android:textSize="30sp"
+            android:textColor="@color/fonts"
+            android:layout_margin="20dp"
+            android:text="Registro de emociones"
+            >
 
-    </androidx.recyclerview.widget.RecyclerView>
+        </TextView>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView_mood"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </LinearLayout>
 
 </FrameLayout>

@@ -6,7 +6,6 @@ import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
@@ -18,16 +17,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.heymama.GlideApp
 import com.example.heymama.R
 import com.example.heymama.databinding.ActivityHomeBinding
-import com.example.heymama.dialogs.MoodDialog
-import com.example.heymama.fragments.MoodFragment
 import com.example.heymama.interfaces.Utils
 import com.example.heymama.models.Mood
 import com.example.heymama.models.MoodType
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
@@ -35,19 +30,16 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.contains as contains
 
 
 class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, Utils {
 
-    // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
     private lateinit var firebaseStore: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageReference: StorageReference
-
     private lateinit var textView: TextView
     private lateinit var viewNav: View
     private lateinit var txt_name_nav_header: TextView
@@ -69,19 +61,14 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
+        dataBase = FirebaseDatabase.getInstance()
 
-        //Instancias para la base de datos y la autenticación
-        dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
-
-
-        //Dentro de la base de datos habrá un nodo "Usuarios" donde se guardan los usuarios de la aplicación
         dataBaseReference = dataBase.getReference("Usuarios")
-        firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
-        storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").reference
+        firebaseStore = FirebaseStorage.getInstance()
+        storageReference = FirebaseStorage.getInstance().reference
 
         val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar_main)
         setSupportActionBar(toolbar)
-
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu_bar);
         supportActionBar?.setHomeButtonEnabled(true)
@@ -118,13 +105,12 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
         drawer.addDrawerListener(toggle)
-        //getMoodStatus()
+
         getUserName()
 
         binding.btnForosHome.setOnClickListener{
             startActivity(Intent(this,ForosActivity::class.java))
         }
-
         binding.btnInfoHome.setOnClickListener{
             val intent = Intent(this, InfoActivity::class.java)
             intent.putExtra("Rol","Usuario")
@@ -132,19 +118,18 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         notification()
-
         mood()
     }
 
     private fun mood() {
-        var btn_mood_feliz = binding.btnMoodHomeFeliz
-        var btn_mood_bien = binding.btnMoodHomeBien
-        var btn_mood_regular = binding.btnMoodHomeRegular
-        var btn_mood_mal = binding.btnMoodHomeMal
-        var btn_mood_triste = binding.btnMoodHomTriste
-        var date = Date().time
-        var simpleDateFormat = SimpleDateFormat("dd MM yyyy")
-        var dateString = simpleDateFormat.format(date)
+        val btn_mood_feliz = binding.btnMoodHomeFeliz
+        val btn_mood_bien = binding.btnMoodHomeBien
+        val btn_mood_regular = binding.btnMoodHomeRegular
+        val btn_mood_mal = binding.btnMoodHomeMal
+        val btn_mood_triste = binding.btnMoodHomTriste
+        val date = Date().time
+        val simpleDateFormat = SimpleDateFormat("dd MM yyyy")
+        val dateString = simpleDateFormat.format(date)
 
         val listMoods = arrayListOf<ImageButton>(btn_mood_feliz,btn_mood_bien,btn_mood_regular,btn_mood_mal,btn_mood_triste)
         val listMoodsTypes = arrayListOf<MoodType>(*MoodType.values())
@@ -160,7 +145,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if(error != null) {
                 return@addSnapshotListener
             }
-            var docs = value!!.documents
+            val docs = value!!.documents
             for(doc in docs) {
                 if (doc.id == dateString) {
                     for(button in listMoods){
@@ -172,9 +157,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     /**
-     *
-     * @param user FirebaseUser
-     *
+     * Obtiene el nombre del usuario y lo añade en el mensaje de bienvenida y el header del navigation lateral.
      */
     private fun getUserName() {
         textView = findViewById(R.id.textView)
@@ -189,11 +172,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         })
     }
 
-    /**
-     *
-     * @param input
-     *
-     */
+
     private fun notification() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
@@ -215,6 +194,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val intent = Intent(this, PerfilActivity::class.java)
                 startActivity(intent)
             }
+            R.id.nav_item_notifications -> startActivity(Intent(this,NotificationsActivity::class.java))
             R.id.nav_item_respirar -> startActivity(Intent(this,RespirarActivity::class.java))
             R.id.nav_item_moodregister -> startActivity(Intent(this,MoodActivity::class.java))
             R.id.nav_item_consultas -> startActivity(Intent(this,ContactoActivity::class.java))
@@ -227,6 +207,9 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+    /**
+     * Cierra sesión del usuario.
+     */
     private fun logOut() {
         prefs.editor?.clear()
         prefs.editor?.commit()
@@ -259,7 +242,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     /**
      *
      * @param item MenuItem
-     *
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(toggle.onOptionsItemSelected(item)){
@@ -277,11 +259,17 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return super.onKeyDown(keyCode, event)
     }
 
+    /**
+     * Cambia el estado del usuario a "offline".
+     */
     override fun onPause() {
         super.onPause()
         com.example.heymama.Utils.updateStatus("offline")
     }
 
+    /**
+     * Cambia el estado del usuario a "online".
+     */
     override fun onResume() {
         super.onResume()
         com.example.heymama.Utils.updateStatus("online")

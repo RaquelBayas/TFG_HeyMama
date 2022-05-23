@@ -35,21 +35,20 @@
         >
         <TextView
             android:id="@+id/txt_foro_time"
-            android:layout_width="0dp"
-            android:layout_weight="0.5"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/open_sans"
             android:textColor="@color/fonts"
+            android:padding="5dp"
             app:layout_constraintTop_toBottomOf="@+id/textView8">
         </TextView>
         <TextView
             android:id="@+id/txt_foro_name"
-            android:layout_width="0dp"
-            android:layout_weight="0.5"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:fontFamily="@font/open_sans"
             android:textColor="@color/fonts"
+            android:padding="5dp"
             app:layout_constraintTop_toBottomOf="@+id/textView8">
         </TextView>
     </LinearLayout>

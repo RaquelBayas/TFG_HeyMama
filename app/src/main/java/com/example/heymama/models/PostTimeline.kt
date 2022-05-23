@@ -9,7 +9,6 @@ import java.util.*
 data class PostTimeline(
     val postId: String? = "",
     val userId: String? = "",
-    /*val user: User? = null,*/
     @ServerTimestamp
     var timestamp: Date? = null,
     val comment: String? = "",
@@ -24,7 +23,6 @@ data class PostTimeline(
     constructor(parcel: Parcel) : this(
         parcel.readString(),
         parcel.readString(),
-        /*parcel.readValue(User::class.java.classLoader) as User,*/
         parcel.readValue(Date::class.java.classLoader) as Date,
         parcel.readString(),
         parcel.readInt(),

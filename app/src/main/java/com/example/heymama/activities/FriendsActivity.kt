@@ -2,23 +2,17 @@ package com.example.heymama.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.heymama.R
-import com.example.heymama.adapters.FriendRequestAdapter
-import com.example.heymama.adapters.FriendsAdapter
 import com.example.heymama.adapters.UserAdapter
 import com.example.heymama.databinding.ActivityFriendsBinding
 import com.example.heymama.models.FriendRequest
 import com.example.heymama.models.User
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -27,7 +21,6 @@ import kotlin.collections.ArrayList
 
 class FriendsActivity : AppCompatActivity() {
 
-    // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
     private lateinit var firebaseStore: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
@@ -45,37 +38,33 @@ class FriendsActivity : AppCompatActivity() {
     /**
      * @constructor
      * @param savedInstanceState Bundle
-     *
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityFriendsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Usuario
         auth = FirebaseAuth.getInstance()
         user = auth.currentUser!!
 
         val intent = intent
-        if (intent.getStringExtra("UID") != null) {
+        if(intent.getStringExtra("UID") != null) {
             uid = intent.getStringExtra("UID").toString()
         } else {
             uid = auth.currentUser?.uid!!
         }
 
-        // Firebase
-        database = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
+        database = FirebaseDatabase.getInstance()
         dataBaseReference = database.getReference("Usuarios")
         firestore = FirebaseFirestore.getInstance()
-        firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
-        storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").reference
+        firebaseStore = FirebaseStorage.getInstance()
+        storageReference = FirebaseStorage.getInstance().reference
 
-        // Recycler View de los amigos
         recyclerViewFriends = binding.recyclerviewAmigos
         recyclerViewFriends.layoutManager = LinearLayoutManager(this)
         recyclerViewFriends.setHasFixedSize(true)
         friendsArraylist = arrayListOf()
-        adapterFriends =  UserAdapter(applicationContext,friendsArraylist,uid)//FriendsAdapter(applicationContext, friendsArraylist, uid)
+        adapterFriends =  UserAdapter(applicationContext,friendsArraylist,uid)
         recyclerViewFriends.adapter = adapterFriends
 
         getFriends()
@@ -83,6 +72,9 @@ class FriendsActivity : AppCompatActivity() {
         searchView()
     }
 
+    /**
+     * Este método permite implementar la búsqueda de amigos.
+     */
     private fun searchView() {
         binding.searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
@@ -97,10 +89,13 @@ class FriendsActivity : AppCompatActivity() {
     }
 
     // friend-send-uid: cuando aceptamos una solicitud
+    /**
+     * Este método permite filtrar la búsqueda de amigos.
+     */
     private fun filter(friendSearch: String) {
-        var friendSearchArrayList = ArrayList<User>()
+        val friendSearchArrayList = ArrayList<User>()
         for(friend in friendsArraylist) {
-            if(friend.name!!.toLowerCase()!!.contains(friendSearch.toLowerCase())!!) {
+            if(friend.name!!.lowercase().contains(friendSearch.lowercase())) {
                 friendSearchArrayList.add(friend)
             }
         }
@@ -108,17 +103,13 @@ class FriendsActivity : AppCompatActivity() {
     }
 
     /**
-     *
      *  Método para obtener los amigos agregados.
-     *
-     * @param input
-     *
      */
     private fun getFriends() {
         friendsArraylist.clear()
         var friend = FriendRequest()
         var uidFriend = ""
-        var friendsRef = firestore.collection("Friendship").document(uid).collection("Friends")
+        val friendsRef = firestore.collection("Friendship").document(uid).collection("Friends")
         friendsRef.addSnapshotListener { value, error ->
             if (error != null) {
                 return@addSnapshotListener
@@ -135,25 +126,17 @@ class FriendsActivity : AppCompatActivity() {
                         } else if (friend.friend_receive_uid == uid) {
                             uidFriend = friend.friend_send_uid
                         }
-                        getDataUser(uidFriend)
+                        friendsArraylist.clear()
+                        firestore.collection("Usuarios").document(uidFriend).addSnapshotListener { value, error ->
+                            val user = value!!.toObject(User::class.java)
+                            if(!friendsArraylist.contains(user)) {
+                                friendsArraylist.add(user!!)
+                            }
+                            adapterFriends.notifyDataSetChanged()
+                        }
                     }
-                    adapterFriends.notifyDataSetChanged()
                 }
             }
         }
     }
-
-    private fun getDataUser(uid: String) {
-        database.reference.child("Usuarios").child(uid).addValueEventListener(object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                var user : User? = snapshot.getValue(User::class.java)
-                friendsArraylist.add(user!!)
-                adapterFriends.notifyDataSetChanged()
-            }
-            override fun onCancelled(error: DatabaseError) {
-                //TO DO("Not yet implemented")
-            }
-        })
-    }
-
 }

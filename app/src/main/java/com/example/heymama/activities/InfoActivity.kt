@@ -1,35 +1,24 @@
 package com.example.heymama.activities
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Parcelable
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
-import com.example.heymama.adapters.ForoAdapter
 import com.example.heymama.adapters.InfoArticleAdapter
 import com.example.heymama.databinding.ActivityInfoBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.Article
-import com.example.heymama.models.Post
-import com.example.heymama.models.User
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
-import java.io.Serializable
 import java.util.ArrayList
 
 class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
@@ -76,8 +65,7 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
     }
 
     private fun initFirebase() {
-        //Instancias para la base de datos y la autenticación
-        dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
+        dataBase = FirebaseDatabase.getInstance()
         auth = FirebaseAuth.getInstance()
     }
 
@@ -86,18 +74,18 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
         recyclerView.layoutManager = GridLayoutManager(this,2)
         recyclerView.setHasFixedSize(true)
 
-        articlesArraylist = arrayListOf<Article>()
+        articlesArraylist = arrayListOf()
         idArticlesArrayList = arrayListOf()
         adapter = InfoArticleAdapter(this,articlesArraylist,this)
         recyclerView.adapter = adapter
     }
+
     /**
-     * Este método permite obtener los artículos publicados
-     *
-     * @param input
-     *
+     * Este método permite obtener los artículos publicados.
      */
     private fun getArticlesData() {
+        articlesArraylist.clear()
+        idArticlesArrayList.clear()
         if(binding.swipeRefreshTL.isRefreshing) {
             binding.swipeRefreshTL.isRefreshing = false
         }
@@ -106,10 +94,9 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         firestore.collection("Artículos").addSnapshotListener { snapshots, e ->
             if (e != null) {
-                Log.w("TAG", "listen:error", e)
+                Log.w("TAG", "InfoActivity", e)
                 return@addSnapshotListener
             }
-            //adapter = ForoAdapter(this,temasArraylist,this)
             for (dc in snapshots!!.documentChanges) {
                 when (dc.type) {
                     DocumentChange.Type.ADDED -> {
@@ -119,6 +106,9 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     //DocumentChange.Type.MODIFIED -> articlesArraylist.add(dc.document.toObject(Article::class.java))
                     DocumentChange.Type.REMOVED -> articlesArraylist.remove(dc.document.toObject(Article::class.java))
                 }
+            }
+            if(articlesArraylist.size>1) {
+                articlesArraylist.sort()
             }
             adapter.notifyDataSetChanged()
         }
@@ -136,28 +126,15 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
             }
         })
     }
+
     private fun filter(articleSearch: String) {
-        var articleSearchArrayList = ArrayList<Article>()
+        val articleSearchArrayList = ArrayList<Article>()
         for(article in articlesArraylist) {
-            if(article.title!!.lowercase().contains(articleSearch.lowercase())) {
+            if(article.title!!.lowercase().contains(articleSearch.lowercase()) ) {
                 articleSearchArrayList.add(article)
             }
         }
         adapter.filterList(articleSearchArrayList)
-    }
-    /**
-     * Este método permite eliminar un artículo
-     *
-     * @param articlessArrayList ArrayList<Article>
-     * @param index Int
-     *
-     */
-    private fun deleteArticle(articlessArrayList: ArrayList<Article>, index: Int) {
-        if(!articlessArrayList.isEmpty()) {
-            articlessArrayList.removeAt(index)
-            this.adapter = InfoArticleAdapter(this,articlesArraylist,this)
-            recyclerView.adapter = adapter
-        }
     }
 
     /**
@@ -168,12 +145,11 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
     override fun onItemClicked(position: Int) {
         Toast.makeText(this,"Has seleccionado el artículo # ${position+1}",Toast.LENGTH_SHORT).show()
         val intent = Intent(this, ArticleActivity::class.java)
-        //intent.putExtra("ForoName",foroName)
         intent.putExtra("Rol",rol)
-        intent.putExtra("ID_Article", idArticlesArrayList.get(position))
-        intent.putExtra("Title_Article",articlesArraylist.get(position).title)
-        intent.putExtra("Description_Article",articlesArraylist.get(position).article)
-        intent.putExtra("Professional_Article",articlesArraylist.get(position).professionalID)
+        intent.putExtra("ID_Article", idArticlesArrayList[position])
+        intent.putExtra("Title_Article", articlesArraylist[position].title)
+        intent.putExtra("Description_Article", articlesArraylist[position].article)
+        intent.putExtra("Professional_Article", articlesArraylist[position].professionalID)
         intent.putParcelableArrayListExtra("ArticlesArraylist",articlesArraylist)
         startActivity(intent)
     }

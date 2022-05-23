@@ -3,7 +3,6 @@ package com.example.heymama.activities
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
@@ -46,14 +45,13 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
         binding = ActivityTimelineBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        database = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
+        database = FirebaseDatabase.getInstance()
         auth = FirebaseAuth.getInstance()
         user = auth.currentUser!!
-        firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
+        firebaseStore = FirebaseStorage.getInstance()
         firestore = FirebaseFirestore.getInstance()
 
         recyclerViewTimeline = binding.recyclerViewPosts
-
         recyclerViewTimeline.layoutManager =  LinearLayoutManager(this)
         //layoutManager.stackFromEnd = true
         //layoutManager.reverseLayout = true
@@ -75,6 +73,10 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
         getUserData()
     }
 
+    /**
+     * Este método obtiene la información del usuario loggeado, concretamente su 'rol'.
+     * Dependiendo del rol que tenga, obtendrá los comentarios de la Timeline con el método getCommentsTLAdmin() o getCommentsTL().
+     */
     private fun getUserData() {
         var ref = database.reference.child("Usuarios").child(auth.uid.toString()).child("rol")
         ref.addValueEventListener(object: ValueEventListener {
@@ -94,11 +96,13 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 }
             }
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
             }
         })
     }
 
+    /**
+     * Este método obtiene los posts de la timeline si el usuario loggeado es el Administrador.
+     */
     private fun getCommentsTLAdmin() {
         if(binding.swipeRefreshTL.isRefreshing){
             binding.swipeRefreshTL.isRefreshing = false
@@ -111,12 +115,8 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
             }
             for (dc in snapshots!!.documentChanges) {
                 when (dc.type) {
-                    DocumentChange.Type.ADDED -> {
-                        postsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
-                    }
-                    // DocumentChange.Type.MODIFIED -> postsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
-                    DocumentChange.Type.REMOVED -> postsTLArraylist.remove(dc.document.toObject(
-                        PostTimeline::class.java))
+                    DocumentChange.Type.ADDED -> postsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
+                    DocumentChange.Type.REMOVED -> postsTLArraylist.remove(dc.document.toObject(PostTimeline::class.java))
                 }
             }
             if(postsTLArraylist.size > 1) {
@@ -129,29 +129,24 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     Toast.makeText(this@TimelineActivity,"Item number: $position",Toast.LENGTH_SHORT).show()
                 }
             })
-
         }
     }
+
     /**
      * Este método añade el comentario en la base de datos.
      *
-     * @param edt_comment String
-     * @param uid String
-     *
+     * @param edt_comment String : Comentario escrito por el usuario.
+     * @param uid String : UID del usuario.
      */
     private fun add_comment_tl(edt_comment:String, uid:String) {
         var doctlfb = firestore.collection("Timeline").document()
         var doc_id = doctlfb.id
-        val comment = PostTimeline(doc_id,uid,/*userdata,*/Date(),edt_comment,0,0)
+        val comment = PostTimeline(doc_id,uid,Date(),edt_comment,0,0)
         doctlfb.set(comment)
     }
 
-
     /**
-     * Este método obtiene los comentarios de Firebase
-     *
-     * @param input
-     *
+     * Este método obtiene los comentarios almacenados en la base de datos.
      */
     private fun getCommentsTL() {
         postsTLArraylist.clear()
@@ -160,14 +155,40 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
         if(binding.swipeRefreshTL.isRefreshing){
             binding.swipeRefreshTL.isRefreshing = false
         }
-        //friendsIds.add(auth.uid.toString()) //El usuario verá sus propios posts en la tl
 
         firestore.collection("Friendship").document(auth.uid.toString()).collection("Friends").get().addOnSuccessListener { it ->
             val documents = it.documents
+            friendsIds.add(auth.uid.toString())
             if(documents.isEmpty()){
-                friendsIds.add(auth.uid.toString())
+                firestore.collection("Usuarios").whereEqualTo("protected",false).addSnapshotListener { value, error ->
+                    value!!.documents.iterator().forEach {
+                        if(it.id != auth.uid.toString()) {
+                        friendsIds.add(it.id)}
+                    }
+                    friendsIds.iterator().forEach {
+                        firestore.collection("Timeline").whereEqualTo("userId",it).addSnapshotListener { snapshots, e ->
+                            if (e!= null) {
+                                return@addSnapshotListener
+                            }
+                            for (dc in snapshots!!.documentChanges) {
+                                when (dc.type) {
+                                    DocumentChange.Type.ADDED -> postsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
+                                    DocumentChange.Type.REMOVED -> postsTLArraylist.remove(dc.document.toObject(PostTimeline::class.java))
+                                }
+                            }
+                            if(postsTLArraylist.size > 1) {
+                                postsTLArraylist.sort()
+                            }
+                            adapterPostsTL.notifyDataSetChanged()
+                            adapterPostsTL.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
+                                override fun onItemClicked(position: Int) {
+                                    Toast.makeText(this@TimelineActivity,"Item number: $position",Toast.LENGTH_SHORT).show()
+                                }
+                            })
+                        }
+                    }
+                }
             } else {
-                friendsIds.add(auth.uid.toString())
                 documents.iterator().forEach {
                     if(it["friend_receive_uid"] == auth.uid.toString()) {
                         friendsIds.add(it["friend_send_uid"].toString())
@@ -175,48 +196,41 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
                         friendsIds.add(it["friend_receive_uid"].toString())
                     }
                 }
-            }
-            friendsIds.iterator().forEach {
-                firestore.collection("Timeline").whereEqualTo("userId",it).addSnapshotListener { snapshots, e ->
-                    if (e!= null) {
-                        return@addSnapshotListener
-                    }
-                    for (dc in snapshots!!.documentChanges) {
-                        when (dc.type) {
-                            DocumentChange.Type.ADDED -> {
-                                postsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
+                friendsIds.iterator().forEach {
+                    firestore.collection("Timeline").whereEqualTo("userId",it).addSnapshotListener { snapshots, e ->
+                        if (e!= null) {
+                            return@addSnapshotListener
+                        }
+                        for (dc in snapshots!!.documentChanges) {
+                            when (dc.type) {
+                                DocumentChange.Type.ADDED -> {
+                                    postsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
+                                }
+                                DocumentChange.Type.REMOVED -> postsTLArraylist.remove(dc.document.toObject(
+                                    PostTimeline::class.java))
                             }
-                            // DocumentChange.Type.MODIFIED -> postsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
-                            DocumentChange.Type.REMOVED -> postsTLArraylist.remove(dc.document.toObject(
-                                PostTimeline::class.java))
                         }
-                    }
-                    if(postsTLArraylist.size > 1) {
-                        postsTLArraylist.sort()
-                    }
-
-                    adapterPostsTL.notifyDataSetChanged()
-                    adapterPostsTL.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
-                        override fun onItemClicked(position: Int) {
-                            Toast.makeText(this@TimelineActivity,"Item number: $position",Toast.LENGTH_SHORT).show()
+                        if(postsTLArraylist.size > 1) {
+                            postsTLArraylist.sort()
                         }
-                    })
+                        adapterPostsTL.notifyDataSetChanged()
+                        adapterPostsTL.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
+                            override fun onItemClicked(position: Int) {
+                                Toast.makeText(this@TimelineActivity,"Item number: $position",Toast.LENGTH_SHORT).show()
+                            }
+                        })
+                    }
                 }
-
             }
             binding.recyclerViewPosts.visibility = View.VISIBLE
-            Log.i("friends-collection",it.documents.toString())
         }.addOnFailureListener {
-            Log.i("friends-collection","no existe")
         }
-
     }
 
     /**
-     * Método para seleccionar los tweets, está ligado al Interface, y a PostTimeAdapter
+     * Método para seleccionar los posts, está ligado al Interface, y a PostTimeAdapter.
      *
-     * @param position Int
-     *
+     * @param position Int : Posición del post en el arraylist.
      */
     override fun onItemClicked(position: Int) {
         Toast.makeText(this,"Has seleccionado el tweet # ${position+1}",Toast.LENGTH_SHORT).show()

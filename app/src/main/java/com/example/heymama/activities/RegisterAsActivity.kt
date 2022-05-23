@@ -17,17 +17,17 @@ class RegisterAsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnUsuario.setOnClickListener {
-            // Do something in response to button click
-            val intent = Intent(this, RegisterActivity::class.java)
-            intent.putExtra("Rol","Usuario")
-            startActivity(intent)
+            initRegister("Usuario")
         }
 
         binding.btnProfesional.setOnClickListener {
-            // Do something in response to button click
-            val intent = Intent(this, RegisterActivity::class.java)
-            intent.putExtra("Rol","Profesional")
-            startActivity(intent)
+          initRegister("Profesional")
         }
+    }
+
+    private fun initRegister(rol: String){
+        val intent = Intent(this, RegisterActivity::class.java)
+        intent.putExtra("Rol",rol)
+        startActivity(intent)
     }
 }

@@ -1,11 +1,8 @@
 package com.example.heymama.activities
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -14,15 +11,11 @@ import com.example.heymama.R
 import com.example.heymama.adapters.CommentsPostTLAdapter
 import com.example.heymama.databinding.ActivityCommentPostTlactivityBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
+import com.example.heymama.models.Notification
 import com.example.heymama.models.PostTimeline
-import com.example.heymama.models.User
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.DocumentChange
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -32,11 +25,11 @@ import java.util.*
 class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     private lateinit var auth: FirebaseAuth
-    private lateinit var dataBase: FirebaseDatabase
-    private lateinit var firebaseStore: FirebaseStorage
+    private lateinit var uid: String
+    private lateinit var database: FirebaseDatabase
+    private lateinit var firebaseStorage: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageReference: StorageReference
-    private lateinit var dataBaseReference: DatabaseReference
 
     private lateinit var recyclerViewCommentsTimeline: RecyclerView
     private lateinit var commentsPostsTLArraylist: ArrayList<PostTimeline>
@@ -44,6 +37,8 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     private lateinit var idpost: String
     private lateinit var iduser: String
+    private lateinit var nameuser: String
+    private lateinit var textpost: String
     private lateinit var photo_comment_0: CircleImageView
     private lateinit var photo_comment: CircleImageView
 
@@ -61,51 +56,47 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
         val intent = intent
         idpost = intent.getStringExtra("idpost").toString()
         iduser = intent.getStringExtra("iduser").toString()
-
-        //Instancias para la base de datos y la autenticación
-        dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
+        nameuser = intent.getStringExtra("name").toString()
+        textpost = intent.getStringExtra("comment").toString()
+        Log.i("COMMENT-TL",iduser)
+        database = FirebaseDatabase.getInstance()
         auth = FirebaseAuth.getInstance()
-        dataBaseReference = dataBase.getReference("Usuarios")
-
-        // Usuario
-        var user: FirebaseUser? = auth.currentUser
-
-        firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
-        storageReference = firebaseStore.reference
-        storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").getReference("Usuarios/"+auth.currentUser?.uid+"/images/perfil")
-
+        uid = auth.currentUser!!.uid
+        firebaseStorage = FirebaseStorage.getInstance()
+        storageReference = FirebaseStorage.getInstance().reference //.getReference("Usuarios/$uid/images/perfil")
         firestore = FirebaseFirestore.getInstance()
 
-        // RECYCLERVIEW TIMELINE
-        recyclerViewCommentsTimeline = findViewById(R.id.recyclerCommentsPostTL)
-        recyclerViewCommentsTimeline.layoutManager = LinearLayoutManager(this)
-        recyclerViewCommentsTimeline.setHasFixedSize(true)
-        commentsPostsTLArraylist = arrayListOf()
-        adapterCommentsPostsTL = CommentsPostTLAdapter(this, idpost, commentsPostsTLArraylist, this)
-        recyclerViewCommentsTimeline.adapter = adapterCommentsPostsTL
-
-        storageReference = firebaseStore.getReference("/Usuarios/$iduser/images/perfil")
-
-        photo_comment_0 = binding.imgCommentPosttl0
-        getPictures(photo_comment_0,storageReference)
-
-        storageReference = firebaseStore.getReference("/Usuarios/"+auth.uid+"/images/perfil")
-
-        photo_comment = binding.imgCommentPosttl1
-        getPictures(photo_comment,storageReference)
-
-        getPostTLInfo(intent)
+        initRecycler()
+        initPictures()
+        getPostTLInfo()
 
         binding.btnSendPosttl.setOnClickListener{
-            getUserData(dataBaseReference,auth.uid.toString())
-            //add_comment_to_posttl(auth.uid.toString(),idpost)
+            add_comment_to_posttl(uid,binding.edtCommentPosttl.text.toString())
         }
 
         getCommentsPostTL()
         binding.swipeRefreshTLComments.setOnRefreshListener {
             getCommentsPostTL()
         }
+    }
 
+    private fun initPictures() {
+        storageReference = firebaseStorage.getReference("/Usuarios/$iduser/images/perfil")
+        photo_comment_0 = binding.imgCommentPosttl0
+        getPictures(photo_comment_0,storageReference)
+
+        storageReference = firebaseStorage.getReference("/Usuarios/"+auth.uid+"/images/perfil")
+        photo_comment = binding.imgCommentPosttl1
+        getPictures(photo_comment,storageReference)
+    }
+
+    private fun initRecycler() {
+        recyclerViewCommentsTimeline = binding.recyclerCommentsPostTL
+        recyclerViewCommentsTimeline.layoutManager = LinearLayoutManager(this)
+        recyclerViewCommentsTimeline.setHasFixedSize(true)
+        commentsPostsTLArraylist = arrayListOf()
+        adapterCommentsPostsTL = CommentsPostTLAdapter(this, idpost, commentsPostsTLArraylist, this)
+        recyclerViewCommentsTimeline.adapter = adapterCommentsPostsTL
     }
 
     /**
@@ -122,51 +113,24 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
     }
 
     /**
-     * @param databaseReference DatabaseReference
-     * @param uid String
-     */
-    private fun getUserData(databaseReference: DatabaseReference, uid: String) {
-        val edt_comment : TextView = findViewById(R.id.edt_comment_posttl)
-
-        databaseReference.child(uid).get().addOnSuccessListener {
-            if (it.exists()) {
-                val name = it.child("name").value.toString()
-                val username = it.child("user").value.toString()
-                val bio = it.child("bio").value.toString()
-                val rol = "Usuario"
-                val protected = it.child("protected").value
-                val status = it.child("status").value.toString()
-                val email = it.child("Email").value.toString()
-                val profilePhoto = "Usuarios/"+uid+"/images/perfil"
-
-                val userdata : User? = User(
-                    uid, name, username, email, rol, protected as Boolean?, bio,status,
-                    profilePhoto
-                )
-                add_comment_to_posttl(uid,edt_comment.text.toString(),userdata!!)
-            }
-        }
-    }
-
-    /**
      * @param uid String
      * @param edt_comment String
-     * @param user User
      */
-    private fun add_comment_to_posttl(uid:String, edt_comment:String, user:User) {
-        var doctlfb = firestore.collection("Timeline").document(idpost).collection("Replies").document()
-        var doc_id = doctlfb.id
+    private fun add_comment_to_posttl(uid:String, edt_comment:String) {
+        val doctlfb = firestore.collection("Timeline").document(idpost).collection("Replies").document()
+        val doc_id = doctlfb.id
 
         val comment = PostTimeline(doc_id, uid, Date(), edt_comment,0,0)
         doctlfb.set(comment).addOnSuccessListener {
-            Log.i("CommentPostTLActivity","Comentario añadido.")
+            val notificationRef = database.reference.child("NotificationsTL").child(iduser)
+            val notification = Notification(uid,"",idpost,textpost,"ha comentado en tu post",Date())
+            notificationRef.push().setValue(notification)
         }.addOnFailureListener {
             Log.i("CommentPostTLActivity","No se ha podido añadir el comentario.")
         }
     }
 
     /**
-     * @param input
      */
     fun getCommentsPostTL() {
         if(binding.swipeRefreshTLComments.isRefreshing){
@@ -179,30 +143,23 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
             }
             for (dc in snapshots!!.documentChanges) {
                 when (dc.type) {
-                    DocumentChange.Type.ADDED -> {
-                        commentsPostsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
-                    }
-                    DocumentChange.Type.MODIFIED -> commentsPostsTLArraylist.add(dc.document.toObject(PostTimeline::class.java)
-                    )
-                    DocumentChange.Type.REMOVED -> commentsPostsTLArraylist.remove(dc.document.toObject(PostTimeline::class.java)
-                    )
+                    DocumentChange.Type.ADDED -> commentsPostsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
+                    //DocumentChange.Type.MODIFIED -> commentsPostsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
+                    DocumentChange.Type.REMOVED -> commentsPostsTLArraylist.remove(dc.document.toObject(PostTimeline::class.java))
                 }
             }
             adapterCommentsPostsTL.notifyDataSetChanged()
             if(commentsPostsTLArraylist.size>1) {
                 commentsPostsTLArraylist.sort()
             }
-
         }
     }
 
     /**
      *
-     * @param intent Intent
-     *
      */
-    private fun getPostTLInfo(intent: Intent) {
-        binding.txtNameCommentPosttl.text = intent.getStringExtra("name")
-        binding.txtCommentPosttl.text = intent.getStringExtra("comment")
+    private fun getPostTLInfo() {
+        binding.txtNameCommentPosttl.text = nameuser
+        binding.txtCommentPosttl.text = textpost
     }
 }

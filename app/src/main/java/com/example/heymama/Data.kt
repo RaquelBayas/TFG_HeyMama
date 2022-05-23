@@ -9,7 +9,6 @@ class Data {
 
     constructor(){}
 
-
     constructor(user: String, icon: Int, body: String, title: String, sented: String) {
         this.user = user
         this.icon = icon
@@ -57,7 +56,5 @@ class Data {
     {
         this.sented=sented
     }
-
-
 
 }

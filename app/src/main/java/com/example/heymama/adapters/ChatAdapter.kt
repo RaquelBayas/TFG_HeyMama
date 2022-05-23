@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
@@ -18,7 +17,6 @@ import com.example.heymama.activities.ViewFullImageActivity
 import com.example.heymama.databinding.ItemChatLeftBinding
 import com.example.heymama.databinding.ItemChatRightBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
-import com.example.heymama.models.Comment
 import com.example.heymama.models.Message
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -40,7 +38,6 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        // inflate layout
         return if (viewType == MESSAGE_RIGHT_SENDER) {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_chat_right,parent,false)
             SendHolder(view,listener)
@@ -70,7 +67,6 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
                 viewHolder.itemView.findViewById<ImageView>(R.id.img_chat).setOnClickListener {
                     val intent = Intent(context, ViewFullImageActivity::class.java)
                     intent.putExtra("url",message.imageUrl)
-                    Log.i("PATH",storageReference!!.path)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                     context.startActivity(intent)
                 }
@@ -111,13 +107,20 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
         }
     }
 
-    fun getTime(message: Message): String {
+    /**
+     * Este método permite obtener y devolver la fecha del mensaje en el formato deseado.
+     * @param message Message: Mensaje
+     */
+    private fun getTime(message: Message): String {
         var timestamp = message.timestamp
         val dateFormat = SimpleDateFormat("HH:mm")
         var time_message = dateFormat.format(timestamp)
         return time_message
     }
 
+    /**
+     *
+     */
     override fun getItemViewType(position: Int): Int {
         firebaseUser = FirebaseAuth.getInstance().currentUser
         return if (chatArrayList[position].senderUID == firebaseUser!!.uid) {
@@ -127,6 +130,9 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
         }
     }
 
+    /**
+     * Devuelve la cantidad de elementos del arraylist.
+     */
     override fun getItemCount(): Int {
         return chatArrayList.size
     }
@@ -140,7 +146,6 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
                 view.dismiss()
             }
             .setPositiveButton("Eliminar") { view, _ ->
-
                 Toast.makeText(context,"Artículo eliminado", Toast.LENGTH_SHORT).show()
                 view.dismiss()
 

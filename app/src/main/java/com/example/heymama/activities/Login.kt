@@ -23,8 +23,6 @@ class Login : AppCompatActivity() {
     private lateinit var txt_email: EditText
     private lateinit var txt_password: EditText
     private lateinit var rol: String
-
-    // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
@@ -43,9 +41,9 @@ class Login : AppCompatActivity() {
             var prefs_email = prefs.preferences?.getString("email","")
             var prefs_password = prefs.preferences?.getString("password","")
             var rol = prefs.preferences?.getString("rol","")
-            Log.i("PREFS",prefs_email + " " + rol)
-            finish()
+            Log.i("PREFS-login",prefs_email + " " + rol)
             goHomeActivity(rol.toString())
+            finish()
         } else {
 
             binding = ActivityLoginBinding.inflate(layoutInflater)
@@ -58,12 +56,8 @@ class Login : AppCompatActivity() {
             txt_email = binding.txtEmail2
             txt_password = binding.txtPassword2
 
-            //Instancias para la base de datos y la autenticación
             dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
             auth = FirebaseAuth.getInstance()
-            var currentUser = auth.currentUser
-
-            //Dentro de la base de datos habrá un nodo "Usuarios" donde se guardan los usuarios de la aplicación
             dataBaseReference = dataBase.reference.child("Usuarios")
 
             binding.btnAcceder.setOnClickListener {
@@ -85,7 +79,6 @@ class Login : AppCompatActivity() {
                         }
                     }
                 })
-
                 logIn()
             }
         }
@@ -93,8 +86,6 @@ class Login : AppCompatActivity() {
 
     /**
      * Este método permite iniciar sesión en la aplicación
-     *
-     * @param mutableList MutableList<String>
      *
      */
     private fun logIn() {
@@ -115,6 +106,8 @@ class Login : AppCompatActivity() {
                             checkRegister(emailFireBase,mailVerified)
                             Toast.makeText(this, "Debes registrarte primero.", Toast.LENGTH_LONG).show()
                         }
+                    } else {
+                        Toast.makeText(this, "Comprueba los datos introducidos.", Toast.LENGTH_SHORT).show()
                     }
                 }
         } else {
@@ -162,15 +155,17 @@ class Login : AppCompatActivity() {
                 }
             }
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
             }
         })
-
     }
 
+    /**
+     *
+     */
     private fun goHomeActivity(rol: String){
         when (rol) {
             "Profesional" -> {
+                finish()
                 val intent = Intent(applicationContext, HomeActivityProf::class.java)
                 intent.putExtra("Rol","Profesional")
                 startActivity(intent)
@@ -183,27 +178,24 @@ class Login : AppCompatActivity() {
             else -> {
                 val intent = Intent(applicationContext, HomeActivity::class.java)
                 intent.putExtra("Rol","Usuario")
-                finish()
                 startActivity(intent)
             }
         }
     }
 
+    /**
+     * Cambia el estado del usuario a "offline".
+     */
     override fun onPause() {
         super.onPause()
         Utils.updateStatus("offline")
     }
 
+    /**
+     * Cambia el estado del usuario a "online".
+     */
     override fun onResume() {
         super.onResume()
         Utils.updateStatus("online")
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        val intent = Intent(this, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
     }
 }

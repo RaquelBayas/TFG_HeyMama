@@ -12,6 +12,8 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.example.heymama.GlideApp
 import com.example.heymama.R
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.PostTimeline
@@ -34,8 +36,6 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
     private lateinit var firebaseStorage: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageReference: StorageReference
-    private val ONE_MEGABYTE: Long = 1024 * 1024
-    private lateinit var id_post: String
     private lateinit var idUser: String
 
     private lateinit var onClickListener: ItemRecyclerViewListener
@@ -45,8 +45,6 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentsPostTLAdapter.HolderForo {
-
-        // inflate layout tema_foro.xml
         val view = LayoutInflater.from(parent.context).inflate(R.layout.add_post_comment,parent,false)
         return HolderForo(view)
     }
@@ -56,7 +54,7 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
         var idpost_origin = idpost_origin
 
         auth = FirebaseAuth.getInstance()
-        firebaseStorage = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
+        firebaseStorage = FirebaseStorage.getInstance()
         storageReference = firebaseStorage.reference
         firestore = FirebaseFirestore.getInstance()
 
@@ -73,13 +71,12 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
                 user_post.text = docs["username"].toString()
                 idUser = docs["id"].toString()
                 comment_post.text = post_tl.comment
-                refPhoto.getBytes(8 * ONE_MEGABYTE).
-                    addOnSuccessListener { bytes ->
-                        val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                        holder.photo_post.setImageBitmap(bmp)
-                    }.addOnFailureListener {
-                        Log.e(ContentValues.TAG, "Se produjo un error al descargar la imagen.", it)
-                    }
+                GlideApp.with(context)
+                    .load(refPhoto)
+                    .error(R.drawable.wallpaper_profile)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .into(holder.photo_post)
                 var timestamp = post_tl.timestamp
                 val dateFormat = SimpleDateFormat("dd/MM/yy \n  HH:mm")
                 time_post.text = dateFormat.format(timestamp)
@@ -96,14 +93,6 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
                 popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
                     when(it.itemId) {
                         R.id.eliminar_post_tl -> {
-                            /*firestore.collection("Timeline").document(idpost_origin).collection("Replies").get().addOnCompleteListener(object:
-                                OnCompleteListener<QuerySnapshot> {
-                                override fun onComplete(p0: Task<QuerySnapshot>) {
-                                    for(doc in p0.result) {
-                                        firestore.collection("Timeline").document(idpost_origin).collection("Replies").document(doc.id).delete()
-                                    }
-                                }
-                            })*/
                             firestore.collection("Timeline").document(idpost_origin).collection("Replies").document(post_tl.postId.toString()).delete()
                         }
                     }
@@ -111,28 +100,6 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
                 })
             }
         }
-        //DESCOMENTAR
-       /* with(holder) {
-            name_post.setText(post_tl.user?.name)
-            storageReference
-                .getBytes(8 * ONE_MEGABYTE).
-                addOnSuccessListener { bytes ->
-                    val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                    holder.photo_post.setImageBitmap(bmp)
-                }.addOnFailureListener {
-                    Log.e(ContentValues.TAG, "Se produjo un error al descargar la imagen.", it)
-                }
-            photo_post.setOnClickListener {
-                commentsPostsListener.onItemClicked(position)
-            }
-            user_post.text = post_tl.user?.username
-            id_user = post_tl.user?.id.toString()
-            comment_post.text = post_tl.comment
-            id_post = post_tl.postId.toString()
-
-
-        }*/
-
     }
 
 
@@ -148,7 +115,4 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
         var comment_post: TextView = itemView.findViewById(R.id.txt_comment_posttl)
         var btn_comment_menu_post_tl : Button = itemView.findViewById(R.id.btn_comment_menu_post_tl)
     }
-
-
-
 }

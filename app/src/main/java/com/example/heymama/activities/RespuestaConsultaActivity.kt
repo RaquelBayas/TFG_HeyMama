@@ -89,12 +89,13 @@ class RespuestaConsultaActivity : AppCompatActivity() {
                     return@addSnapshotListener
                 }
                 var consulta = value!!.toObject(Consulta::class.java)
-                consultasArraylist.add(consulta!!)
+                if(consulta != null) {
+                consultasArraylist.add(consulta!!)}
+
                 respuestaConsultaAdapter = RespuestaConsultaAdapter(this, consultasArraylist)
                 respuestaConsultaAdapter.setHasStableIds(true)
                 respuestaConsultaAdapter.notifyDataSetChanged()
                 recyclerView.adapter = respuestaConsultaAdapter
-
             }
 
         firestore.collection("Consultas").document(tema_consulta).collection("Consultas").document(id_consulta).collection("Respuestas")

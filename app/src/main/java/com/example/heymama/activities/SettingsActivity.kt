@@ -46,9 +46,6 @@ class SettingsActivity : AppCompatActivity() {
 
         prefs = PreferencesManager(this)
 
-        if(prefs.isProtected()) {
-            protected = prefs!!.preferences!!.getBoolean("IS_PROTECTED",false)
-        }
         database = FirebaseDatabase.getInstance()
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
@@ -108,13 +105,20 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun changePrivacidad() {
         val switch = binding.switchPrivacidad
-        switch.setOnCheckedChangeListener { compoundButton, b ->
-            if(b) {
-                firestore.collection("Usuarios").document(uid).update("protected", b)
-                database.getReference("Usuarios").child(uid).child("protected").setValue(b)
-                prefs.switchPrivacidad(b)
+        switch.isChecked = prefs.isProtected()
+
+        switch.setOnCheckedChangeListener { compoundButton, isChecked ->
+            if(isChecked) {
+                firestore.collection("Usuarios").document(uid).update("protected", isChecked)
+                database.getReference("Usuarios").child(uid).child("protected").setValue(isChecked)
+                prefs.switchPrivacidad(isChecked)
+
+            } else {
+                prefs.switchPrivacidad(isChecked)
             }
+            prefs.preferences!!.edit().apply()
         }
+
 
     }
 
@@ -460,6 +464,5 @@ class SettingsActivity : AppCompatActivity() {
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
     }
-
 
 }

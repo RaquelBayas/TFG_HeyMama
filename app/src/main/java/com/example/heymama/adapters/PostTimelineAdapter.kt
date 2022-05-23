@@ -1,9 +1,7 @@
 package com.example.heymama.adapters
 
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
@@ -33,7 +31,6 @@ import kotlin.collections.HashMap
 
 class PostTimelineAdapter(private val context: Context, private val postsTimelineList: ArrayList<PostTimeline>, private val postTimelineListener: ItemRecyclerViewListener
 ) : RecyclerView.Adapter<PostTimelineAdapter.Holder>() {
-    // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var firebaseStore: FirebaseStorage
@@ -46,7 +43,6 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
     /**
      *
      * @param listener ItemRecyclerViewListener
-     *
      */
     fun setOnItemRecyclerViewListener(listener: ItemRecyclerViewListener) {
         this.listener = listener
@@ -56,7 +52,6 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
      *
      * @param parent ViewGroup
      * @param viewType Int
-     *
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder{
         val view = LayoutInflater.from(parent.context).inflate(R.layout.add_post,parent,false)
@@ -65,17 +60,16 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
 
     /**
      *
-     *
      */
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun onBindViewHolder(holder: PostTimelineAdapter.Holder, position: Int) {
+    override fun onBindViewHolder(holder:Holder, position: Int) {
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
-        firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
+        firebaseStore = FirebaseStorage.getInstance()
         storageReference = firebaseStore.reference
         firestore = FirebaseFirestore.getInstance()
 
-        var post_tl: PostTimeline = postsTimelineList[position] // get data at specific position
+        val post_tl: PostTimeline = postsTimelineList[position]
 
         storageReference = storageReference.child("Usuarios/"+post_tl.userId+"/images/perfil")
 
@@ -86,14 +80,13 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
             }
         }
 
-        firestore.collection("Usuarios").document(post_tl.userId!!).addSnapshotListener { value, error ->
+        firestore.collection("Usuarios").document(post_tl.userId).addSnapshotListener { value, error ->
             if(error != null) {
                 return@addSnapshotListener
             }
             val docs = value!!.data
             with(holder) {
                 name_post.text = docs!!["name"].toString()
-
                 storageReference = firebaseStore.getReference("Usuarios/"+post_tl.userId+"/images/perfil")
                 GlideApp.with(context)
                     .load(storageReference)
@@ -108,15 +101,16 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
                 user_post.text = docs["username"].toString()
                 id_user = docs["id"].toString()
                 comment_post.text = post_tl.comment
-                commentCount_post.text = post_tl.commentCount.toString() //likeCounter(holder,position).toString()
+                commentCount_post.text = post_tl.commentCount.toString()
                 likeCount_post.text = post_tl.likeCount.toString()
                 id_post = post_tl.postId.toString()
-                var timestamp = post_tl.timestamp
-
+                val timestamp = post_tl.timestamp
                 val dateFormat = SimpleDateFormat("dd/MM/yy \n  HH:mm")
                 time_post.text = dateFormat.format(timestamp)
                 commentButton.setOnClickListener {
-                    commentPostTL(name_post.text.toString(),user_post.text.toString(),comment_post.text.toString(), postsTimelineList[Integer.parseInt(adapterPosition.toString())].postId.toString(), id_user
+                    commentPostTL(name_post.text.toString(),user_post.text.toString(),
+                        comment_post.text.toString(), postsTimelineList[Integer.parseInt(adapterPosition.toString())].postId.toString(),
+                        postsTimelineList[Integer.parseInt(adapterPosition.toString())].userId.toString()
                     )
                 }
             }
@@ -127,14 +121,12 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
         }
 
         likeCounter(holder,position)
-
         commentsCounter(holder,position)
-
         changeButtonColors(holder, post_tl)
     }
 
     private fun like(post_tl: PostTimeline) {
-        firestore.collection("Timeline").addSnapshotListener { value, error ->
+        firestore.collection("Timeline").addSnapshotListener { _, error ->
             if (error != null) {
                 return@addSnapshotListener
             }
@@ -142,29 +134,33 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
                 .document(auth.uid.toString()).get().addOnCompleteListener {
                     if (!it.result.exists()) {
                         val likesMap: HashMap<String, String> = HashMap()
-                        likesMap?.put("timestap", Date().toString())
+                        likesMap["timestap"] = Date().toString()
                         firestore.collection("Timeline").document(post_tl.postId.toString())
-                            .collection("Likes").document(auth.uid.toString()).set(likesMap!!)
+                            .collection("Likes").document(auth.uid.toString()).set(likesMap)
                     } else {
                         firestore.collection("Timeline").document(post_tl.postId.toString()).collection("Likes")
                             .document(auth.uid.toString()).delete()
                     }
                 }
         }
-        var likesReference =  firestore.collection("Likes").document(auth.uid.toString()).collection("Likes").document(post_tl.postId.toString())
+        val likesReference =  firestore.collection("Likes").document(auth.uid.toString()).collection("Likes").document(post_tl.postId.toString())
         likesReference.get().addOnCompleteListener {
             if(!it.result.exists()) {
                 val likesMap: HashMap<String, String> = HashMap()
-                likesMap?.put("timestap", Date().toString())
-                likesReference.set(likesMap!!)
+                likesMap["timestap"] = Date().toString()
+                likesReference.set(likesMap)
             } else {
                 likesReference.delete()
             }
         }
     }
 
-    private fun menuBtnPostTL(holder: PostTimelineAdapter.Holder,post_tl: PostTimeline) {
-        val popupMenu: PopupMenu = PopupMenu(context,holder.btn_menu_post_tl)
+    /**
+     * Este método permite añadir un popupMenu a cada post de la timeline.
+     * Cuenta con la opción 'eliminar' para borrar el post seleccionado.
+     */
+    private fun menuBtnPostTL(holder: Holder,post_tl: PostTimeline) {
+        val popupMenu = PopupMenu(context,holder.btn_menu_post_tl)
         popupMenu.menuInflater.inflate(R.menu.post_tl_menu,popupMenu.menu)
         popupMenu.show()
 
@@ -189,7 +185,6 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
      *
      * @param holder Holder
      * @param post_tl PostTimeline
-     *
      */
     private fun changeButtonColors(holder: Holder, post_tl: PostTimeline) {
         val timeline = firestore.collection("Timeline").orderBy("date", Query.Direction.ASCENDING)
@@ -211,8 +206,9 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
             }
         }
     }
+
     /**
-     *
+     * Este método abre un nuevo activity dónde el usuario puede realizar un comentario dentro de un post.
      * @param name_post String
      * @param user_post String
      * @param comment_post String
@@ -242,14 +238,12 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
                     return@addSnapshotListener
                 }
                 if(value!!.documents.isNotEmpty()) {
-                    var count : String = value.documents!!.size.toString()
+                    var count : String = value.documents.size.toString()
                     postsTimelineList[position].commentCount = Integer.parseInt(count)
                     firestore.collection("Timeline").document(postsTimelineList[position].postId.toString()).update("commentCount",Integer.parseInt(count))
                     holder.commentCount_post.text = count
                 } else {
-                    //postsTimelineList[position].commentCount = 0
                     holder.commentCount_post.text = '0'.toString()
-
                 }
             }
     }
@@ -257,17 +251,16 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
     /**
      *
      * @param holder PostTimelineAdapter
-     * @param position Int
-     *
+     * @param position Int : Posición del post en el postsTimelineList
      */
-    private fun likeCounter(holder:PostTimelineAdapter.Holder, position:Int) {
+    private fun likeCounter(holder:Holder, position:Int) {
         firestore.collection("Timeline").document(postsTimelineList[position].postId.toString())
             .collection("Likes").addSnapshotListener { value, error ->
                 if(error != null) {
                     return@addSnapshotListener
                 }
                 if(value!!.documents.isNotEmpty()) {
-                    var count : String = value.documents!!.size.toString()
+                    val count : String = value.documents.size.toString()
                     holder.likeCount_post.text = count
                 } else {
                     holder.likeCount_post.text = '0'.toString()
@@ -276,16 +269,14 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
     }
 
     /**
-     *
-     * @param input
-     *
+     * Devuelve la cantidad de elementos del arraylist "postsTimelineList"
      */
     override fun getItemCount(): Int {
         return postsTimelineList.size
     }
 
     /**
-     *
+     * ViewHolder
      */
     class Holder(itemView: View, listener:ItemRecyclerViewListener) : RecyclerView.ViewHolder(itemView){
         var user_post: TextView = itemView.findViewById(R.id.txt_tweet_user)
@@ -305,7 +296,4 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
             }
         }
     }
-
-
-
 }

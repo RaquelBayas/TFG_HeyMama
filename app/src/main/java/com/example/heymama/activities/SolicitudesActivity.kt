@@ -21,17 +21,8 @@ import com.google.firebase.storage.StorageReference
 
 class SolicitudesActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
-    // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
-    private lateinit var firebaseStore: FirebaseStorage
-    private lateinit var firestore: FirebaseFirestore
-    private lateinit var storageReference: StorageReference
-    private lateinit var dataBase: FirebaseDatabase
-    private lateinit var dataBaseReference: DatabaseReference
-
     private lateinit var uid: String
-
-
     private lateinit var binding: ActivitySolicitudesBinding
     /**
      *
@@ -43,16 +34,8 @@ class SolicitudesActivity : AppCompatActivity(), ItemRecyclerViewListener {
         binding = ActivitySolicitudesBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Usuario
         auth = FirebaseAuth.getInstance()
         uid = auth.currentUser?.uid!!
-
-        // Firebase
-        dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
-        dataBaseReference = dataBase.getReference("Usuarios")
-        firestore = FirebaseFirestore.getInstance()
-        firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
-        storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").reference
 
         setUpTabs()
     }
@@ -71,9 +54,5 @@ class SolicitudesActivity : AppCompatActivity(), ItemRecyclerViewListener {
         binding.viewPagerAmigos.adapter = tabsAdapter
         binding.tabs.setupWithViewPager(binding.viewPagerAmigos)
     }
-    /**
-     *
-     * @param input
-     *
-     */
+
 }

@@ -1,12 +1,9 @@
 package com.example.heymama.activities
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
@@ -25,14 +22,12 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.StorageReference
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
 
 class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
 
-    // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var firestore: FirebaseFirestore
@@ -79,7 +74,7 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
         initRecycler()
         getComments(foroName,id)
         getDataUser()
-
+        getDataCurrentUser()
         binding.swipeRefreshTL.setOnRefreshListener {
             getComments(foroName,id)
         }
@@ -110,22 +105,22 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
         recyclerViewComments.layoutManager = LinearLayoutManager(this)
         recyclerViewComments.setHasFixedSize(true)
         commentsArraylist = arrayListOf()
+        adapterComments = CommentsForoAdapter(this,commentsArraylist,this)
+        recyclerViewComments.adapter = adapterComments
     }
 
     private fun btnMenuForo() {
         btn_menu_foro = findViewById(R.id.btn_menu_foro)
-        if((userID == auth.uid.toString()) || (rol == "Admin") ) {
-            btn_menu_foro.visibility = View.VISIBLE
-            btn_menu_foro.setOnClickListener {
-                menuForo()
-            }
+        btn_menu_foro.visibility = View.VISIBLE
+        btn_menu_foro.setOnClickListener {
+            menuForo()
         }
     }
+
     /**
      * Obtener el rol del usuario y el nombre
      *
      */
-
     private fun getDataUser(){
         database.reference.child("Usuarios").child(userID).addValueEventListener(object:
             ValueEventListener {
@@ -138,15 +133,30 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
                 binding.txtForoUser.setOnClickListener {
                     finish()
                     val intent = Intent(applicationContext,PerfilActivity::class.java)
-                    intent.putExtra("userID",user.id)
+                    intent.putExtra("userID",userID)
                     startActivity(intent)
                 }
-                btnMenuForo()
             }
             override fun onCancelled(error: DatabaseError) {
             }
         })
+    }
 
+    private fun getDataCurrentUser() {
+        database.reference.child("Usuarios").child(uid).addValueEventListener(object:
+            ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                var user : User? = snapshot.getValue(User::class.java)
+                rol = user!!.rol.toString()
+                if((userID == auth.uid.toString()) || (rol == "Admin") ){
+                    btnMenuForo()
+                }
+                Log.i("TEMAFORO",rol.toString())
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
     }
 
     /**
@@ -230,30 +240,20 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
      * @param id String
      */
     private fun add_comment(edt_comment:String, user:FirebaseUser, foroName:String, protected:String, id:String) {
-        var comment = Comment(edt_comment,user.uid,protected,Date())
-        addCommentFB(comment,foroName,id)
-    }
-
-    /**
-     * Añade los comentarios en la base de datos
-     *
-     * @param comment Comment
-     * @param foroName String
-     * @param idTema String
-     * @param id String
-     */
-     private fun addCommentFB(comment: Comment, foroName: String, id: String) {
-        firestore.collection("Foros").document("SubForos").collection(foroName)
-            .document(id).collection("Comentarios").add(comment)
+        val ref = firestore.collection("Foros").document("SubForos").collection(foroName)
+            .document(id).collection("Comentarios").document()
+        var comment = Comment(ref.id,edt_comment,user.uid,protected,Date())
+        ref.set(comment)
     }
 
     /**
      * Obtiene los comentarios de la base de datos
      *
-     * @param foroName String
-     *
+     * @param foroName String : Nombre del foro
+     * @param id String : ID del comentario
      */
     private fun getComments(foroName: String, id: String) {
+        commentsArraylist.clear()
         if(binding.swipeRefreshTL.isRefreshing) {
             binding.swipeRefreshTL.isRefreshing = false
         }
@@ -266,27 +266,41 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
                 }
                 for (dc in snapshots!!.documentChanges) {
                     when (dc.type) {
-                        DocumentChange.Type.ADDED ->
-                        {
-                            commentsArraylist.add(dc.document.toObject(Comment::class.java))
-                        }
-                        DocumentChange.Type.MODIFIED -> commentsArraylist.add(dc.document.toObject(Comment::class.java))
-                        DocumentChange.Type.REMOVED -> commentsArraylist.remove(dc.document.toObject(
-                            Comment::class.java))
+                        DocumentChange.Type.ADDED -> commentsArraylist.add(dc.document.toObject(Comment::class.java))
+                        //DocumentChange.Type.MODIFIED -> commentsArraylist.add(dc.document.toObject(Comment::class.java))
+                        DocumentChange.Type.REMOVED -> commentsArraylist.remove(dc.document.toObject(Comment::class.java))
                     }
                 }
-                commentsArraylist.sort()
-                adapterComments = CommentsForoAdapter(this,commentsArraylist,this)
-
+                if(commentsArraylist.size>1) {
+                commentsArraylist.sort()}
+                adapterComments.notifyDataSetChanged()
                 adapterComments.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
                     override fun onItemLongClicked(position: Int) {
-                        commentsArraylist.removeAt(position)
-                        adapterComments.notifyItemRemoved(position)
+                        if(commentsArraylist[position].userID == uid) {
+                            deleteComment(commentsArraylist[position])
+                            adapterComments.notifyItemRemoved(position)
+                        }
                     }
                 })
-                recyclerViewComments.adapter = adapterComments
             }
     }
 
+    private fun deleteComment(comment: Comment) {
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(R.string.eliminar)
+            .setMessage(R.string.alert_eliminar)
+            .setNegativeButton("Cancelar") { view, _ ->
+                Toast.makeText(this, "Cancel button pressed", Toast.LENGTH_SHORT).show()
+                view.dismiss()
+            }
+            .setPositiveButton("Eliminar") { view, _ ->
+                commentsArraylist.remove(comment)
+                firestore.collection("Foros").document("SubForos").collection(foroName).document(id).collection("Comentarios")
+                  .document(comment.id).delete()
+            }.setCancelable(false)
+            .create()
+        dialog.show()
+
+    }
 
 }

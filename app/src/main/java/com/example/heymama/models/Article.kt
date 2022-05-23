@@ -10,7 +10,7 @@ data class Article(var idArticle: String? = "",
                    var article: String? = "",
                    var professionalID: String? = "",
                    @ServerTimestamp
-                   var timestamp: Date? = null): Parcelable {
+                   var timestamp: Date? = null): Comparable<Article>, Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString(),
         parcel.readString(),
@@ -40,5 +40,9 @@ data class Article(var idArticle: String? = "",
         override fun newArray(size: Int): Array<Article?> {
             return arrayOfNulls(size)
         }
+    }
+
+    override fun compareTo(other: Article): Int {
+        return other.timestamp!!.compareTo(this.timestamp)
     }
 }

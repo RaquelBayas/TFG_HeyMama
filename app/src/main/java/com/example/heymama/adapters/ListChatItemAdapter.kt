@@ -56,14 +56,14 @@ class ListChatItemAdapter(private val context: Context, private val listChatItem
     }
 
     override fun onBindViewHolder(holder: ListChatItemAdapter.ChatItemForo, position: Int) {
-        firebaseStorage = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
-        database = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
+        firebaseStorage = FirebaseStorage.getInstance()
+        database = FirebaseDatabase.getInstance()
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
         storageReference = firebaseStorage.reference
-
+        var idUser = listChatItemsList[position].id.toString()
         with(holder){
-            var idUser = listChatItemsList[position].id.toString()
+
             database.reference.child("Usuarios").child(idUser).addValueEventListener(object:ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
                     var user = snapshot.getValue(User::class.java)
@@ -87,10 +87,10 @@ class ListChatItemAdapter(private val context: Context, private val listChatItem
                 }
             })
         }
-        menuItem(holder)
+        menuItem(holder,idUser)
     }
 
-    private fun menuItem(holder: ChatItemForo) {
+    private fun menuItem(holder: ChatItemForo, idUser: String) {
         holder.btn_menu_list_chats_item.visibility = View.VISIBLE
         holder.btn_menu_list_chats_item.setOnClickListener {
             val popupMenu: PopupMenu = PopupMenu(context,holder.btn_menu_list_chats_item)
@@ -115,15 +115,25 @@ class ListChatItemAdapter(private val context: Context, private val listChatItem
      *
      */
     private fun deleteChat(idUser: String) {
-        database.reference.child("Chats").child(auth.uid.toString()).child("Messages").child(idUser).removeValue().addOnSuccessListener {
+        var ref = database.reference.child("ChatList").child(auth.uid.toString()).child(idUser)
+        ref.removeValue().addOnSuccessListener {
+            database.reference.child("Chats").child(auth.uid.toString()).child("Messages").child(idUser)
+                .addValueEventListener(object:ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        snapshot.children.iterator().forEach { it.ref.removeValue() }
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                    }
+                })
             Toast.makeText(context,"Chat eliminado",Toast.LENGTH_SHORT).show()
+
         }.addOnFailureListener {
             Utils.showError(context,"Se ha producido un error.")
         }
     }
 
     /**
-     *
+     * Devuelve la cantidad de elementos del arraylist.
      */
     override fun getItemCount(): Int {
         return listChatItemsList.size
@@ -141,7 +151,7 @@ class ListChatItemAdapter(private val context: Context, private val listChatItem
 
         init {
             itemView.setOnClickListener {
-                Log.i("ONCLICK: ",listener.onItemClicked(adapterPosition).toString())
+                Log.i("ListChatItemAdapter",listener.onItemClicked(adapterPosition).toString())
             }
         }
 

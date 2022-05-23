@@ -4,26 +4,20 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.heymama.R
 import com.example.heymama.Token
 import com.example.heymama.Utils
 import com.example.heymama.adapters.ListChatItemAdapter
 import com.example.heymama.databinding.ActivityListChatsBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.ListChat
-import com.example.heymama.models.ListChatItem
-import com.example.heymama.models.Message
-import com.example.heymama.models.User
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -31,16 +25,10 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private lateinit var auth: FirebaseAuth
     private lateinit var firebaseStorage: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
-    private lateinit var storageReference: StorageReference
     private lateinit var dataBase: FirebaseDatabase
-
     private lateinit var recyclerViewChats: RecyclerView
     private lateinit var chatsArraylist: ArrayList<ListChat>
     private lateinit var adapterChats: ListChatItemAdapter
-
-    private lateinit var receiver_name: String
-    private lateinit var receiver_username: String
-    private lateinit var idUser: String
     private lateinit var binding: ActivityListChatsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,9 +38,8 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
-        firebaseStorage = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
-        dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
-        storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").reference
+        firebaseStorage = FirebaseStorage.getInstance()
+        dataBase = FirebaseDatabase.getInstance()
 
         recyclerViewChats = binding.recyclerViewListChats
         recyclerViewChats.layoutManager = LinearLayoutManager(this)
@@ -68,18 +55,15 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
         }
         setChats()
 
-        FirebaseMessaging.getInstance().token
-            .addOnCompleteListener { task: Task<String?> ->
-                if (!task.isSuccessful) {
-                    Log.w("TAG", "Fetching FCM registration token failed", task.exception)
-                    return@addOnCompleteListener
-                }
-
-                // Get new FCM registration token
-                val token = task.result
-                updateToken(token.toString())
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task: Task<String?> ->
+            if (!task.isSuccessful) {
+                Log.w("TAG", "Fetching FCM registration token failed", task.exception)
+                return@addOnCompleteListener
             }
-
+            // Get new FCM registration token
+            val token = task.result
+            updateToken(token.toString())
+        }
     }
 
     private fun updateToken(token: String) {
@@ -109,19 +93,22 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 }
                 adapterChats.notifyDataSetChanged()
             }
-
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
             }
-
         })
     }
-   
+
+    /**
+     * Cambia el estado del usuario a "offline".
+     */
     override fun onPause() {
         super.onPause()
         Utils.updateStatus("offline")
     }
 
+    /**
+     * Cambia el estado del usuario a "online".
+     */
     override fun onResume() {
         super.onResume()
         Utils.updateStatus("online")

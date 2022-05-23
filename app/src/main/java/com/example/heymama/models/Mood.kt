@@ -11,6 +11,11 @@ data class Mood(
     @ServerTimestamp
     var timestamp: Date? = null
 ) : Parcelable, Comparable<Mood> {
+
+    override fun compareTo(other: Mood): Int {
+        return other.timestamp?.compareTo(this.timestamp!!)!!
+    }
+
     constructor(parcel: Parcel) : this(
         parcel.readString(),
         parcel.readString(),
@@ -20,7 +25,6 @@ data class Mood(
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(id!!)
         parcel.writeString(mood)
-        //parcel.writeValue(mood)
         parcel.writeValue(timestamp)
     }
 
@@ -37,9 +41,4 @@ data class Mood(
             return arrayOfNulls(size)
         }
     }
-
-    override fun compareTo(other: Mood): Int {
-        return other.timestamp?.compareTo(this.timestamp!!)!!
-    }
-
 }

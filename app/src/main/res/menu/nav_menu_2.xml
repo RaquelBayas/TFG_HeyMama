@@ -8,6 +8,11 @@
             android:icon="@drawable/casa"/>
 
         <item
+            android:id="@+id/nav_item_notifications"
+            android:title="@string/nav_item_notifications"
+            android:icon="@drawable/ic_notifications"/>
+
+        <item
             android:title="@string/nav_item_timeline"
             android:id="@+id/nav_item_timeline"
             android:icon="@drawable/menu"/>

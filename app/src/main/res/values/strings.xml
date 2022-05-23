@@ -23,6 +23,7 @@
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
     <string name="correoElectronico">Correo Electrónico</string>
+    <string name="introduceEmail">Introduce tu correo electrónico</string>
     <string name="contraseña">Contraseña</string>
     <string name="prompt_password">Password</string>
     <string name="ContraseñaInsegura">Contraseña insegura</string>
@@ -90,6 +91,7 @@
     <string name="nav_item_respirar">Respirar</string>
     <string name="nav_item_consultas">Consultas</string>
     <string name="nav_item_ajustes">Ajustes</string>
+    <string name="nav_item_notifications">Notificaciones</string>
     <string name="nav_item_timeline">Timeline</string>
     <!-- Bottom nav bar -->
     <string name="nav_item_home">Perfil</string>

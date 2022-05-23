@@ -20,6 +20,8 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.sql.Timestamp
+import java.text.SimpleDateFormat
 
 class CommentsForoAdapter(private val context: Context, private val commentsForoArrayList: ArrayList<Comment>, private val foroItemListener: ItemRecyclerViewListener
 ) : RecyclerView.Adapter<CommentsForoAdapter.HolderForo>() {
@@ -41,15 +43,21 @@ class CommentsForoAdapter(private val context: Context, private val commentsForo
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
 
-        val tema_post: Comment = commentsForoArrayList[position] // get data at specific position
+        val tema_post: Comment = commentsForoArrayList[position]
         holder.comment_foro.text = tema_post.post
-        //holder.img_tema_foro.setImageURI(tema_post)
+
         if(tema_post.protected == "Público") {
             getDataUser(tema_post.userID,holder)
         }
         holder.comment_foro.setOnClickListener{
             foroItemListener.onItemClicked(position)
         }
+
+        var timestamp = commentsForoArrayList[position].timestamp.toString()
+        var timestamp1 = Timestamp.parse(timestamp)
+        val dateFormat = SimpleDateFormat("dd/MM/yy HH:mm")
+
+        holder.time.text = dateFormat.format(timestamp1)
     }
 
     private fun getDataUser(userID: String, holder: CommentsForoAdapter.HolderForo) {
@@ -60,7 +68,6 @@ class CommentsForoAdapter(private val context: Context, private val commentsForo
                 holder.user.text = user!!.username
             }
             override fun onCancelled(error: DatabaseError) {
-                //TO DO("Not yet implemented")
             }
         })
     }
@@ -70,12 +77,16 @@ class CommentsForoAdapter(private val context: Context, private val commentsForo
     }
 
     inner class HolderForo(itemView: View) : RecyclerView.ViewHolder(itemView){
-        var comment_foro: TextView = itemView.findViewById(R.id.textView8)
-        var user: TextView = itemView.findViewById(R.id.txt_foro_name)
+        val comment_foro: TextView = itemView.findViewById(R.id.textView8)
+        val user: TextView = itemView.findViewById(R.id.txt_foro_name)
+        val time: TextView = itemView.findViewById(R.id.txt_foro_time)
         init {
             itemView.setOnClickListener {
-                Log.i("ONCLICK: ",listener.onItemClicked(adapterPosition).toString())
+                Log.i("CommentsForoAdapter", listener.onItemClicked(adapterPosition).toString())
             }
+            itemView.setOnLongClickListener {
+                Log.i("CommentsForoAdapter", listener.onItemLongClicked(adapterPosition).toString())
+            return@setOnLongClickListener true}
         }
     }
 

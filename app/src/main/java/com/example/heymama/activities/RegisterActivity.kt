@@ -241,24 +241,6 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    private fun verifyUser(username:String,email:String) {
-        var userRef = dataBase.getReference("Usernames")
-        var verified : Boolean = false
-        userRef.get().addOnCompleteListener(this) { task ->
-            userRef.get().addOnSuccessListener { value ->
-                if (!value.child(username).exists()) {
-                    userRef.child(username).setValue(email)
-                    Toast.makeText(applicationContext, "Username registrado", Toast.LENGTH_SHORT)
-                        .show()
-                    createAccount()
-                    verified = true
-                }
-            }.addOnFailureListener {
-                Toast.makeText(this, "Username no disponible", Toast.LENGTH_SHORT).show()
-            }
-        }.addOnFailureListener { Toast.makeText(this, "Username no disponible", Toast.LENGTH_SHORT).show() }
-    }
-
     private fun verifyEmail(user: FirebaseUser?) {
         user?.sendEmailVerification()?.addOnCompleteListener(this) { task ->
             if (task.isComplete) {
@@ -270,7 +252,6 @@ class RegisterActivity : AppCompatActivity() {
             startActivity(Intent(this, MainActivity::class.java))
         }
     }
-
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed() //go previous activity

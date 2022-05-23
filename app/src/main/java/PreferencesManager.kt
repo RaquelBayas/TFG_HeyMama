@@ -22,6 +22,7 @@ class PreferencesManager(context: Context) {
 
     fun switchPrivacidad(protected: Boolean) {
         editor?.putBoolean(IS_PROTECTED,protected)
+        editor?.commit()
     }
 
     fun isLogin() : Boolean {

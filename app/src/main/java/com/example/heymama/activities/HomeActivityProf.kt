@@ -18,7 +18,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.heymama.GlideApp
 import com.example.heymama.R
 import com.example.heymama.databinding.ActivityHomeProfBinding
-import com.example.heymama.Utils
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -60,15 +59,13 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
         firebaseStorage = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
         storageReference = firebaseStorage.reference
 
-        toolbar = findViewById(R.id.toolbar_main)
+        val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar_main)
         setSupportActionBar(toolbar)
-
-
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu_bar)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu_bar);
         supportActionBar?.setHomeButtonEnabled(true)
 
-        val navigationView: NavigationView = findViewById(R.id.nav_view)
+        val navigationView = binding.navView
         navigationView.setNavigationItemSelectedListener(this)
 
         drawer = binding.drawerLayoutHomeProf
@@ -103,6 +100,7 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
             return@setOnNavigationItemSelectedListener false
         }
     }
+
     private fun initButtons() {
         binding.txtConsultas.setOnClickListener{
             startActivity(Intent(this,ConsultasActivity::class.java))
@@ -130,6 +128,7 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
                 val intent = Intent(this, PerfilActivity::class.java)
                 startActivity(intent)
             }
+            R.id.nav_item_notifications -> startActivity(Intent(this,NotificationsActivity::class.java))
             R.id.nav_item_solicitudes -> startActivity(Intent(this,SolicitudesActivity::class.java))
             R.id.nav_item_timeline -> startActivity(Intent(this,TimelineActivity::class.java))
             R.id.nav_item_ajustes -> startActivity(Intent(this,SettingsActivity::class.java))
@@ -139,10 +138,18 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
         return true
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
+    }
+
+    /**
+     * Este método permite cerrar la sesión al usuario.
+     */
     private fun logOut() {
         prefs.editor?.clear()
         prefs.editor?.commit()
-
+        finish()
         val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -155,10 +162,8 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
             override fun onDataChange(snapshot: DataSnapshot) {
                 txt_name_nav_header = viewNav.findViewById(R.id.txt_name_nav_header)
                 txt_name_nav_header.text = snapshot.value.toString()
-
             }
             override fun onCancelled(error: DatabaseError) {
-
             }
         })
     }
@@ -193,5 +198,21 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    /**
+     * Cambia el estado del usuario a "offline".
+     */
+    override fun onPause() {
+        super.onPause()
+        com.example.heymama.Utils.updateStatus("offline")
+    }
+
+    /**
+     * Cambia el estado del usuario a "online".
+     */
+    override fun onResume() {
+        super.onResume()
+        com.example.heymama.Utils.updateStatus("online")
     }
 }

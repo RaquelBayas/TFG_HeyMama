@@ -8,9 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.heymama.R
 import com.example.heymama.adapters.MoodAdapter
-import com.example.heymama.databinding.FragmentLikesBinding
 import com.example.heymama.databinding.FragmentRegistroMoodBinding
 import com.example.heymama.models.Mood
 import com.google.firebase.auth.FirebaseAuth
@@ -33,19 +31,22 @@ class RegistroMoodFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
+
+        _binding = FragmentRegistroMoodBinding.inflate(inflater, container, false)
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
-        _binding = FragmentRegistroMoodBinding.inflate(inflater, container, false)
 
+        initRecycler()
+        getMoodRegister()
+        return binding.root
+    }
+
+    private fun initRecycler() {
         moodArraylist = arrayListOf()
         adapterMood = MoodAdapter(requireContext(), moodArraylist)
         recyclerViewMood = binding.recyclerViewMood
         recyclerViewMood.layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
         recyclerViewMood.adapter = adapterMood
-
-
-        getMoodRegister()
-        return binding.root
     }
 
     private fun getMoodRegister() {

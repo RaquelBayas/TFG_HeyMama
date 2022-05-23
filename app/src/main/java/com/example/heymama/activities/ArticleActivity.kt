@@ -3,28 +3,19 @@ package com.example.heymama.activities
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.drawerlayout.widget.DrawerLayout
 import com.example.heymama.R
-import com.example.heymama.adapters.ForoAdapter
 import com.example.heymama.databinding.ActivityArticleBinding
 import com.example.heymama.models.Article
-import com.example.heymama.models.Post
-import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ArticleActivity : AppCompatActivity() {
@@ -32,13 +23,11 @@ class ArticleActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var firestore: FirebaseFirestore
-
     private lateinit var articlesArraylist: ArrayList<Article>
     private lateinit var title_article: String
     private lateinit var id_article: String
     private lateinit var description_article: String
     private lateinit var professional_article: String
-
     private lateinit var txt_title_article : TextView
     private lateinit var txt_description_article: TextView
     private lateinit var binding: ActivityArticleBinding
@@ -51,12 +40,12 @@ class ArticleActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityArticleBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        dataBase = FirebaseDatabase.getInstance()
+        auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
 
         val intent = intent
-        val bundle: Bundle? = intent.extras
         id_article = intent.getStringExtra("ID_Article")!!
-
-        firestore = FirebaseFirestore.getInstance()
 
         title_article = intent.getStringExtra("Title_Article")!!
         description_article = intent.getStringExtra("Description_Article")!!
@@ -71,24 +60,17 @@ class ArticleActivity : AppCompatActivity() {
         txt_description_article.text = description_article
 
         val rol = intent.getStringExtra("Rol")
-
-        if (rol.equals("Profesional")) {
+        if (rol == "Profesional" || rol == "Admin") {
             findViewById<CoordinatorLayout>(R.id.include_article).visibility = View.VISIBLE
             val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar_main)
             setSupportActionBar(toolbar)
         }
-
-        //Instancias para la base de datos y la autenticación
-        dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
-        auth = FirebaseAuth.getInstance()
-
     }
 
     /**
      *
      * @param firestore FirebaseFirestore
      * @param articlesArraylist ArrayList<Article>
-     *
      */
     private fun deleteArticle(firestore: FirebaseFirestore, articlesArraylist: ArrayList<Article>) {
         firestore.collection("Artículos").whereEqualTo("title",title_article).whereEqualTo("professionalID",professional_article).get().addOnSuccessListener {
@@ -103,9 +85,7 @@ class ArticleActivity : AppCompatActivity() {
     }
 
     /**
-     *
-     * @param input
-     *
+     * Este método muestra un alertDialog en el momento que el usuario desea eliminar el artículo.
      */
     private fun delete_alertDialog() {
         val dialog = AlertDialog.Builder(this)
@@ -140,7 +120,6 @@ class ArticleActivity : AppCompatActivity() {
     /**
      *
      * @param item MenuItem
-     *
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {

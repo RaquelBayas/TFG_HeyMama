@@ -2,10 +2,8 @@ package com.example.heymama.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import com.example.heymama.R
 import com.example.heymama.Utils
 import com.example.heymama.databinding.ActivityPreguntaBinding
 import com.example.heymama.models.Post
@@ -13,7 +11,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -21,7 +18,6 @@ import com.google.firebase.storage.StorageReference
 import java.util.*
 
 class PreguntaActivity : AppCompatActivity() {
-    // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
@@ -47,18 +43,13 @@ class PreguntaActivity : AppCompatActivity() {
         dataBase = FirebaseDatabase.getInstance()
         auth = FirebaseAuth.getInstance()
 
-        //Dentro de la base de datos habrá un nodo "Usuarios" donde se guardan los usuarios de la aplicación
         dataBaseReference = dataBase.getReference("Usuarios")
 
-        // Usuario
-        val user: FirebaseUser? = auth.currentUser
-
-        val userDB: DatabaseReference = dataBaseReference.child(user!!.uid)
+        val user: FirebaseUser = auth.currentUser!!
 
         firestore = FirebaseFirestore.getInstance()
         firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
         storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").reference
-
 
         binding.btnEnviar.setOnClickListener {
             enviar_pregunta_foro(user, foroName!!)
@@ -75,9 +66,9 @@ class PreguntaActivity : AppCompatActivity() {
         txt_descripcion_foro = binding.txtDescripcionForo
         txt_titulo_foro = binding.txtTituloForo
 
-        var publico = binding.btnPublico
-        var privado = binding.btnPrivado
-        var protected : String = ""
+        val publico = binding.btnPublico
+        val privado = binding.btnPrivado
+        var protected = ""
         when {
             publico.isChecked -> {
                 protected = publico.text.toString()
@@ -90,12 +81,12 @@ class PreguntaActivity : AppCompatActivity() {
             }
         }
 
-        var ref = firestore.collection("Foros").document("SubForos").collection(foroName).document()
-        var id_ref = ref.id
+        val ref = firestore.collection("Foros").document("SubForos").collection(foroName).document()
+        val id_ref = ref.id
 
         if(txt_titulo_foro.text.isNotEmpty() && txt_descripcion_foro.text.isNotEmpty() && (publico.isChecked || privado.isChecked)) {
 
-            var post = Post(id_ref,txt_titulo_foro.text.toString(),txt_descripcion_foro.text.toString(),user.uid,protected,
+            val post = Post(id_ref,txt_titulo_foro.text.toString(),txt_descripcion_foro.text.toString(),user.uid,protected,
                 Date())
             addPost(post,ref)
             Toast.makeText(this,"Correcto.",Toast.LENGTH_SHORT).show()

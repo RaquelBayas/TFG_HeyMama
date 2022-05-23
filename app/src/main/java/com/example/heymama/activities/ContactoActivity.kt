@@ -8,17 +8,18 @@ import android.widget.*
 import com.example.heymama.*
 import com.example.heymama.databinding.ActivityContactoBinding
 import com.example.heymama.models.Consulta
+import com.example.heymama.models.Notification
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
 
 class ContactoActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
-
+    private lateinit var database: FirebaseDatabase
     private lateinit var spinnerConsultas: Spinner
     private lateinit var temas: Array<String>
-
     private lateinit var binding: ActivityContactoBinding
 
     /**
@@ -32,9 +33,10 @@ class ContactoActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
-        firestore = FirebaseFirestore.getInstance() //CLOUD STORAGE
+        firestore = FirebaseFirestore.getInstance()
+        database = FirebaseDatabase.getInstance()
 
-        spinnerConsultas = findViewById(R.id.spinnerConsultas)
+        spinnerConsultas = binding.spinnerConsultas
         temas = resources.getStringArray(R.array.temasConsultas)
         val adapter = ArrayAdapter(this,R.layout.spinner_item,temas)
         spinnerConsultas.adapter = adapter
@@ -61,8 +63,8 @@ class ContactoActivity : AppCompatActivity() {
     }
 
     /**
-     * Este método permite marcar un número telefónico
-     * @param input
+     * Este método permite marcar un número telefónico.
+     * @param number String : Teléfono.
      */
     private fun call(number: String) {
         val dialIntent = Intent(Intent.ACTION_DIAL)
@@ -71,8 +73,7 @@ class ContactoActivity : AppCompatActivity() {
     }
 
     /**
-     * Este método permite acceder a las consultas realizadas
-     *
+     * Este método permite acceder a las consultas realizadas.
      * @param input
      */
     private fun misConsultas() {
@@ -81,10 +82,7 @@ class ContactoActivity : AppCompatActivity() {
     }
 
     /**
-     * Este método permite enviar la consulta
-     *
-     * @param input
-     *
+     * Este método permite enviar la consulta del usuario.
      */
     private fun sendConsulta() {
         val spinnerConsultas : Spinner = binding.spinnerConsultas
@@ -95,8 +93,13 @@ class ContactoActivity : AppCompatActivity() {
         val consulta = Consulta(ref.id,user,txt_tema,txt_consulta.text.toString(),Date())
         if(txt_consulta.text.isNotEmpty()) {
             ref.set(consulta)
+            val notifRef = database.reference.child("NotificationsConsultas")
+            val notification = Notification(user,"",ref.id,txt_consulta.text.toString(),"ha realizado una consulta",Date())
+            notifRef.push().setValue(notification)
             Toast.makeText(this,"Consulta enviada correctamente",Toast.LENGTH_SHORT).show()
             txt_consulta.setText("")
+        } else {
+            Toast.makeText(this, "Se ha producido un error", Toast.LENGTH_SHORT).show()
         }
     }
 

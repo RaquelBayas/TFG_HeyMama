@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
 import com.example.heymama.interfaces.ItemRecyclerViewListener
-import com.example.heymama.models.Article
 import com.example.heymama.models.Post
 import com.example.heymama.models.User
 import com.google.firebase.database.DataSnapshot
@@ -31,10 +30,8 @@ class ForoAdapter(private val context: Context, private var foroArrayList: Array
      *
      * @param parent ViewGroup
      * @param viewType Int
-     *
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderForo {
-        // inflate layout tema_foro.xml
         val view = LayoutInflater.from(parent.context).inflate(R.layout.tema_foro,parent,false)
         return HolderForo(view)
     }
@@ -47,16 +44,15 @@ class ForoAdapter(private val context: Context, private var foroArrayList: Array
     override fun onBindViewHolder(holder: HolderForo, position: Int) {
         database = FirebaseDatabase.getInstance()
 
-        val tema_post: Post = foroArrayList[position] // get data at specific position
+        val tema_post: Post = foroArrayList[position]
         if(tema_post.protected == "Público") {
             getDataUser(tema_post.userID, holder)
         }
         holder.titulo_foro.text = tema_post.title
-        //holder.img_tema_foro.setImageURI(tema_post)
         holder.titulo_foro.setOnClickListener{
             foroItemListener.onItemClicked(position)
         }
-        var timestamp = tema_post.timestamp
+        val timestamp = tema_post.timestamp
         val dateFormat = SimpleDateFormat("dd/MM/yy HH:mm")
         holder.time_foro.text = dateFormat.format(timestamp)
     }
@@ -74,9 +70,7 @@ class ForoAdapter(private val context: Context, private var foroArrayList: Array
         })
     }
     /**
-     *
-     * @param input
-     *
+     * Devuelve la cantidad de elementos del arraylist "foroArrayList"
      */
     override fun getItemCount(): Int {
         return foroArrayList.size

@@ -1,11 +1,6 @@
 package com.example.heymama.activities
 
 import android.os.Bundle
-import android.view.FrameMetrics
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import com.example.heymama.R
 import com.example.heymama.databinding.ActivityInfoAppBinding

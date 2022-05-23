@@ -28,11 +28,11 @@ class MoodAdapter(private val context: Context, private var moodList: ArrayList<
             val dateFormat = SimpleDateFormat("dd/MM/yy \n  HH:mm")
             fecha.text = dateFormat.format(date)
             when(mood.text.toString()) {
-                "FELIZ" -> image.setImageResource(R.drawable.mood_feliz)
+                "FELIZ" -> image.setImageResource(R.drawable.happy)
                 "BIEN" -> image.setImageResource(R.drawable.mood_bien)
                 "REGULAR" -> image.setImageResource(R.drawable.mood_regular)
-                "TRISTE" -> image.setImageResource(R.drawable.mood_triste)
-                "MAL" -> image.setImageResource(R.drawable.mood_mal)
+                "TRISTE" -> image.setImageResource(R.drawable.sad)
+                "MAL" -> image.setImageResource(R.drawable.sad)
             }
         }
     }

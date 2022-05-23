@@ -43,7 +43,6 @@ class ConsultaAdapter(private val context: Context, private val consultasArrayLi
                 menuBtnConsulta(holder,consultasArrayList[position])
             }
         }
-
     }
 
     /**
@@ -86,6 +85,9 @@ class ConsultaAdapter(private val context: Context, private val consultasArrayLi
         })
     }
 
+    /**
+     * Devuelve la cantidad de elementos del arraylist "consultasArraylist"
+     */
     override fun getItemCount(): Int {
         return consultasArrayList.size
     }

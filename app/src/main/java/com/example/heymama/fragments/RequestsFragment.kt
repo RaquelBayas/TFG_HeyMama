@@ -1,20 +1,15 @@
 package com.example.heymama.fragments
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.heymama.R
 import com.example.heymama.adapters.FriendRequestAdapter
-import com.example.heymama.adapters.UserAdapter
 import com.example.heymama.databinding.FragmentRequestsBinding
-import com.example.heymama.databinding.FragmentTimelineBinding
 import com.example.heymama.models.FriendRequest
-import com.example.heymama.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
@@ -46,7 +41,7 @@ class RequestsFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
         uid = auth.currentUser?.uid!!
         _binding = FragmentRequestsBinding.inflate(inflater, container, false)
-        // Firebase
+
         database = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
         dataBaseReference = database.getReference("Usuarios")
         firestore = FirebaseFirestore.getInstance()
@@ -63,7 +58,6 @@ class RequestsFragment : Fragment() {
     }
 
     private fun getFriendRequest() {
-        var uidFriend = ""
         requestsArraylist.clear()
         recyclerViewRequests.layoutManager = LinearLayoutManager(context)
         recyclerViewRequests.setHasFixedSize(true)
@@ -75,17 +69,14 @@ class RequestsFragment : Fragment() {
                     document.forEach { d ->
                         d.reference.addSnapshotListener { value, error ->
                             if (value != null) {
-                                var friendRequest = value.toObject(FriendRequest::class.java)
+                                val friendRequest = value.toObject(FriendRequest::class.java)
                                 if ((friendRequest != null) && (friendRequest.state == "receive")) { // SÓLO SE MUESTRAN LOS QUE HAN ENVIADO LA SOLICITUD
                                     requestsArraylist.add(friendRequest)
                                     adapterRequests.notifyDataSetChanged()
-                                    Log.i("REQUESTFRAGMENT",requestsArraylist[0].toString())
                                 }
                             }
                         }
                     }
-
-                    Log.i("adapterRequest",adapterRequests.toString())
                 }
             }
     }

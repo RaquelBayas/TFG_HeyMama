@@ -144,14 +144,6 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
 
     override fun onNewToken(p0: String) {
         super.onNewToken(p0)
-
-       // val token: String = FirebaseInstanceId.getInstance().getToken()
         Log.d("TOKEN", "Refreshed token: $p0")
-
-        // If you want to send messages to this application instance or
-        // manage this apps subscriptions on the server side, send the
-        // FCM registration token to your app server.
-
     }
-
 }

@@ -11,12 +11,9 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.*
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.heymama.GlideApp
 import com.example.heymama.R
-import com.example.heymama.adapters.PostTimelineAdapter
 import com.example.heymama.databinding.ActivityPerfilBinding
 import com.example.heymama.fragments.LikesFragment
 import com.example.heymama.fragments.TimelineFragment
@@ -24,11 +21,9 @@ import com.example.heymama.fragments.ViewPagerAdapter
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.interfaces.Utils
 import com.example.heymama.models.FriendRequest
-import com.example.heymama.models.PostTimeline
 import com.example.heymama.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -61,29 +56,22 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
     /**
      * @constructor
      * @param savedInstanceState Bundle
-     *
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPerfilBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Usuario
         auth = FirebaseAuth.getInstance()
         currentUserUID = auth.currentUser!!.uid
-
-        // Firebase
-        dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
+        dataBase = FirebaseDatabase.getInstance()
         dataBaseReference = dataBase.getReference("Usuarios")
-        firestore = FirebaseFirestore.getInstance() //CLOUD STORAGE
-        firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
+        firestore = FirebaseFirestore.getInstance()
+        firebaseStore = FirebaseStorage.getInstance()
         storageReference = firebaseStore.reference
 
-        btn_amigos = binding.btnAmigos
-
-        // Cambiar de perfil
         val intent = intent
-
+        btn_amigos = binding.btnAmigos
         checkUserProfile()
 
         txt_user_perfil = binding.txtUserPerfil
@@ -108,7 +96,6 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
             }
         })
 
-        // BOTÓN MENSAJES
         btn_mensajes = binding.btnMensajes
         if(uid == auth.currentUser!!.uid) {
             btn_mensajes.setOnClickListener {
@@ -146,34 +133,10 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
                 btn_amigos.setText("Solicitud enviada")
             }
             "Solicitud enviada" -> {
-                var dialog = AlertDialog.Builder(this@PerfilActivity)
-                dialog.setTitle("Cancelar solicitud de amistad")
-                dialog.setMessage("¿Deseas cancelar la solicitud de amistad?")
-                dialog.setPositiveButton("Cancelar solicitud") { dialog, which ->
-                    btn_amigos.setText("Añadir")
-                    cancelRequest()
-                }
-                dialog.setNegativeButton("Volver atrás") { dialog, which ->
-                    Toast.makeText(applicationContext,
-                        "", Toast.LENGTH_SHORT).show()
-                }
-                dialog.show()
+                alertSendRequest()
             }
             "Responder solicitud" -> {
-                val popupmenu: PopupMenu = PopupMenu(this, btn_amigos)
-                popupmenu.menuInflater.inflate(R.menu.request_friends_menu, popupmenu.menu)
-                popupmenu.show()
-                popupmenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
-                    when (it.itemId) {
-                        R.id.request_friends_menu_aceptar -> {
-                            aceptar_solicitud(uid)
-                        }
-                        R.id.request_friends_menu_rechazar -> {
-                            rechazar_solicitud(uid)
-                        }
-                    }
-                    true
-                })
+                menuFriendRequest()
             }
             "Amigos" -> {
                 val intent = Intent(this, FriendsActivity::class.java)
@@ -182,6 +145,49 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
             }
         }
     }
+
+    /**
+     * Este método permite mostrar un alertDialog cuando el usuario desea cancelar una solicitud de amistad enviada a otro usuario.
+     */
+    private fun alertSendRequest() {
+        var dialog = AlertDialog.Builder(this@PerfilActivity)
+        dialog.setTitle("Cancelar solicitud de amistad")
+        dialog.setMessage("¿Deseas cancelar la solicitud de amistad?")
+        dialog.setPositiveButton("Cancelar solicitud") { dialog, which ->
+            btn_amigos.setText("Añadir")
+            cancelRequest()
+        }
+        dialog.setNegativeButton("Volver atrás") { dialog, which ->
+            Toast.makeText(applicationContext,
+                "", Toast.LENGTH_SHORT).show()
+        }
+        dialog.show()
+    }
+
+    /**
+     * Este método permite mostrar un popupMenu con las opciones 'Aceptar solicitud' o 'Rechazar solicitud'.
+     */
+    private fun menuFriendRequest() {
+        val popupmenu: PopupMenu = PopupMenu(this, btn_amigos)
+        popupmenu.menuInflater.inflate(R.menu.request_friends_menu, popupmenu.menu)
+        popupmenu.show()
+        popupmenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.request_friends_menu_aceptar -> {
+                    aceptar_solicitud(uid)
+                }
+                R.id.request_friends_menu_rechazar -> {
+                    rechazar_solicitud(uid)
+                }
+            }
+            true
+        })
+    }
+
+    /**
+     * Este método permite agregar fragmentos (TimelineFragment y LikesFragment) en el perfil de cada usuario
+     * con la opción de desplazarse entre ambos dentro de la misma activity.
+     */
     private fun setUpTabs() {
         val tabsAdapter = ViewPagerAdapter(supportFragmentManager)
         val timelineFragment = TimelineFragment()
@@ -190,7 +196,6 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
         bundle.putString("uid",uid)
         timelineFragment.arguments = bundle
         likesFragment.arguments = bundle
-
         tabsAdapter.addFragment(timelineFragment,"Timeline")
         tabsAdapter.addFragment(likesFragment,"Likes")
         binding.viewPagerTimeline.adapter = tabsAdapter
@@ -198,9 +203,7 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
     }
 
     /**
-     *
      * Comprueba el uid del perfil que visitamos.
-     * @param input
      *
      */
     private fun checkUserProfile() {
@@ -210,17 +213,18 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
             uid = auth.currentUser?.uid!!
             binding.btnMenuLayout.visibility = View.VISIBLE
 
+            // Cambiar imagen layout
             binding.btnMenuLayout.setOnClickListener {
                 popupmenu = PopupMenu(this,binding.btnMenuLayout)
                 popupmenu.menuInflater.inflate(R.menu.menu_imagen, popupmenu.menu)
                 menuImagen(popupmenu,100)
-            // Cambiar imagen layout
             }
+            //Cambiar imagen perfil
             binding.profileImage.setOnClickListener {
                 val popupmenu: PopupMenu = PopupMenu(this,binding.profileImage)
                 popupmenu.menuInflater.inflate(R.menu.menu_imagen, popupmenu.menu)
                 menuImagen(popupmenu, 200)
-            }  // Cambiar imagen de perfil
+            }
         }
     }
 
@@ -234,9 +238,8 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
             when (it.itemId) {
                 R.id.menu_verImagen -> {
                     val intent = Intent(this,ViewFullImageActivity::class.java)
-                    storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").getReference("/Usuarios/"+uid+"/images/"+type)
-                    intent.putExtra("path",uid)
-                    Log.i("url",uid)
+                    storageReference = FirebaseStorage.getInstance().getReference("/Usuarios/"+uid+"/images/"+type)
+                    intent.putExtra("url",storageReference.toString())
                     startActivity(intent)
                 }
                 R.id.menu_cambiarImagen -> {
@@ -247,6 +250,9 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
         })
     }
 
+    /**
+     * Este método permite cancelar una solicitud de amistad enviada a otro usuario.
+     */
     private fun cancelRequest() {
         var sendRequest = firestore.collection("Friendship").document(currentUserUID).collection("FriendRequest").document(uid)
         var receiveRequest = firestore.collection("Friendship").document(uid).collection("FriendRequest").document(currentUserUID)
@@ -261,6 +267,11 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
         }
     }
 
+    /**
+     * Este método permite controlar el estado de los botones 'Amigos' y 'Mensajes' los cuales cambiarán dependiendo
+     * de si el perfil del usuario que visitamos forma parte de la lista de amigos agregados, se le ha enviado una solicitud
+     * de amistad, o no.
+     */
     private fun request() {
         //Comprobamos que estamos en el perfil de otro usuario
         var requestReference = firestore.collection("Friendship").document(currentUserUID).collection("FriendRequest").document(uid)
@@ -290,15 +301,14 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
                     }
                 }
             } else {
-                Toast.makeText(this,"NO HAY SOLICITUD",Toast.LENGTH_SHORT).show()
+                Log.i("PerfilActivity",task.result.toString())
             }
         }
     }
 
     /**
-     *
-     * @param uid String
-     *
+     * Este método permite al usuario aceptar la solicitud de amistad recibida.
+     * @param uid String : UID del usuario que ha enviado la solicitud.
      */
     private fun aceptar_solicitud(uid: String) {
         var friendship_reference = firestore.collection("Friendship")
@@ -321,9 +331,8 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
     }
 
     /**
-     *
-     * @param uid String
-     *
+     * Este método permite al usuario rechazar la solicitud de amistad enviada por otro.
+     * @param uid String : UID del usuario que ha enviado la solicitud.
      */
     private fun rechazar_solicitud(uid: String) {
         var friendship_reference = firestore.collection("Friendship")
@@ -336,13 +345,9 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
     }
 
     /**
-     *
-     * @param input
-     *
+     * Este método permite enviar una solicitud de amistad a otro usuario.
      */
     fun sendFriendRequest() {
-        // Comprobar si el user actual y el user del perfil visitado son amigos, sino enviar peticion
-
         var friendRequest_send = FriendRequest(uid,currentUserUID,"send")
         var friendRequest_receive = FriendRequest(uid,currentUserUID,"receive")
 
@@ -353,12 +358,10 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
     }
 
     /**
-     *
-     * @param uid String
-     *
+     * Este método permite cargar la imagen de perfil y de layout.
+     * @param uid String : UID del usuario.
      */
     private fun loadPicture(uid: String) {
-        // Comprueba si existe imagen de perfil en la bbdd
         profileImage  = binding.profileImage
         layoutImage  = binding.layoutImage
 
@@ -367,7 +370,7 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
     }
 
     /**
-     *
+     * Este método permite cargar la imagen de perfil y de layout utilizando la librería Glide.
      * @param uid String
      * @param path String
      * @param image ImageView
@@ -384,7 +387,7 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
     }
 
     /**
-     *
+     * Este método permite añadir la imagen  en la base de datos.
      * @param storageReference StorageReference
      * @param uri Uri
      */
@@ -394,24 +397,22 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
         progressDialog.setCancelable(false)
         progressDialog.show()
 
-        storageReference.putFile(uri).
-                addOnSuccessListener {
-                    if(code == 200) {
-                        var profilePhoto: Map<String, String> = mapOf("profilePhoto" to storageReference.path)
-                        dataBase.getReference("Usuarios").child(uid).updateChildren(profilePhoto)
-                    }
-                    Toast.makeText(this,"Foto subida",Toast.LENGTH_SHORT).show()
-                    if(progressDialog.isShowing) progressDialog.dismiss()
-                }.addOnFailureListener{
-                    if(progressDialog.isShowing) progressDialog.dismiss()
-                    Toast.makeText(this,"Se ha producido un error",Toast.LENGTH_SHORT).show()
+        storageReference.putFile(uri).addOnSuccessListener {
+            if(code == 200) {
+                val profilePhoto: Map<String, String> = mapOf("profilePhoto" to storageReference.path)
+                dataBase.getReference("Usuarios").child(uid).updateChildren(profilePhoto)
+            }
+            Toast.makeText(this,"Foto subida",Toast.LENGTH_SHORT).show()
+            if(progressDialog.isShowing) progressDialog.dismiss()
+        }.addOnFailureListener{
+            if(progressDialog.isShowing) progressDialog.dismiss()
+            Toast.makeText(this,"Se ha producido un error",Toast.LENGTH_SHORT).show()
         }
     }
 
     /**
-     *
+     * Este método permite seleccionar una imagen a partir de la galería de imágenes del dispositivo móvil.
      * @param code Int
-     *
      */
     private fun selectImage(code: Int) {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
@@ -422,7 +423,8 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
     }
 
     /**
-     *
+     * Este método permite recortar la imagen seleccionada de la galería de imágenes del dispositivo móvil para
+     * posteriormente ser subida en la base de datos.
      * @param requestCode Int
      * @param resultCode Int
      * @param data Intent
@@ -458,31 +460,41 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
                 var result = CropImage.getActivityResult(data)
                 if((resultCode == Activity.RESULT_OK) && (code==100)) {
                     binding.layoutImage.setImageURI(result.uri)
-                    storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").getReference("Usuarios/"+auth.currentUser?.uid+"/images/layout")
+                    storageReference = FirebaseStorage.getInstance().getReference("Usuarios/"+auth.currentUser?.uid+"/images/layout")
                     uploadImage(storageReference,result.uri,code)
                     code = 0
                 } else if((resultCode == Activity.RESULT_OK) && (code==200)) {
                     binding.profileImage.setImageURI(result.uri)
-                    storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").getReference("Usuarios/"+auth.currentUser?.uid+"/images/perfil")
+                    storageReference = FirebaseStorage.getInstance().getReference("Usuarios/"+auth.currentUser?.uid+"/images/perfil")
                     uploadImage(storageReference,result.uri,code)
                     code = 0
                 }
                 else if(resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                    Log.i("TAG","CROP ERROR: "+result.error.toString())
+                    Log.i("PerfilActivity",result.error.toString())
                 }
             }
         }
     }
 
+    /**
+     * Cambia el estado del usuario a "offline".
+     */
     override fun onPause() {
         super.onPause()
         com.example.heymama.Utils.updateStatus("offline")
     }
 
+    /**
+     * Cambia el estado del usuario a "online".
+     */
     override fun onStart() {
         super.onStart()
         com.example.heymama.Utils.updateStatus("online")
     }
+
+    /**
+     * Cambia el estado del usuario a "online".
+     */
     override fun onResume() {
         super.onResume()
         com.example.heymama.Utils.updateStatus("online")
