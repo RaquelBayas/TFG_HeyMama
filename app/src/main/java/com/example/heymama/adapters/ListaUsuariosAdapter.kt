@@ -172,11 +172,18 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
     }
 
     private fun deleteUserConsultas(userId: String) {
-        var arrayTemas = arrayListOf<String>("Embarazo","Familia","Parto","Posparto","Otros")
+        val arrayTemas = arrayListOf("Embarazo","Familia","Parto","Posparto","Otros")
         for(tema in arrayTemas) {
-            firestore.collection("Consultas").document(tema).collection("Consultas").addSnapshotListener { value, error ->
+            firestore.collection("Consultas").document(tema).collection("Consultas").whereEqualTo("userId",userId).addSnapshotListener { value, error ->
+                if(error != null) {
+                    Log.e("SettingsActivity",error.toString())
+                    return@addSnapshotListener
+                }
                 value!!.documents.iterator().forEach {
                     it.reference.collection("Respuestas").addSnapshotListener { value, error ->
+                        if(error != null) {
+                            Log.e("SettingsActivity",error.toString())
+                        }
                         value!!.documents.iterator().forEach { it.reference.delete() }
                     }
                     it.reference.delete()

@@ -1,11 +1,7 @@
 package com.example.heymama.adapters
 
-import android.content.ContentValues
 import android.content.Context
-import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Build
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,21 +13,17 @@ import com.example.heymama.GlideApp
 import com.example.heymama.R
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.PostTimeline
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 class CommentsPostTLAdapter(private val context: Context, private val idpost_origin: String, private val commentsPostsList: ArrayList<PostTimeline>, private val commentsPostsListener: ItemRecyclerViewListener
 ) : RecyclerView.Adapter<CommentsPostTLAdapter.HolderForo>() {
-    // FirebaseAuth object
+
     private lateinit var auth: FirebaseAuth
     private lateinit var firebaseStorage: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
@@ -58,7 +50,7 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
         storageReference = firebaseStorage.reference
         firestore = FirebaseFirestore.getInstance()
 
-        val post_tl: PostTimeline = commentsPostsList[position] // get data at specific position
+        val post_tl: PostTimeline = commentsPostsList[position]
         val refPhoto = firebaseStorage.getReference("Usuarios/"+post_tl.userId+"/images/perfil")
 
         with(holder) {
@@ -102,7 +94,9 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
         }
     }
 
-
+    /**
+     * Devuelve la cantidad de elementos del arraylist "commentsPostsList"
+     */
     override fun getItemCount(): Int {
         return commentsPostsList.size
     }

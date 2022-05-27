@@ -47,7 +47,7 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
         recyclerViewChats.setHasFixedSize(true)
 
         chatsArraylist = arrayListOf()
-        adapterChats = ListChatItemAdapter(applicationContext, chatsArraylist, this)
+        adapterChats = ListChatItemAdapter(applicationContext, chatsArraylist)
         recyclerViewChats.adapter = adapterChats
 
         binding.swipeRefreshTL.setOnRefreshListener {

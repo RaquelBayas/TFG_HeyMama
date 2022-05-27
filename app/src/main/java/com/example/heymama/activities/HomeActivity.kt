@@ -6,6 +6,7 @@ import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
@@ -70,7 +71,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar_main)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu_bar);
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu_bar)
         supportActionBar?.setHomeButtonEnabled(true)
 
         val navigationView: NavigationView = findViewById(R.id.nav_view)
@@ -94,7 +95,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         viewNav = navigationView.getHeaderView(0)
         toggle = object : ActionBarDrawerToggle(this,drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close){
             override fun onDrawerStateChanged(newState: Int) {
-                var profileImage_nav = viewNav.findViewById<ImageView>(R.id.nav_header_icon)
+                val profileImage_nav = viewNav.findViewById<ImageView>(R.id.nav_header_icon)
                 storageReference = firebaseStore.getReference("/Usuarios/"+auth.currentUser?.uid+"/images/perfil")
                 GlideApp.with(applicationContext)
                     .load(storageReference)
@@ -131,11 +132,11 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val simpleDateFormat = SimpleDateFormat("dd MM yyyy")
         val dateString = simpleDateFormat.format(date)
 
-        val listMoods = arrayListOf<ImageButton>(btn_mood_feliz,btn_mood_bien,btn_mood_regular,btn_mood_mal,btn_mood_triste)
-        val listMoodsTypes = arrayListOf<MoodType>(*MoodType.values())
+        val listMoods = arrayListOf(btn_mood_feliz,btn_mood_bien,btn_mood_regular,btn_mood_mal,btn_mood_triste)
+        val listMoodsTypes = arrayListOf(*MoodType.values())
         for((index,button) in listMoods.withIndex()) {
             button.setOnClickListener{
-                var mood = Mood(listMoodsTypes[index].ordinal.toString(), listMoodsTypes[index].name, Date())
+                val mood = Mood(listMoodsTypes[index].ordinal.toString(), listMoodsTypes[index].name, Date())
                 firestore.collection("Mood").document(auth.uid.toString()).collection("Historial").document(dateString).set(mood)
                 Toast.makeText(this,"Has registrado tu estado de ánimo correctamente.",Toast.LENGTH_SHORT).show()
             }

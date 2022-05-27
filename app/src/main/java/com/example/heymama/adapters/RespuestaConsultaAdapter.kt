@@ -57,13 +57,8 @@ class RespuestaConsultaAdapter(private val context: Context, private val consult
                 holder.name_consulta.text = user!!.name.toString()
             }
             override fun onCancelled(error: DatabaseError) {
-                //TO DO("Not yet implemented")
             }
         })
-    }
-
-    private fun getUserRol(position: Int) {
-        var user = consultaArrayList[position].userID
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -74,20 +69,18 @@ class RespuestaConsultaAdapter(private val context: Context, private val consult
             MESSAGE_RESPUESTA
         }
     }
+
+    /**
+     * Devuelve la cantidad de elementos del arraylist "consultaArrayList"
+     */
     override fun getItemCount(): Int {
         return consultaArrayList.size
     }
 
     inner class HolderConsulta(itemView: View) : RecyclerView.ViewHolder(itemView) {
-       // var userc_consulta: TextView = itemView.find
         var name_consulta: TextView = itemView.findViewById(R.id.txt_consulta_name)
         var username_consulta: TextView = itemView.findViewById(R.id.txt_consulta_user)
         var consulta: TextView = itemView.findViewById(R.id.txt_consulta_post)
-        //var respuesta : TextView = itemView.findViewById(R.id.txt_consulta_respuesta_post)
-
-
-
     }
-
 
 }

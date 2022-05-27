@@ -1,6 +1,5 @@
 package com.example.heymama.activities
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -73,19 +72,30 @@ class NotificationsActivity : AppCompatActivity(), ItemRecyclerViewListener {
         })
     }
 
+    /**
+     * Este método permite obtener las notificaciones de los comentarios recibidos en posts publicados
+     * por el usuario en la timeline.
+     */
     private fun getNotificationsTL() {
         notificationsArraylist.clear()
-        database.reference.child("NotificationsTL").child(uid).get().addOnSuccessListener { it ->
+        val ref = database.reference.child("NotificationsTL").child(uid)
+        ref.get().addOnSuccessListener { it ->
             if(it.exists()) {
                 it.children.iterator().forEach {
                     val notification = it.getValue(Notification::class.java)
-                    //if(notification!!.uid != auth.uid.toString()) {
-                    notificationsArraylist.add(notification!!)
-                    //}
+                    if(notification!!.uid != auth.uid.toString()) {
+                        firestore.collection("Timeline").document(notification.idpost.toString()).collection("Replies")
+                            .whereEqualTo("comment",notification.textpost).addSnapshotListener { value, error ->
+                                value!!.documents.iterator().forEach {
+                                    if(it.exists()) {
+                                        notificationsArraylist.add(notification)
+                                    }
+                                }
+                            }
+                    }
                     adapterNotifications.notifyDataSetChanged()
                     adapterNotifications.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
                         override fun onItemClicked(position: Int) {
-                            Toast.makeText(applicationContext,"notif",Toast.LENGTH_SHORT).show()
                         }
                     })
                 }
@@ -94,7 +104,11 @@ class NotificationsActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     }
 
+    /**
+     * Este método permite obtener las notificaciones de las consultas recibidas.
+     */
     private fun getNotificationsConsultas() {
+        //notificationsArraylist.clear()
         database.reference.child("NotificationsConsultas").get().addOnSuccessListener { it ->
             if(it.exists()) {
                 it.children.iterator().forEach {

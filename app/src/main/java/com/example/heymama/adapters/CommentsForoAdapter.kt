@@ -5,15 +5,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
-import com.example.heymama.activities.TemaForoActivity
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.Comment
-import com.example.heymama.models.Post
 import com.example.heymama.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot

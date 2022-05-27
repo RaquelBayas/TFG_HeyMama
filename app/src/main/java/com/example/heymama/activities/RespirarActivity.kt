@@ -1,8 +1,5 @@
 package com.example.heymama.activities
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.github.florent37.viewanimator.ViewAnimator;
@@ -12,14 +9,9 @@ import android.widget.TextView
 import com.example.heymama.R
 import com.example.heymama.databinding.ActivityRespirarBinding
 import com.example.heymama.interfaces.Utils
-import com.example.heymama.models.User
 import com.github.florent37.viewanimator.AnimationListener
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 
 class RespirarActivity : AppCompatActivity(), Utils {
 
@@ -43,23 +35,19 @@ class RespirarActivity : AppCompatActivity(), Utils {
 
         btn_empezar_respirar = findViewById(R.id.btn_empezar_respirar)
         btn_empezar_respirar.setOnClickListener {
-            start_breathing()
+            startBreathing()
         }
         btn_parar_respiracion = findViewById(R.id.btn_parar_respiracion)
         btn_parar_respiracion.setOnClickListener {
             animation.cancel()
         }
-
     }
 
     /**
      * Este método sirve para empezar la animación de control de la respiración.
-     *
-     * @param input
-     *
      */
-    private fun start_breathing() {
-       var img_respirar : ImageView = findViewById(R.id.img_respirar)
+    private fun startBreathing() {
+       val img_respirar : ImageView = findViewById(R.id.img_respirar)
 
         animation = ViewAnimator.animate(img_respirar).alpha(0f, 1f).onStart(object: AnimationListener.Start {
             override fun onStart() {

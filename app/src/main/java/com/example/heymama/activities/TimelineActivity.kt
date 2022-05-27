@@ -3,6 +3,7 @@ package com.example.heymama.activities
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
@@ -51,26 +52,27 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
         firebaseStore = FirebaseStorage.getInstance()
         firestore = FirebaseFirestore.getInstance()
 
-        recyclerViewTimeline = binding.recyclerViewPosts
-        recyclerViewTimeline.layoutManager =  LinearLayoutManager(this)
-        //layoutManager.stackFromEnd = true
-        //layoutManager.reverseLayout = true
-        friendsIds = arrayListOf()
-        postsTLArraylist = arrayListOf()
-        adapterPostsTL = PostTimelineAdapter(applicationContext,postsTLArraylist,this)
-        recyclerViewTimeline.adapter = adapterPostsTL
-        recyclerViewTimeline.setHasFixedSize(false)
-        recyclerViewTimeline.recycledViewPool.setMaxRecycledViews(0,0)
+        initRecycler()
 
         binding.btnAddPostTl.setOnClickListener {
             if(!findViewById<EditText>(R.id.edt_post_tl).text.isEmpty()) {
                 edt_post_tl = binding.edtPostTl.text.toString()
             }
             add_comment_tl(edt_post_tl,user!!.uid)
-            Toast.makeText(this, "Post add", Toast.LENGTH_SHORT).show()
             binding.edtPostTl.setText("")
         }
         getUserData()
+    }
+
+    private fun initRecycler() {
+        recyclerViewTimeline = binding.recyclerViewPosts
+        recyclerViewTimeline.layoutManager =  LinearLayoutManager(this)
+        friendsIds = arrayListOf()
+        postsTLArraylist = arrayListOf()
+        adapterPostsTL = PostTimelineAdapter(applicationContext,postsTLArraylist,this)
+        recyclerViewTimeline.adapter = adapterPostsTL
+        recyclerViewTimeline.setHasFixedSize(false)
+        recyclerViewTimeline.recycledViewPool.setMaxRecycledViews(0,0)
     }
 
     /**
@@ -107,7 +109,6 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
         if(binding.swipeRefreshTL.isRefreshing){
             binding.swipeRefreshTL.isRefreshing = false
         }
-
         postsTLArraylist.clear()
         firestore.collection("Timeline").addSnapshotListener { snapshots, e ->
             if (e!= null) {
@@ -156,6 +157,10 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
             binding.swipeRefreshTL.isRefreshing = false
         }
 
+        /**
+         * Comprobamos si el usuario tiene amigos:
+         *
+         */
         firestore.collection("Friendship").document(auth.uid.toString()).collection("Friends").get().addOnSuccessListener { it ->
             val documents = it.documents
             friendsIds.add(auth.uid.toString())
@@ -182,7 +187,7 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
                             adapterPostsTL.notifyDataSetChanged()
                             adapterPostsTL.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
                                 override fun onItemClicked(position: Int) {
-                                    Toast.makeText(this@TimelineActivity,"Item number: $position",Toast.LENGTH_SHORT).show()
+                                    Log.i("TimelineActivity","Item number: $position")
                                 }
                             })
                         }
@@ -216,7 +221,7 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
                         adapterPostsTL.notifyDataSetChanged()
                         adapterPostsTL.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
                             override fun onItemClicked(position: Int) {
-                                Toast.makeText(this@TimelineActivity,"Item number: $position",Toast.LENGTH_SHORT).show()
+                                Log.i("TimelineActivity","Item number: $position")
                             }
                         })
                     }
@@ -233,7 +238,6 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
      * @param position Int : Posición del post en el arraylist.
      */
     override fun onItemClicked(position: Int) {
-        Toast.makeText(this,"Has seleccionado el tweet # ${position+1}",Toast.LENGTH_SHORT).show()
         val intent = Intent(this, PerfilActivity::class.java)
         if(postsTLArraylist[position].userId.equals(auth.currentUser?.uid)) {
             startActivity(intent)

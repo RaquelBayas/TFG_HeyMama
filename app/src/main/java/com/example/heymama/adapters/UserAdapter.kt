@@ -1,9 +1,7 @@
 package com.example.heymama.adapters
 
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,9 +11,10 @@ import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.example.heymama.GlideApp
 import com.example.heymama.R
 import com.example.heymama.activities.PerfilActivity
-import com.example.heymama.models.FriendRequest
 import com.example.heymama.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -28,7 +27,6 @@ class UserAdapter(private val context: Context, private var usersList: ArrayList
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
     private lateinit var uidFriend: String
-    private val ONE_MEGABYTE : Long = 1024 * 1024
 
     inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var txt_nombre_amigo: TextView = itemView.findViewById(R.id.txt_nombre_amigo)
@@ -50,7 +48,7 @@ class UserAdapter(private val context: Context, private var usersList: ArrayList
     override fun onBindViewHolder(holder: Holder, position: Int) {
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
-        firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
+        firebaseStore = FirebaseStorage.getInstance()
         storageReference = firebaseStore.reference
 
         with(holder) {
@@ -58,27 +56,27 @@ class UserAdapter(private val context: Context, private var usersList: ArrayList
             txt_user_amigo.text = usersList[position].username
 
             storageReference = firebaseStore.getReference("/Usuarios/"+usersList[position].id+"/images/perfil")
-            storageReference
-                .getBytes(8 * ONE_MEGABYTE).
-                addOnSuccessListener { bytes ->
-                    val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                    img_amigos.setImageBitmap(bmp)
-                }.addOnFailureListener {
-                    Log.e(ContentValues.TAG, "Se produjo un error al descargar la imagen.", it)
-                }
-            Log.i("USERADAPTER",storageReference.path)
+            GlideApp.with(context)
+                .load(storageReference)
+                .error(R.drawable.wallpaper_profile)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .into(img_amigos)
             img_amigos.setOnClickListener {
                 visitFriend(usersList[position].id.toString())
             }
         }
 
-        menuFriend(holder)
+        menuFriend(holder,usersList[position].username)
     }
 
     override fun getItemCount(): Int {
         return usersList.size
     }
 
+    /**
+     * Este método permite al usuario acceder y visitar el perfil de otro.
+     */
     private fun visitFriend(uid:String) {
         val intent = Intent(context, PerfilActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -86,7 +84,10 @@ class UserAdapter(private val context: Context, private var usersList: ArrayList
         this.context.startActivity(intent)
     }
 
-    private fun menuFriend(holder: UserAdapter.Holder) {
+    /**
+     * Este método permite mostrar el menú
+     */
+    private fun menuFriend(holder: Holder, username: String?) {
         with(holder) {
             if (uid == auth.uid) {
                 btn_menu_friends.visibility = View.VISIBLE
@@ -98,7 +99,7 @@ class UserAdapter(private val context: Context, private var usersList: ArrayList
                     popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
                         when (it.itemId) {
                             R.id.eliminar_post_tl -> {
-                                getUIDFriend(txt_user_amigo.text.toString())
+                                getUIDFriend(username.toString())
                             }
                         }
                         true
@@ -109,28 +110,28 @@ class UserAdapter(private val context: Context, private var usersList: ArrayList
     }
 
     /**
-     *
+     * Este método permite obtener el UID del usuario que deseamos eliminar.
      * @param username String
      */
     private fun getUIDFriend(username: String) {
-        firestore.collection("Usuarios").whereEqualTo("username",username).get().addOnSuccessListener {
-            for (doc in it.documents) {
-                uidFriend = doc["ID"].toString()
+        firestore.collection("Usuarios").whereEqualTo("username",username).addSnapshotListener { value, error ->
+            val docs = value!!.documents
+            docs.iterator().forEach {
+                uidFriend = it["id"].toString()
                 removeFriend(uidFriend)
             }
         }
     }
 
     /**
-     *
-     * @param uidFriend String
-     *
+     * Este método permite eliminar un usuario de nuestra lista de amigos.
+     * @param uidFriend String : UID del usuario
      */
     private fun removeFriend(uidFriend: String) {
         firestore.collection("Friendship").document(auth.uid.toString()).collection("Friends").document(uidFriend).delete().addOnSuccessListener{
             firestore.collection("Friendship").document(uidFriend).collection("Friends").document(auth.uid.toString()).delete()
         }.addOnFailureListener {
-            Log.i("FriendsAdapter", "Se ha producido un error.")
+            Log.e("FriendsAdapter", "Se ha producido un error.")
         }
     }
 }

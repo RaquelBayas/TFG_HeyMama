@@ -1,7 +1,6 @@
 package com.example.heymama.adapters
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,21 +21,23 @@ class MoodAdapter(private val context: Context, private var moodList: ArrayList<
 
     override fun onBindViewHolder(holder: MoodAdapter.Holder, position: Int) {
         with(holder) {
-            var date = moodList[position].timestamp!!.time
+            val date = moodList[position].timestamp!!.time
             mood.text = moodList[position].mood.toString()
-            Log.i("mood-date",date.toString())
             val dateFormat = SimpleDateFormat("dd/MM/yy \n  HH:mm")
             fecha.text = dateFormat.format(date)
             when(mood.text.toString()) {
                 "FELIZ" -> image.setImageResource(R.drawable.happy)
-                "BIEN" -> image.setImageResource(R.drawable.mood_bien)
-                "REGULAR" -> image.setImageResource(R.drawable.mood_regular)
+                "BIEN" -> image.setImageResource(R.drawable.fine)
+                "REGULAR" -> image.setImageResource(R.drawable.regular)
                 "TRISTE" -> image.setImageResource(R.drawable.sad)
-                "MAL" -> image.setImageResource(R.drawable.sad)
+                "MAL" -> image.setImageResource(R.drawable.angry)
             }
         }
     }
 
+    /**
+     * Devuelve la cantidad de elementos del arraylist "moodList"
+     */
     override fun getItemCount(): Int {
        return moodList.size
     }

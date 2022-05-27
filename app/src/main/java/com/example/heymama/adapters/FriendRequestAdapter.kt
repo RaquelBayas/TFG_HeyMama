@@ -29,7 +29,6 @@ import com.google.firebase.storage.StorageReference
 
 class FriendRequestAdapter(private val context: Context, private val friendRequestList: ArrayList<FriendRequest>
 ) : RecyclerView.Adapter<FriendRequestAdapter.Holder>() {
-    // FirebaseAuth object
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
@@ -41,7 +40,6 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
      *
      * @param parent ViewGroup
      * @param viewType Int
-     *
      */
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -55,15 +53,13 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
      *
      * @param holder FriendRequestAdapter.HolderForo
      * @param position Int
-     *
      */
     override fun onBindViewHolder(holder: FriendRequestAdapter.Holder, position: Int) {
         auth = FirebaseAuth.getInstance()
-        firestore = FirebaseFirestore.getInstance() //CLOUD STORAGE
-        firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
+        firestore = FirebaseFirestore.getInstance()
+        firebaseStore = FirebaseStorage.getInstance()
         storageReference = firebaseStore.reference
-        dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
-
+        dataBase = FirebaseDatabase.getInstance()
         dataBaseReference = dataBase.getReference("Usuarios")
 
         val friendRequest = friendRequestList[position].friend_send_uid //BUSCA EL USUARIO QUE ENVIÓ LA SOLICITUD
@@ -74,7 +70,7 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
                 holder.txt_user_solicitud.text = snapshot.child("username").value.toString()
             }
             override fun onCancelled(error: DatabaseError) {
-                Log.i("ERROR","error-friend")
+                Log.e("FriendRequestAdapter",error.toString())
             }
         })
 
@@ -93,12 +89,10 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
             context.startActivity(intent)
         }
 
-        // BOTÓN ACEPTAR SOLICITUD
         holder.btn_aceptar_solicitud.setOnClickListener {
             acceptDenyFriendRequest(holder,"aceptar")
         }
 
-        // BOTÓN RECHAZAR SOLICITUD
         holder.btn_rechazar_solicitud.setOnClickListener {
             acceptDenyFriendRequest(holder,"rechazar")
         }
@@ -119,7 +113,6 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
             friendship_reference.document(auth.currentUser?.uid.toString())
                 .collection("Friends").document(id).set(friends)
 
-            //friends = FriendRequest(id, auth.currentUser?.uid.toString(), "friends")
             friendship_reference.document(id).collection("Friends")
                 .document(auth.currentUser?.uid.toString()).set(friends)
         }
@@ -131,7 +124,6 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
      *
      * @param reference CollectionReference
      * @param id String
-     *
      */
     private fun deleteFriendRequest(reference: CollectionReference, id: String) {
         reference.document(auth.currentUser?.uid.toString()).collection("FriendRequest")
@@ -145,27 +137,26 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
      *
      * @param id String
      * @param request String
-     *
      */
     private fun searchFriendRequest(id: String, request: String) {
         firestore.collection("Friendship").document(auth.currentUser?.uid.toString()).collection("FriendRequest")
             .document(id).addSnapshotListener { value, error ->
+                if(error != null) {
+                    Log.e("FriendRequestAdapter",error.toString())
+                    return@addSnapshotListener
+                }
                 if(value != null) {
-                    var friendRequest = value.toObject(FriendRequest::class.java)
-
+                    val friendRequest = value.toObject(FriendRequest::class.java)
                     updateFriendRequest(id,request)
 
                     for(item in friendRequestList) {
-                        var friend_receive = item.friend_receive_uid
-                        var friend_send = item.friend_send_uid
-                        var state = item.state
+                        val friend_receive = item.friend_receive_uid
+                        val friend_send = item.friend_send_uid
+                        val state = item.state
                         if (friendRequest != null) {
-                            if ((friend_receive.equals(friendRequest?.friend_receive_uid)) && (friend_send.equals(friendRequest.friend_send_uid))&& (state.equals(friendRequest.state))) {
+                            if ((friend_receive == friendRequest?.friend_receive_uid) && (friend_send == friendRequest.friend_send_uid)&& (state == friendRequest.state)) {
                                 friendRequestList.remove(item)
                                 notifyDataSetChanged()
-                            } else {
-                                Log.i("ACCEPT1","a: "+ friend_receive + " " + friend_send + " " + state)
-                                Log.i("ACCEPT1","c: "+ friendRequest!!.friend_receive_uid + " " + friendRequest.friend_send_uid + " " +friendRequest.state)
                             }
                         }
                     }
@@ -176,10 +167,9 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
     /**
      *
      * @param holder FriendRequestAdapter.HolderForo
-     *
      */
     private fun acceptDenyFriendRequest(holder: Holder, request: String) {
-        var holder_username = holder.txt_user_solicitud.text.toString()
+        val holder_username = holder.txt_user_solicitud.text.toString()
         //BUSCA EL ID DEL USERNAME CAPTURADO EN EL HOLDER
         dataBase.reference.child("Usuarios").addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -191,15 +181,12 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
                 }
             }
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
             }
         })
     }
 
     /**
-     *
-     * @param input
-     *
+     * Devuelve la cantidad de elementos del arraylist "friendRequestList"
      */
     override fun getItemCount(): Int {
         return friendRequestList.size
@@ -208,7 +195,6 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
     /**
      *
      * @param itemView View
-     *
      */
     inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var txt_nombre_solicitud: TextView = itemView.findViewById(R.id.txt_nombre_solicitud)

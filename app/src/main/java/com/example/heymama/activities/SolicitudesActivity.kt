@@ -2,22 +2,10 @@ package com.example.heymama.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-
-import com.example.heymama.R
-import com.example.heymama.adapters.FriendRequestAdapter
 import com.example.heymama.databinding.ActivitySolicitudesBinding
 import com.example.heymama.fragments.*
 import com.example.heymama.interfaces.ItemRecyclerViewListener
-import com.example.heymama.models.FriendRequest
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.*
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 
 class SolicitudesActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
@@ -48,11 +36,9 @@ class SolicitudesActivity : AppCompatActivity(), ItemRecyclerViewListener {
         bundle.putString("uid",uid)
         solicitudesFragment.arguments = bundle
         searchFriends.arguments = bundle
-
         tabsAdapter.addFragment(solicitudesFragment,"Solicitudes de amistad")
         tabsAdapter.addFragment(searchFriends,"Buscar amigos")
         binding.viewPagerAmigos.adapter = tabsAdapter
         binding.tabs.setupWithViewPager(binding.viewPagerAmigos)
     }
-
 }

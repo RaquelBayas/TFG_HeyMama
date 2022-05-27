@@ -14,16 +14,14 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import java.util.*
 
 class PreguntaActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
-    private lateinit var firebaseStore: FirebaseStorage
+    private lateinit var firebaseStorage: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
-    private lateinit var storageReference: StorageReference
     private lateinit var binding: ActivityPreguntaBinding
     private lateinit var txt_descripcion_foro: EditText
     private lateinit var txt_titulo_foro: EditText
@@ -42,14 +40,10 @@ class PreguntaActivity : AppCompatActivity() {
 
         dataBase = FirebaseDatabase.getInstance()
         auth = FirebaseAuth.getInstance()
-
         dataBaseReference = dataBase.getReference("Usuarios")
-
         val user: FirebaseUser = auth.currentUser!!
-
         firestore = FirebaseFirestore.getInstance()
-        firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
-        storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").reference
+        firebaseStorage = FirebaseStorage.getInstance()
 
         binding.btnEnviar.setOnClickListener {
             enviar_pregunta_foro(user, foroName!!)
@@ -57,10 +51,9 @@ class PreguntaActivity : AppCompatActivity() {
     }
 
     /**
-     *
-     * @param user FirebaseUser
-     * @param foroName String
-     *
+     * Este método permite al usuario agregar un nuevo post (hilo) en el Foro
+     * @param user FirebaseUser : Usuario
+     * @param foroName String : Nombre del foro
      */
     private fun enviar_pregunta_foro(user:FirebaseUser, foroName: String){
         txt_descripcion_foro = binding.txtDescripcionForo
@@ -77,30 +70,26 @@ class PreguntaActivity : AppCompatActivity() {
                 protected = privado.text.toString()
             }
             else -> {
-                Toast.makeText(this,"Selecciona el nivel de privacidad",Toast.LENGTH_SHORT).show()
+                Utils.showToast(this,"Selecciona el nivel de privacidad")
             }
         }
 
         val ref = firestore.collection("Foros").document("SubForos").collection(foroName).document()
         val id_ref = ref.id
-
         if(txt_titulo_foro.text.isNotEmpty() && txt_descripcion_foro.text.isNotEmpty() && (publico.isChecked || privado.isChecked)) {
-
-            val post = Post(id_ref,txt_titulo_foro.text.toString(),txt_descripcion_foro.text.toString(),user.uid,protected,
-                Date())
+            val post = Post(id_ref,txt_titulo_foro.text.toString(),txt_descripcion_foro.text.toString(),user.uid,protected, Date())
             addPost(post,ref)
-            Toast.makeText(this,"Correcto.",Toast.LENGTH_SHORT).show()
+            Utils.showToast(this,"Correcto.")
             finish()
         } else {
-            Utils.showError(this,"Rellena la información.")
+            Utils.showToast(this,"Rellena la información.")
         }
     }
 
     /**
-     *
+     * Este método permie añadir el post (hilo) del Foro en la base de datos.
      * @param post Post
      * @param reference DocumentReference
-     *
      */
     private fun addPost(post: Post, reference: DocumentReference) {
         reference.set(post)

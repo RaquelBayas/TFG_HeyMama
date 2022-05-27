@@ -7,8 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.heymama.GlideApp
@@ -20,6 +18,7 @@ import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.Message
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.text.SimpleDateFormat
@@ -27,6 +26,8 @@ import java.text.SimpleDateFormat
 class ChatAdapter(private val context: Context, private val chatArrayList: ArrayList<Message>, private val chatListener: ItemRecyclerViewListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var firebaseUser: FirebaseUser ? = null
+    private lateinit var auth: FirebaseAuth
+    private lateinit var database: FirebaseDatabase
     private var storageReference: StorageReference ? = null
     private lateinit var listener: ItemRecyclerViewListener
 
@@ -48,6 +49,8 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        database = FirebaseDatabase.getInstance()
+        auth = FirebaseAuth.getInstance()
         val message = chatArrayList[position]
 
         if(holder.javaClass == SendHolder::class.java) {
@@ -56,14 +59,12 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
                 viewHolder.binding_send.txtMessageChat.visibility = View.GONE
                 viewHolder.binding_send.imgChat.visibility = View.VISIBLE
                 storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(message.imageUrl)
-
                 GlideApp.with(context)
                     .load(storageReference)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(holder.itemView.findViewById(R.id.img_chat))
-                var timeMessage = getTime(message)
+                val timeMessage = getTime(message)
                 viewHolder.binding_send.itemChatTime.text = timeMessage
-
                 viewHolder.itemView.findViewById<ImageView>(R.id.img_chat).setOnClickListener {
                     val intent = Intent(context, ViewFullImageActivity::class.java)
                     intent.putExtra("url",message.imageUrl)
@@ -74,7 +75,7 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
                 viewHolder.binding_send.txtMessageChat.visibility = View.VISIBLE
                 viewHolder.binding_send.txtMessageChat.text = message.message
                 viewHolder.binding_send.imgChat.visibility = View.GONE
-                var timeMessage = getTime(message)
+                val timeMessage = getTime(message)
                 viewHolder.binding_send.itemChatTime.text = timeMessage
             }
         } else {
@@ -83,14 +84,12 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
                 viewHolder.binding_receive.txtMessageChat.visibility = View.GONE
                 viewHolder.binding_receive.imgChat.visibility = View.VISIBLE
                 storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(message.imageUrl)
-
                 GlideApp.with(context)
                     .load(storageReference)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(holder.itemView.findViewById(R.id.img_chat))
-                var timeMessage = getTime(message)
+                val timeMessage = getTime(message)
                 viewHolder.binding_receive.itemChatTime.text = timeMessage
-
                 viewHolder.itemView.findViewById<ImageView>(R.id.img_chat).setOnClickListener {
                     val intent = Intent(context, ViewFullImageActivity::class.java)
                     intent.putExtra("url",message.imageUrl)
@@ -101,7 +100,7 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
                 viewHolder.binding_receive.txtMessageChat.visibility = View.VISIBLE
                 viewHolder.binding_receive.txtMessageChat.text = message.message
                 viewHolder.binding_receive.imgChat.visibility = View.GONE
-                var timeMessage = getTime(message)
+                val timeMessage = getTime(message)
                 viewHolder.binding_receive.itemChatTime.text = timeMessage
             }
         }
@@ -112,10 +111,9 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
      * @param message Message: Mensaje
      */
     private fun getTime(message: Message): String {
-        var timestamp = message.timestamp
-        val dateFormat = SimpleDateFormat("HH:mm")
-        var time_message = dateFormat.format(timestamp)
-        return time_message
+        val timestamp = message.timestamp
+        val dateFormat = SimpleDateFormat("dd/MM/yy HH:mm")
+        return dateFormat.format(timestamp)
     }
 
     /**
@@ -137,32 +135,15 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
         return chatArrayList.size
     }
 
-    private fun deleteMsg() {
-        val dialog = AlertDialog.Builder(context)
-            .setTitle(R.string.eliminar)
-            .setMessage(R.string.alert_eliminar)
-            .setNegativeButton("Cancelar") { view, _ ->
-                Toast.makeText(context, "Cancel button pressed", Toast.LENGTH_SHORT).show()
-                view.dismiss()
-            }
-            .setPositiveButton("Eliminar") { view, _ ->
-                Toast.makeText(context,"Artículo eliminado", Toast.LENGTH_SHORT).show()
-                view.dismiss()
-
-            }
-            .setCancelable(false)
-            .create()
-        dialog.show()
-    }
-
     inner class SendHolder(itemView: View, listener:ItemRecyclerViewListener) : RecyclerView.ViewHolder(itemView) {
         var binding_send: ItemChatRightBinding = ItemChatRightBinding.bind(itemView)
         init {
             itemView.setOnClickListener {
+                Log.i("ONCLICK: ",listener.onItemClicked(adapterPosition).toString())
                 return@setOnClickListener
             }
             itemView.setOnLongClickListener {
-                Log.i("ONCLICK: ",listener.onItemLongClicked(adapterPosition).toString())
+                Log.i("ONLONGCLICK: ",listener.onItemLongClicked(adapterPosition).toString())
                 return@setOnLongClickListener true
             }
         }
@@ -170,9 +151,11 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
     inner class ReceiveHolder(itemView: View, listener:ItemRecyclerViewListener) : RecyclerView.ViewHolder(itemView){
         var binding_receive: ItemChatLeftBinding = ItemChatLeftBinding.bind(itemView)
         init {
-            itemView.setOnClickListener { return@setOnClickListener }
+            itemView.setOnClickListener {
+                Log.i("ONCLICK: ",listener.onItemClicked(adapterPosition).toString())
+                return@setOnClickListener }
             itemView.setOnLongClickListener {
-                Log.i("ONCLICK: ",listener.onItemLongClicked(adapterPosition).toString())
+                Log.i("ONLONGCLICK: ",listener.onItemLongClicked(adapterPosition).toString())
                 return@setOnLongClickListener true
             }
         }

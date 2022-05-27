@@ -1,8 +1,6 @@
 package com.example.heymama.adapters
 
-import android.content.ContentValues
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,22 +13,18 @@ import com.example.heymama.R
 import com.example.heymama.Utils
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.ListChat
-import com.example.heymama.models.ListChatItem
 import com.example.heymama.models.User
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import de.hdodenhof.circleimageview.CircleImageView
 
-class ListChatItemAdapter(private val context: Context, private val listChatItemsList: ArrayList<ListChat>, private val listChatItemsListener: ItemRecyclerViewListener
+class ListChatItemAdapter(private val context: Context, private val listChatItemsList: ArrayList<ListChat>
  ): RecyclerView.Adapter<ListChatItemAdapter.ChatItemForo>() {
 
     private lateinit var firebaseStorage: FirebaseStorage
@@ -38,9 +32,6 @@ class ListChatItemAdapter(private val context: Context, private val listChatItem
     private lateinit var database: FirebaseDatabase
     private lateinit var storageReference: StorageReference
     private lateinit var firestore: FirebaseFirestore
-
-    private lateinit var idUser: String
-
     private lateinit var listener: ItemRecyclerViewListener
 
     fun setOnItemRecyclerViewListener(listener: ItemRecyclerViewListener) {
@@ -110,9 +101,7 @@ class ListChatItemAdapter(private val context: Context, private val listChatItem
 
     /**
      * Este método permite eliminar un chat
-     *
-     * @param idUser String
-     *
+     * @param idUser String : UID del usuario
      */
     private fun deleteChat(idUser: String) {
         var ref = database.reference.child("ChatList").child(auth.uid.toString()).child(idUser)
@@ -125,10 +114,10 @@ class ListChatItemAdapter(private val context: Context, private val listChatItem
                     override fun onCancelled(error: DatabaseError) {
                     }
                 })
-            Toast.makeText(context,"Chat eliminado",Toast.LENGTH_SHORT).show()
+            Utils.showToast(context,"Chat eliminado")
 
         }.addOnFailureListener {
-            Utils.showError(context,"Se ha producido un error.")
+            Utils.showToast(context,"Se ha producido un error.")
         }
     }
 
@@ -154,7 +143,6 @@ class ListChatItemAdapter(private val context: Context, private val listChatItem
                 Log.i("ListChatItemAdapter",listener.onItemClicked(adapterPosition).toString())
             }
         }
-
     }
 
 }

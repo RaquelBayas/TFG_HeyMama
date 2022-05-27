@@ -11,10 +11,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
+import com.example.heymama.Utils
 import com.example.heymama.adapters.CommentsForoAdapter
 import com.example.heymama.databinding.ActivityTemaForoBinding
 import com.example.heymama.interfaces.ItemRecyclerViewListener
-import com.example.heymama.interfaces.Utils
+
 import com.example.heymama.models.Comment
 import com.example.heymama.models.User
 import com.google.firebase.auth.FirebaseAuth
@@ -26,7 +27,7 @@ import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
+class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
@@ -125,7 +126,7 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
         database.reference.child("Usuarios").child(userID).addValueEventListener(object:
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                var user : User? = snapshot.getValue(User::class.java)
+                val user : User? = snapshot.getValue(User::class.java)
                 rol = user!!.rol.toString()
                 if(privacidad == "Público") {
                     binding.txtForoUser.text = user.username
@@ -151,7 +152,6 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
                 if((userID == auth.uid.toString()) || (rol == "Admin") ){
                     btnMenuForo()
                 }
-                Log.i("TEMAFORO",rol.toString())
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -164,17 +164,14 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
      */
     private fun menuForo() {
         val popupMenu: PopupMenu = PopupMenu(this,btn_menu_foro)
-        popupMenu.menuInflater.inflate(R.menu.article_menu,popupMenu.menu)
+        popupMenu.menuInflater.inflate(R.menu.post_tl_menu,popupMenu.menu)
         popupMenu.show()
 
         popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
             when(it.itemId) {
-                R.id.editar -> {
-                    ""
-                }
                 R.id.eliminar -> {
                     ""
-                    var reference = firestore.collection("Foros").document("SubForos")
+                    val reference = firestore.collection("Foros").document("SubForos")
                         .collection(foroName).document(id)
                     reference.delete()
                     reference.collection("Comentarios").addSnapshotListener { value, error ->
@@ -182,7 +179,7 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
                         for(i in data!!.iterator()) {
                             i.reference.delete()
                         }
-                        Toast.makeText(this,"Deleted successfully",Toast.LENGTH_SHORT).show()
+                       Utils.showToast(this,"Deleted successfully")
                     }
                     finish()
                 }
@@ -218,14 +215,14 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
                     protected = btnPrivado.text.toString()
                 }
                 else -> {
-                    Toast.makeText(this,"Selecciona el nivel de privacidad",Toast.LENGTH_SHORT).show()
+                    Utils.showToast(this,"Selecciona el nivel de privacidad")
                 }
             }
             if(editText.text.isNotEmpty() && (btnPublico.isChecked || btnPrivado.isChecked)) {
                 add_comment(editText.text.toString(),user,foroName,protected,id)
                 builder.dismiss()
             } else {
-                Toast.makeText(this,"Escribe un comentario",Toast.LENGTH_SHORT).show()
+                Utils.showToast(this,"Escribe un comentario")
             }
         }
         builder.show()
@@ -242,7 +239,7 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
     private fun add_comment(edt_comment:String, user:FirebaseUser, foroName:String, protected:String, id:String) {
         val ref = firestore.collection("Foros").document("SubForos").collection(foroName)
             .document(id).collection("Comentarios").document()
-        var comment = Comment(ref.id,edt_comment,user.uid,protected,Date())
+        val comment = Comment(ref.id,edt_comment,user.uid,protected,Date())
         ref.set(comment)
     }
 
@@ -290,7 +287,6 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
             .setTitle(R.string.eliminar)
             .setMessage(R.string.alert_eliminar)
             .setNegativeButton("Cancelar") { view, _ ->
-                Toast.makeText(this, "Cancel button pressed", Toast.LENGTH_SHORT).show()
                 view.dismiss()
             }
             .setPositiveButton("Eliminar") { view, _ ->
@@ -300,7 +296,5 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener, Utils {
             }.setCancelable(false)
             .create()
         dialog.show()
-
     }
-
 }

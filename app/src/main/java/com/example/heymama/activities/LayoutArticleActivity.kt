@@ -46,13 +46,11 @@ class LayoutArticleActivity : AppCompatActivity() {
 
         dataBase = FirebaseDatabase.getInstance()
         auth = FirebaseAuth.getInstance()
-
         user = auth.currentUser!!
         firestore = FirebaseFirestore.getInstance()
 
         edt_titulo_articulo = binding.edtTituloArticulo
         edt_contenido_articulo = binding.edtContenidoArticulo
-
 
         val intent = intent
         if(intent.hasExtra("type")) {
@@ -74,7 +72,7 @@ class LayoutArticleActivity : AppCompatActivity() {
                 publicar_articulo(user!!)
             } else {
                 editar_articulo()
-                Toast.makeText(this, "Correcto.", Toast.LENGTH_SHORT).show()
+                Utils.showToast(this, "Correcto.")
                 finish()
             }
         }
@@ -82,8 +80,6 @@ class LayoutArticleActivity : AppCompatActivity() {
 
     /**
      * Este método permite editar el artículo publicado
-     *
-     * @param input
      */
     private fun editar_articulo()  {
         val reference_article = firestore.collection("Artículos").document(id_article)
@@ -93,9 +89,7 @@ class LayoutArticleActivity : AppCompatActivity() {
 
     /**
      * Este método permite publicar un artículo
-     *
      * @param user FirebaseUser
-     *
      */
     private fun publicar_articulo(user: FirebaseUser){
         val article_ref = firestore.collection("Artículos").document()
@@ -108,10 +102,10 @@ class LayoutArticleActivity : AppCompatActivity() {
                 Date()
             )
             addArticle(articulo, article_ref)
-            Toast.makeText(this, "Correcto.", Toast.LENGTH_SHORT).show()
+            Utils.showToast(this,"Correcto")
             finish()
         }else {
-            Utils.showError(this,"Rellena la información.")
+            Utils.showToast(this,"Rellena la información.")
         }
     }
 

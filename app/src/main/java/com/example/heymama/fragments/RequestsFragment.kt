@@ -14,13 +14,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 
 class RequestsFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var firebaseStore: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
-    private lateinit var storageReference: StorageReference
     private lateinit var database: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
     private lateinit var recyclerViewRequests: RecyclerView
@@ -42,11 +40,10 @@ class RequestsFragment : Fragment() {
         uid = auth.currentUser?.uid!!
         _binding = FragmentRequestsBinding.inflate(inflater, container, false)
 
-        database = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
+        database = FirebaseDatabase.getInstance()
         dataBaseReference = database.getReference("Usuarios")
         firestore = FirebaseFirestore.getInstance()
-        firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
-        storageReference = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com").reference
+        firebaseStore = FirebaseStorage.getInstance()
 
         recyclerViewRequests = binding.recyclerViewRequests
         requestsArraylist = arrayListOf()
@@ -57,6 +54,9 @@ class RequestsFragment : Fragment() {
         return binding.root
     }
 
+    /**
+     * Este método muestra la lista de solicitudes de amistad recibidas.
+     */
     private fun getFriendRequest() {
         requestsArraylist.clear()
         recyclerViewRequests.layoutManager = LinearLayoutManager(context)
@@ -70,7 +70,8 @@ class RequestsFragment : Fragment() {
                         d.reference.addSnapshotListener { value, error ->
                             if (value != null) {
                                 val friendRequest = value.toObject(FriendRequest::class.java)
-                                if ((friendRequest != null) && (friendRequest.state == "receive")) { // SÓLO SE MUESTRAN LOS QUE HAN ENVIADO LA SOLICITUD
+                                // Sólo se muestran las peticiones de la gente que 'nos' ha enviado una solicitud
+                                if ((friendRequest != null) && (friendRequest.state == "receive")) {
                                     requestsArraylist.add(friendRequest)
                                     adapterRequests.notifyDataSetChanged()
                                 }

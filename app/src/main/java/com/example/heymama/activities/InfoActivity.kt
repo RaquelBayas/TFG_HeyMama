@@ -92,9 +92,9 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         firestore = FirebaseFirestore.getInstance()
 
-        firestore.collection("Artículos").addSnapshotListener { snapshots, e ->
-            if (e != null) {
-                Log.w("TAG", "InfoActivity", e)
+        firestore.collection("Artículos").addSnapshotListener { snapshots, error ->
+            if (error != null) {
+                Log.e("InfoActivity", error.toString())
                 return@addSnapshotListener
             }
             for (dc in snapshots!!.documentChanges) {
@@ -143,7 +143,6 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
      *
      */
     override fun onItemClicked(position: Int) {
-        Toast.makeText(this,"Has seleccionado el artículo # ${position+1}",Toast.LENGTH_SHORT).show()
         val intent = Intent(this, ArticleActivity::class.java)
         intent.putExtra("Rol",rol)
         intent.putExtra("ID_Article", idArticlesArrayList[position])

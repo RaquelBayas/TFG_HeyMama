@@ -60,7 +60,6 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         auth = FirebaseAuth.getInstance()
         uid = auth.currentUser?.uid!!
-
         database = FirebaseDatabase.getInstance()
         dataBaseReference = database.getReference("Usuarios")
         firestore = FirebaseFirestore.getInstance()
@@ -71,15 +70,11 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         val intent = intent
         friendUID = intent.getStringExtra("friendUID").toString()
-
-       binding.txtChatFriendName.text = friendUID
-
-
+        binding.txtChatFriendName.text = friendUID
+        txt_message_chat = binding.txtMessageChat
         binding.imgBackChat.setOnClickListener {
             onBackPressed()
         }
-
-        txt_message_chat = binding.txtMessageChat
 
         binding.btnSendMessageChat.setOnClickListener {
             if(txt_message_chat.text.isEmpty()){
@@ -88,59 +83,47 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 notify=true
                 val imagePath = ""
                 val message = txt_message_chat.text.toString()
-                sendMessageImage(auth.uid.toString(),friendUID,message,imagePath)
+                sendMessage(auth.uid.toString(),friendUID,message,imagePath)
             }
         }
 
+        initRecycler()
+        getMessage(auth.uid.toString(),friendUID)
+        updateFriendName()
+        updatePicture()
+
+        binding.btnAddImgChat.setOnClickListener {
+            selectImage(100)
+        }
+    }
+
+    /**
+     * Este método permite inicializar el recyclerview, el adapter, y el arraylist de los mensajes.
+     */
+    private fun initRecycler(){
         recyclerViewChats = binding.recyclerViewChat
         chatsArraylist = arrayListOf()
         adapterChats = ChatAdapter(applicationContext, chatsArraylist,this)
-        adapterChats.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
-            override fun onItemLongClicked(position: Int) {
-                deleteMsg(chatsArraylist[position])
-            }
-        })
 
         val linearLayoutManager = LinearLayoutManager(this,LinearLayoutManager.VERTICAL,true)
         linearLayoutManager.stackFromEnd = false
-
         recyclerViewChats.layoutManager = linearLayoutManager
         recyclerViewChats.recycledViewPool.setMaxRecycledViews(0,0)
         recyclerViewChats.smoothScrollToPosition(adapterChats.itemCount)
         recyclerViewChats.scrollToPosition(adapterChats.itemCount-1)
         recyclerViewChats.setHasFixedSize(false)
         recyclerViewChats.adapter = adapterChats
-
-        getMessage(auth.uid.toString(),friendUID)
-        updateFriendName()
-        updatePicture()
-        checkStatus()
-        binding.btnAddImgChat.setOnClickListener {
-            selectImage(100)
-        }
     }
 
-    private fun checkStatus() {
-        database.getReference("Usuarios/$friendUID").addValueEventListener(object: ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if(snapshot.exists()){
-                    snapshot.children.iterator().forEach {
-
-                        Log.i("CHECK-STATUS-2",it.toString())
-                    }
-                }
-            }
-            override fun onCancelled(error: DatabaseError) {
-            }
-        })
-    }
-
+    /**
+     * Este método permite eliminar un mensaje seleccionado.
+     * @param message Message : Mensaje que deseamos eliminar
+     */
     private fun deleteMsg(message: Message) {
         val dialog = AlertDialog.Builder(this)
             .setTitle(R.string.eliminar)
-            .setMessage(R.string.alert_eliminar)
+            .setMessage("¿Deseas eliminar el mensaje?")
             .setNegativeButton("Cancelar") { view, _ ->
-                Toast.makeText(this, "Cancel button pressed", Toast.LENGTH_SHORT).show()
                 view.dismiss()
             }
             .setPositiveButton("Eliminar") { view, _ ->
@@ -152,7 +135,7 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 ref.orderByChild("timestamp").addValueEventListener(object: ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot)  {
                         val listMsgs = arrayListOf<Message>()
-                        for((position,it) in snapshot.children.iterator().withIndex()){
+                        for(it in snapshot.children.iterator()){
                             if(it.getValue(Message::class.java) == message && !it.key.equals("LastMessage")) {
                                 ref.child(it.key.toString()).removeValue()
                                 if(listMsgs.size >= 1) {
@@ -178,7 +161,7 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
     }
 
     /**
-     *
+     * Este método permite seleccionar una imagen de la galería de imágenes del teléfono.
      * @param code Int
      */
     private fun selectImage(code: Int) {
@@ -190,7 +173,7 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
     }
 
     /**
-     *
+     * Este método permite subir una imagen
      * @param storageReference StorageReference
      * @param uri Uri
      */
@@ -205,16 +188,15 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
             if(task.isSuccessful) {
                 storageReference.downloadUrl.addOnSuccessListener { uri ->
                     val imagePath = uri.toString()
-                    val message = ""//Message(auth.uid.toString(),friendUID,"",imagePath,Date().time)
+                    val message = ""
                     notify=true
-                    sendMessageImage(auth.uid.toString(),friendUID,message,imagePath)
+                    sendMessage(auth.uid.toString(),friendUID,message,imagePath)
                 }
             }
         }
 
         storageReference.putFile(uri).
         addOnSuccessListener {
-            Toast.makeText(this,"Foto subida",Toast.LENGTH_SHORT).show()
             if(progressDialog.isShowing) progressDialog.dismiss()
         }.addOnFailureListener{
             if(progressDialog.isShowing) progressDialog.dismiss()
@@ -244,8 +226,14 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
         }
     }
 
-    private fun sendMessageImage(senderUID: String, receiverUID: String, txtMessage: String, imagePath: String) {
-
+    /**
+     * Este método permite enviar un mensaje.
+     * @param senderUID String  : UID de la persona que envía el mensaje
+     * @param receiverUID String : UID de la persona que recibe el mensaje
+     * @param txtMessage String : Texto del mensaje
+     * @param imagePath String : Path de la imagen
+     */
+    private fun sendMessage(senderUID: String, receiverUID: String, txtMessage: String, imagePath: String) {
         val ref = database.reference.child("Chats").child(senderUID).child("Messages").child(receiverUID).push()
         val message = Message(ref.key.toString(),senderUID,receiverUID,txtMessage,imagePath,Date().time)
         ref.setValue(message).addOnSuccessListener {
@@ -348,7 +336,7 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 chatsArraylist.clear()
                 for (datasnapshot: DataSnapshot in snapshot.children) {
                     if(!datasnapshot.key.equals("LastMessage")) {
-                        var message = datasnapshot.getValue(Message::class.java)
+                        val message = datasnapshot.getValue(Message::class.java)
                         chatsArraylist.add(message!!)
                     }
                 }
@@ -356,6 +344,12 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     chatsArraylist.sort()
                 }
                 adapterChats.notifyDataSetChanged()
+                adapterChats.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
+                    override fun onItemLongClicked(position: Int) {
+                        deleteMsg(chatsArraylist[position])
+
+                    }
+                })
             }
             override fun onCancelled(error: DatabaseError) {
             }
@@ -385,7 +379,6 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
      *
      * @param uid String
      * @param image ImageView
-     *
      */
     private fun glidePicture(uid: String, image: ImageView) {
         firebaseStorageRef = firebaseStorage.getReference("/Usuarios/$uid/images/perfil")

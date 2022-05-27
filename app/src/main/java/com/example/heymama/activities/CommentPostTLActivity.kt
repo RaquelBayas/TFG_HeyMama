@@ -58,7 +58,7 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
         iduser = intent.getStringExtra("iduser").toString()
         nameuser = intent.getStringExtra("name").toString()
         textpost = intent.getStringExtra("comment").toString()
-        Log.i("COMMENT-TL",iduser)
+
         database = FirebaseDatabase.getInstance()
         auth = FirebaseAuth.getInstance()
         uid = auth.currentUser!!.uid
@@ -80,6 +80,9 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
         }
     }
 
+    /**
+     * Este método carga las imágenes: la del usuario al que pertenece el post en el que comentaremos, y del usuario actual.
+     */
     private fun initPictures() {
         storageReference = firebaseStorage.getReference("/Usuarios/$iduser/images/perfil")
         photo_comment_0 = binding.imgCommentPosttl0
@@ -90,6 +93,9 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
         getPictures(photo_comment,storageReference)
     }
 
+    /**
+     * Este método inicializa el recyclerview, el adapter y el arraylist de los comentarios.
+     */
     private fun initRecycler() {
         recyclerViewCommentsTimeline = binding.recyclerCommentsPostTL
         recyclerViewCommentsTimeline.layoutManager = LinearLayoutManager(this)
@@ -100,6 +106,7 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
     }
 
     /**
+     * Este método permite cargar imágenes gracias a la librería Glide
      * @param image CircleImageView
      * @param storageReference StorageReference
      */
@@ -113,6 +120,7 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
     }
 
     /**
+     * Este método permite añadir un comentario en un post de la timeline.
      * @param uid String
      * @param edt_comment String
      */
@@ -131,6 +139,7 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
     }
 
     /**
+     * Este método permite obtener los comentarios de los posts de la timeline.
      */
     fun getCommentsPostTL() {
         if(binding.swipeRefreshTLComments.isRefreshing){

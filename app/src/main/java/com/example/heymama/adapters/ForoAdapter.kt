@@ -65,10 +65,10 @@ class ForoAdapter(private val context: Context, private var foroArrayList: Array
                 holder.user_foro.text = user!!.username
             }
             override fun onCancelled(error: DatabaseError) {
-                //TO DO("Not yet implemented")
             }
         })
     }
+
     /**
      * Devuelve la cantidad de elementos del arraylist "foroArrayList"
      */

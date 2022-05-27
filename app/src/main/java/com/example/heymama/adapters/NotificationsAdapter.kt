@@ -67,10 +67,22 @@ class NotificationsAdapter(private val context: Context?, private val notificati
                 }
             })
             if(type.text == "ha comentado en tu post") {
-                comment.setOnClickListener { comment(name.text.toString(),comment.text.toString(),notificationsList[position].idpost.toString(),auth.uid.toString()) }
+                comment.setOnClickListener {
+                    getComment(notificationsList[position].idpost.toString(),comment.text.toString())
+                    comment(name.text.toString(),comment.text.toString(),notificationsList[position].idpost.toString(),auth.uid.toString()) }
             } else {
                 comment.setOnClickListener {
                     consulta(notificationsList[position].idpost.toString())
+                }
+            }
+        }
+    }
+
+    private fun getComment(idpost: String,comment: String) {
+        firestore.collection("Timeline").document(idpost).addSnapshotListener { value, error ->
+            value!!.reference.collection("Replies").whereEqualTo("comment",comment).addSnapshotListener { value, error ->
+                if(value!!.documents.isNotEmpty()) {
+                    Log.i("NOT-ADAPTER",value.toString())
                 }
             }
         }
@@ -106,6 +118,13 @@ class NotificationsAdapter(private val context: Context?, private val notificati
         this.context!!.startActivity(intent)
     }
 
+    /**
+     * Este método permite abrir el post.
+     * @param name String
+     * @param comment String
+     * @param idpost String
+     * @param iduser String
+     */
     private fun comment(name: String,comment: String, idpost: String, iduser: String) {
         val intent = Intent(context, CommentPostTLActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -116,6 +135,9 @@ class NotificationsAdapter(private val context: Context?, private val notificati
         this.context!!.startActivity(intent)
     }
 
+    /**
+     * Devuelve la cantidad de elementos del arraylist "notificationsList"
+     */
     override fun getItemCount(): Int {
        return notificationsList.size
     }

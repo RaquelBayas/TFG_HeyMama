@@ -19,7 +19,6 @@ class RegistroMoodFragment : Fragment() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
-
     private lateinit var recyclerViewMood: RecyclerView
     private lateinit var moodArraylist: ArrayList<Mood>
     private lateinit var adapterMood: MoodAdapter
@@ -41,6 +40,9 @@ class RegistroMoodFragment : Fragment() {
         return binding.root
     }
 
+    /**
+     * Este método inicializa el recyclerview, adapter y arraylist
+     */
     private fun initRecycler() {
         moodArraylist = arrayListOf()
         adapterMood = MoodAdapter(requireContext(), moodArraylist)
@@ -51,10 +53,14 @@ class RegistroMoodFragment : Fragment() {
 
     private fun getMoodRegister() {
         moodArraylist.clear()
-        var ref = firestore.collection("Mood").document(auth.uid.toString()).collection("Historial")
+        val ref = firestore.collection("Mood").document(auth.uid.toString()).collection("Historial")
         ref.addSnapshotListener { value, error ->
+            if(error != null){
+                Log.e("RegistroMoodFragment",error.toString())
+                return@addSnapshotListener
+            }
             value!!.documents.iterator().forEach {
-                var mood = it.toObject(Mood::class.java)
+                val mood = it.toObject(Mood::class.java)
                 moodArraylist.add(mood!!)
             }
             adapterMood.notifyDataSetChanged()

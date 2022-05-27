@@ -3,8 +3,6 @@ package com.example.heymama.activities
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import com.example.heymama.R
 import com.example.heymama.databinding.ActivityRegisterAsBinding
 
 class RegisterAsActivity : AppCompatActivity() {

@@ -7,25 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.heymama.R
-import com.example.heymama.adapters.FriendsAdapter
 import com.example.heymama.adapters.ListaUsuariosAdapter
-import com.example.heymama.adapters.PostTimelineAdapter
-import com.example.heymama.adapters.UserAdapter
 import com.example.heymama.databinding.FragmentSearchFriendsBinding
-import com.example.heymama.databinding.FragmentTimelineBinding
-import com.example.heymama.interfaces.ItemRecyclerViewListener
-import com.example.heymama.models.PostTimeline
 import com.example.heymama.models.User
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.ArrayList
 
@@ -52,9 +40,9 @@ class SearchFriendsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        firestore = FirebaseFirestore.getInstance() //CLOUD STORAGE
+        firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
-        database = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
+        database = FirebaseDatabase.getInstance()
         listaUsuariosArraylist = arrayListOf()
         _binding = FragmentSearchFriendsBinding.inflate(inflater, container, false)
         val data = arguments
@@ -69,7 +57,7 @@ class SearchFriendsFragment : Fragment() {
     }
 
     private fun filter(friendSearch: String) {
-        var friendSearchArrayList = ArrayList<User>()
+        val friendSearchArrayList = ArrayList<User>()
         for(friend in listaUsuariosArraylist) {
             if((friend.name!!.lowercase()!!.contains(friendSearch.lowercase())!!) || (friend.username!!.lowercase().contains(friendSearch.lowercase()))) {
                 friendSearchArrayList.add(friend)
@@ -91,22 +79,25 @@ class SearchFriendsFragment : Fragment() {
         })
     }
 
+    /**
+     * Este método permite mostrar la lista de los usuarios registrados en la aplicación.
+     */
     private fun searchFriends(){
         listaUsuariosArraylist.clear()
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.setHasFixedSize(true)
 
-        var reference = database.reference.child("Usuarios")
+        val reference = database.reference.child("Usuarios")
         reference.get().addOnSuccessListener {
             it.children.iterator().forEach { va ->
                 var user = va.getValue(User::class.java)
                 if(user!!.rol != "Admin") {
                     listaUsuariosArraylist.add(user!!)
                 }
-                adapter = ListaUsuariosAdapter(requireContext().applicationContext,listaUsuariosArraylist)
-                recyclerView.adapter = adapter
+                adapter.notifyDataSetChanged()
             }
         }
+
     }
 
 }

@@ -6,10 +6,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.heymama.R
 import com.example.heymama.adapters.PostTimelineAdapter
 import com.example.heymama.databinding.ActivityPerfilBinding
 import com.example.heymama.databinding.FragmentTimelineBinding
@@ -23,13 +21,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.ktx.Firebase
 
-/**
- * A simple [Fragment] subclass.
- * Use the [TimelineFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class TimelineFragment : Fragment(), ItemRecyclerViewListener {
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
@@ -52,8 +44,7 @@ class TimelineFragment : Fragment(), ItemRecyclerViewListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        // Inflate the layout for this fragment
-        firestore = FirebaseFirestore.getInstance() //CLOUD STORAGE
+        firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
         postsTLArraylist = arrayListOf()
@@ -63,19 +54,22 @@ class TimelineFragment : Fragment(), ItemRecyclerViewListener {
         val data = arguments
         uid = data!!["uid"].toString()
         tabs = _perfilBinding!!.tabs
-
         recyclerViewTimeline = binding.recyclerViewPerfil
         recyclerViewTimeline.layoutManager = LinearLayoutManager(context)
         recyclerViewTimeline.setHasFixedSize(true)
         adapterPostsTL = PostTimelineAdapter(requireContext().applicationContext,postsTLArraylist,this)
         recyclerViewTimeline.adapter = adapterPostsTL
 
-        //checkFriend()
         checkPublicUser()
 
         return binding.root
     }
 
+    /**
+     * Este método comprueba si un usuario tiene su perfil público o privado.
+     * Si es público: se muestran sus posts.
+     * Si es privado: se comprueba si pertenece a nuestra lista de amigos.
+     */
     private fun checkPublicUser() {
         val ref = database.reference.child("Usuarios").child(uid).child("protected")
         ref.addValueEventListener(object:ValueEventListener {
@@ -92,14 +86,18 @@ class TimelineFragment : Fragment(), ItemRecyclerViewListener {
         })
     }
 
+    /**
+     * Este método permite comprobar si el usuario pertenece a la lista de amigos:
+     * Si pertenece: el tabLayout se muestra y se cargan sus posts.
+     * Si no pertenece: el tabLayout no muestra los posts.
+     */
     private fun checkFriend() {
         tabs!!.visibility = View.INVISIBLE
         firestore.collection("Friendship").document(auth.uid.toString()).collection("Friends").get()
-            .addOnSuccessListener {
+            .addOnSuccessListener { it ->
                 val documents = it.documents
-                Log.i("checkfriend-0",documents.toString())
                 if(documents.isNotEmpty()) {
-                    documents.iterator().forEach(){
+                    documents.iterator().forEach(){it ->
                         if(it["friend_send_uid"] == uid || it["friend_receive_uid"] == uid) {
                             tabs!!.visibility = View.VISIBLE
                         }
@@ -113,9 +111,11 @@ class TimelineFragment : Fragment(), ItemRecyclerViewListener {
             }
     }
 
+    /**
+     * Este método permite cargar los posts de la timeline.
+     */
     private fun loadPostsTL() {
         postsTLArraylist.clear()
-
         firestore.collection("Timeline").whereEqualTo("userId",uid).addSnapshotListener { snapshots, e ->
             if (e!= null) {
                 return@addSnapshotListener
@@ -125,18 +125,19 @@ class TimelineFragment : Fragment(), ItemRecyclerViewListener {
                     DocumentChange.Type.ADDED -> {
                         postsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
                     }
-                    DocumentChange.Type.MODIFIED -> postsTLArraylist.add(dc.document.toObject(
-                        PostTimeline::class.java))
+                    //DocumentChange.Type.MODIFIED -> postsTLArraylist.add(dc.document.toObject( PostTimeline::class.java))
                     DocumentChange.Type.REMOVED -> postsTLArraylist.remove(dc.document.toObject(
                         PostTimeline::class.java))
                 }
             }
             adapterPostsTL.notifyDataSetChanged()
-            postsTLArraylist.sort()
-            Log.i("adapterTL",adapterPostsTL.toString())
+            if(postsTLArraylist.size > 1) {
+            postsTLArraylist.sort()}
+            Log.i("TIMELINEFRAGMENT",postsTLArraylist.toString())
+
             adapterPostsTL.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
                 override fun onItemClicked(position: Int) {
-                    Toast.makeText(context,"Item number: $position", Toast.LENGTH_SHORT).show()
+                    Log.i("TimelineFragment","Item number: $position")
                 }
             })
         }

@@ -25,9 +25,8 @@
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="70dp"
-                android:inputType="textMultiLine"
                 android:fontFamily="@font/alegreya"
                 android:textColor="@color/fonts"
                 android:textSize="26sp" />
@@ -53,7 +52,7 @@
                 android:fillViewport="true">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
 
@@ -62,41 +61,41 @@
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_margin="5dp"
-                        android:background="@color/white"
+                        android:background="@color/pink2"
                         android:src="@drawable/happy"
-                        ></ImageButton>
+                        />
                     <ImageButton
                         android:id="@+id/btn_mood_home_bien"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_margin="5dp"
-                        android:background="@color/white"
-                        android:src="@drawable/mood_bien"
-                        ></ImageButton>
+                        android:background="@color/rectangle_purple"
+                        android:src="@drawable/fine"
+                        />
                     <ImageButton
                         android:id="@+id/btn_mood_home_regular"
                         android:layout_width="60dp"
-                        android:background="@color/white"
+                        android:background="@color/rectangle_orange"
                         android:layout_height="60dp"
                         android:layout_margin="5dp"
-                        android:src="@drawable/mood_regular"
-                        ></ImageButton>
+                        android:src="@drawable/regular"
+                        />
                     <ImageButton
                         android:id="@+id/btn_mood_home_mal"
                         android:layout_width="60dp"
-                        android:background="@color/white"
+                        android:background="#FFC0C0"
                         android:layout_height="60dp"
                         android:layout_margin="5dp"
-                        android:src="@drawable/mood_mal"
-                        ></ImageButton>
+                        android:src="@drawable/angry"
+                        />
                     <ImageButton
                         android:id="@+id/btn_mood_hom_triste"
                         android:layout_width="60dp"
-                        android:background="@color/white"
+                        android:background="#D589BFEF"
                         android:layout_height="60dp"
                         android:layout_margin="5dp"
                         android:src="@drawable/sad"
-                        ></ImageButton>
+                        />
 
                 </LinearLayout>
             </HorizontalScrollView>
@@ -116,7 +115,6 @@
                     android:layout_marginRight="20dp"
                     android:layout_weight="0.3"
                     android:background="@drawable/rectangle_pink"
-                    android:capitalize="none"
                     android:fontFamily="@font/alegreya"
                     android:text="@string/foros"
                     android:textAlignment="gravity"

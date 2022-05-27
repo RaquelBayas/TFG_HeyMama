@@ -41,7 +41,6 @@ class Login : AppCompatActivity() {
             var prefs_email = prefs.preferences?.getString("email","")
             var prefs_password = prefs.preferences?.getString("password","")
             var rol = prefs.preferences?.getString("rol","")
-            Log.i("PREFS-login",prefs_email + " " + rol)
             goHomeActivity(rol.toString())
             finish()
         } else {
@@ -56,7 +55,7 @@ class Login : AppCompatActivity() {
             txt_email = binding.txtEmail2
             txt_password = binding.txtPassword2
 
-            dataBase = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
+            dataBase = FirebaseDatabase.getInstance()
             auth = FirebaseAuth.getInstance()
             dataBaseReference = dataBase.reference.child("Usuarios")
 
@@ -104,14 +103,14 @@ class Login : AppCompatActivity() {
                             checkRol(email,password)
                         } else {
                             checkRegister(emailFireBase,mailVerified)
-                            Toast.makeText(this, "Debes registrarte primero.", Toast.LENGTH_LONG).show()
+                            Utils.showToast(this, "Debes registrarte primero.")
                         }
                     } else {
-                        Toast.makeText(this, "Comprueba los datos introducidos.", Toast.LENGTH_SHORT).show()
+                        Utils.showToast(this, "Comprueba los datos introducidos.")
                     }
                 }
         } else {
-            Toast.makeText(this, "Rellena los datos.", Toast.LENGTH_SHORT).show()
+           Utils.showToast(this, "Rellena los datos.")
         }
     }
 
@@ -127,9 +126,9 @@ class Login : AppCompatActivity() {
                 email?.sendEmailVerification().addOnCompleteListener(this) { task ->
                     if (task.isComplete) {
                         task.exception?.printStackTrace()
-                        Toast.makeText(this, "Comprueba tu email.",Toast.LENGTH_SHORT).show()
+                        Utils.showToast(this, "Comprueba tu email.")
                     } else {
-                        Toast.makeText(this, "Oh, algo ha ido mal.", Toast.LENGTH_SHORT).show()
+                        Utils.showToast(this, "Oh, algo ha ido mal.")
                     }
                 }
             }

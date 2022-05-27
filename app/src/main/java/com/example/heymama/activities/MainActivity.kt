@@ -48,6 +48,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Este método comprueba si hay conexión a internet disponible.
+     */
     private val isNetworkAvailable: Boolean
         get() {
             val connectivityManager =

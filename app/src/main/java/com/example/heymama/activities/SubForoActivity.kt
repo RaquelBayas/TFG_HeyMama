@@ -57,7 +57,7 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
         binding.swipeRefreshTL.setOnRefreshListener {
             getTemasData(foroName)
         }
-        binding.btnAddQuestion.setOnClickListener { view ->
+        binding.btnAddQuestion.setOnClickListener {
             val intent = Intent(this,PreguntaActivity::class.java)
             intent.putExtra("ForoName",foroName)
             startActivity(intent)
@@ -78,9 +78,9 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
     }
 
     private fun filter(text: String) {
-        var postSearchArrayList = ArrayList<Post>()
+        val postSearchArrayList = ArrayList<Post>()
         for(post in temasArraylist) {
-            if(post.title!!.lowercase().contains(text.lowercase())) {
+            if(post.title.lowercase().contains(text.lowercase())) {
                 postSearchArrayList.add(post)
             }
         }

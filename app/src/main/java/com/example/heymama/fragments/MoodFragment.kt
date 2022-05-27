@@ -10,6 +10,7 @@ import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.example.heymama.R
+import com.example.heymama.Utils
 import com.example.heymama.models.Mood
 import com.example.heymama.models.MoodType
 import com.google.firebase.auth.FirebaseAuth
@@ -31,23 +32,18 @@ class MoodFragment : DialogFragment() {
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
-        var rootView : View = inflater.inflate(R.layout.fragment_mood,container,false)
-
+        val rootView : View = inflater.inflate(R.layout.fragment_mood,container,false)
         rootView.findViewById<Button>(R.id.cancel_mood).setOnClickListener { dismiss() }
-
         rootView.findViewById<Button>(R.id.submit_mood).setOnClickListener {
-            var radio_group_mood : RadioGroup = rootView.findViewById(R.id.radio_group_mood)
-            var selectedItem = radio_group_mood.checkedRadioButtonId
-            var radioButton = rootView.findViewById<RadioButton>(selectedItem)
-
+            val radio_group_mood : RadioGroup = rootView.findViewById(R.id.radio_group_mood)
+            val selectedItem = radio_group_mood.checkedRadioButtonId
+            val radioButton = rootView.findViewById<RadioButton>(selectedItem)
             setMood(radioButton.id)
-
         }
-
         return rootView
     }
 
-    fun setMood(view : Int) {
+    private fun setMood(view : Int) {
         var moodtype : MoodType? = null
 
         when(view) {
@@ -72,20 +68,12 @@ class MoodFragment : DialogFragment() {
                 moodtype = MoodType.TRISTE
             }
         }
-
-        var mood = Mood(moodtype!!.ordinal.toString(), moodtype!!.name, Date())
-        var date = Date().time
-        var simpleDateFormat = SimpleDateFormat("dd MM yyyy")
-        var dateString = simpleDateFormat.format(date)
-        Toast.makeText(context,dateString,Toast.LENGTH_SHORT).show()
-
-        firestore.collection("Mood").document(auth.uid.toString()).collection("Historial").document(
-            dateString)
-            .set(mood)
-
-        Toast.makeText(context,"Registro guardado correctamente",Toast.LENGTH_SHORT).show()
+        val mood = Mood(moodtype!!.ordinal.toString(), moodtype!!.name, Date())
+        val date = Date().time
+        val simpleDateFormat = SimpleDateFormat("dd MM yyyy")
+        val dateString = simpleDateFormat.format(date)
+        firestore.collection("Mood").document(auth.uid.toString()).collection("Historial").document(dateString).set(mood)
+        Utils.showToast(requireContext(),"Registro guardado correctamente")
         dismiss()
-
     }
-
 }

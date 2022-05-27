@@ -101,8 +101,11 @@
     <!-- Settings -->
     <string name="nombre">Nombre</string>
     <string name="bio">Biografía</string>
+    <string name="old_name">Nombre actual</string>
+    <string name="new_name">Nombre nuevo</string>
     <string name="bio_actual">Biografía actual</string>
     <string name="bio_nueva">Nueva biografía</string>
+    <string name="settings_name">Cambiar nombre</string>
     <string name="settings_username">Cambiar nombre de usuario</string>
     <string name="settings_bio">Cambiar biografía</string>
     <string name="change_password">Cambiar contraseña</string>

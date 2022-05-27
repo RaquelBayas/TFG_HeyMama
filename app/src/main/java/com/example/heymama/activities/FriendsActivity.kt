@@ -59,17 +59,21 @@ class FriendsActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
         firebaseStore = FirebaseStorage.getInstance()
         storageReference = FirebaseStorage.getInstance().reference
+        initRecycler()
+        getFriends()
+        searchView()
+    }
 
+    /**
+     * Este método permite inicializar el recyclerview, el adapter, y el arraylist de amigos.
+     */
+    private fun initRecycler() {
         recyclerViewFriends = binding.recyclerviewAmigos
         recyclerViewFriends.layoutManager = LinearLayoutManager(this)
         recyclerViewFriends.setHasFixedSize(true)
         friendsArraylist = arrayListOf()
         adapterFriends =  UserAdapter(applicationContext,friendsArraylist,uid)
         recyclerViewFriends.adapter = adapterFriends
-
-        getFriends()
-
-        searchView()
     }
 
     /**
@@ -116,6 +120,7 @@ class FriendsActivity : AppCompatActivity() {
             }
             val docs = value!!.documents
             if (docs.isEmpty()) {
+                friendsArraylist.clear()
                 Toast.makeText(this, "No has agregado a nadie...", Toast.LENGTH_SHORT).show()
             } else {
                 friendsRef.get().addOnSuccessListener { documents ->

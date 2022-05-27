@@ -70,9 +70,6 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
         firestore = FirebaseFirestore.getInstance()
 
         val post_tl: PostTimeline = postsTimelineList[position]
-
-        storageReference = storageReference.child("Usuarios/"+post_tl.userId+"/images/perfil")
-
         if(post_tl.userId!! == auth.uid){
             holder.btn_menu_post_tl.visibility = View.VISIBLE
             holder.btn_menu_post_tl.setOnClickListener {
@@ -125,6 +122,10 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
         changeButtonColors(holder, post_tl)
     }
 
+    /**
+     * Este método permite añadir un like en un post.
+     * @param post_tl PostTimeline : Post
+     */
     private fun like(post_tl: PostTimeline) {
         firestore.collection("Timeline").addSnapshotListener { _, error ->
             if (error != null) {
@@ -182,7 +183,7 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
     }
 
     /**
-     *
+     * Este método cambia el color del botón "Like"
      * @param holder Holder
      * @param post_tl PostTimeline
      */
@@ -227,7 +228,7 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
     }
 
     /**
-     *
+     * Este método sirve para contar los comentarios recibidos en un post de la timeline.
      * @param holder PostTimelineAdapter
      * @param position Int
      */
@@ -249,7 +250,7 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
     }
 
     /**
-     *
+     * Este método sirve para contar el número de likes de un post.
      * @param holder PostTimelineAdapter
      * @param position Int : Posición del post en el postsTimelineList
      */
@@ -292,7 +293,7 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
 
         init {
             itemView.setOnClickListener {
-                Log.i("ONCLICK: ",listener.onItemClicked(adapterPosition).toString())
+                Log.i("PostTimelineAdapter",listener.onItemClicked(adapterPosition).toString())
             }
         }
     }
