@@ -125,9 +125,8 @@ class SettingsActivity : AppCompatActivity() {
         firestore.collection("Usuarios").document(uid).addSnapshotListener { value, error ->
             switch.isChecked = value!!["protected"] as Boolean
         }
-        //switch.isChecked = true //prefs.isProtected()
+        //switch.isChecked = prefs.isProtected()
 
-        Log.i("SETTINGS-PRIVACIDAD",prefs.isProtected().toString())
         switch.setOnClickListener {
             if(switch.isChecked) {
                 firestore.collection("Usuarios").document(uid).update("protected", true)
@@ -194,7 +193,6 @@ class SettingsActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.dialog_change_username,null)
         builder.setView(view)
 
-        //Obtenemos el editText del nombre de usuario
         val txt_old = view.findViewById<TextView>(R.id.settings_txt_old)
         val txt_new = view.findViewById<TextView>(R.id.settings_txt_new)
         txt_old.text = resources.getString(R.string.bio_actual)
@@ -283,8 +281,8 @@ class SettingsActivity : AppCompatActivity() {
 
         val txt_old = view.findViewById<TextView>(R.id.settings_txt_old)
         val txt_new = view.findViewById<TextView>(R.id.settings_txt_new)
-        txt_old.text = "Correo electrónico actual"//R.string.settings_old_email
-        txt_new.text = "Nuevo correo electrónico" //R.string.settings_new_email.toString()
+        txt_old.text = "Correo electrónico actual"
+        txt_new.text = "Nuevo correo electrónico"
 
         val new_email = view.findViewById<EditText>(R.id.edt_settings_email)
         val current_password = view.findViewById<EditText>(R.id.edt_settings_password)
@@ -323,7 +321,7 @@ class SettingsActivity : AppCompatActivity() {
                                         Toast.makeText(applicationContext,R.string.email_updated,Toast.LENGTH_SHORT).show()
                                     }.addOnFailureListener{
                                         Toast.makeText(applicationContext,"Se ha producido un error",Toast.LENGTH_SHORT).show()
-                                        Log.i("CHANGEEMAIL",it.toString())
+                                        Log.e("SettingsActivity",it.toString())
                                     }
                                 }
                             }
@@ -331,7 +329,7 @@ class SettingsActivity : AppCompatActivity() {
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        Log.i("TAG",error.toString())
+                        Log.i("SettingsActivity",error.toString())
                     }
                 })
             }
@@ -407,6 +405,7 @@ class SettingsActivity : AppCompatActivity() {
         deleteChatList(uid)
         deleteUserConsultas(uid)
         deleteUserFriendRequests(uid)
+        deleteNotifications(uid)
         database.reference.child("Usernames").child(username).removeValue()
         database.reference.child("Usuarios").child(uid).removeValue()
 
@@ -421,6 +420,19 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Este método elimina las notificaciones.
+     * @param userId String : UID del usuario
+     */
+    private fun deleteNotifications(userId: String) {
+        database.reference.child("NotificationsTL").child(userId).removeValue()
+        database.reference.child("NotificationsConsultas").equalTo("uid",userId).ref.removeValue()
+    }
+
+    /**
+     * Este método elimina los foros publicados y los comentarios.
+     * @param userId String : UID del usuario
+     */
     private fun deleteForos(userId: String) {
         val temasForos = arrayListOf("Depresión","Embarazo","Posparto","Otros")
         for(temaForo in temasForos) {
@@ -469,6 +481,7 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+
     private fun deleteUserChats(userId: String) {
         database.reference.child("ChatList").child(userId).removeValue()
         database.reference.child("Chats").child(userId).child("Messages").addValueEventListener(object:ValueEventListener{
@@ -483,6 +496,10 @@ class SettingsActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Este método elimina los registros de estado.
+     * @param userId String : UID del usuario
+     */
     private fun deleteUserMood(userId: String) {
         firestore.collection("Mood").document(userId).collection("Historial").addSnapshotListener { value, error ->
             value!!.documents.iterator().forEach {
@@ -491,6 +508,10 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Este método elimina los posts publicados por el usuario.
+     * @param userId String : UID del usuario
+     */
     private fun deleteUserPosts(userId: String) {
         firestore.collection("Timeline").whereEqualTo("userId",userId).addSnapshotListener { value, error ->
             value?.documents?.iterator()?.forEach {
@@ -509,19 +530,25 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Este método elimina las fotos del usuario (perfil,layout).
+     * @param userId String : UID del usuario
+     */
     private fun deleteUserPhotos(userId: String) {
-        firebaseStore.getReference("Usuarios/"+userId+"/images/perfil").delete().addOnSuccessListener {
-            Log.i("SettingsActivity",it.toString())
+        firebaseStore.getReference("Usuarios/$userId/images/perfil").delete().addOnSuccessListener {
         }.addOnFailureListener {
             Log.e("SettingsActivity",it.toString())
         }
-        firebaseStore.getReference("Usuarios/"+userId+"/images/layout").delete().addOnSuccessListener {
-            Log.i("SettingsActivity",it.toString())
+        firebaseStore.getReference("Usuarios/$userId/images/layout").delete().addOnSuccessListener {
         }.addOnFailureListener {
             Log.e("SettingsActivity",it.toString())
         }
     }
 
+    /**
+     * Este método elimina los posts a los que ha dado 'like' el usuario.
+     * @param userId String : UID del usuario
+     */
     private fun deleteUserLikes(userId: String) {
         firestore.collection("Likes").document(userId).collection("Likes").addSnapshotListener { value, error ->
             if(error != null) {
@@ -535,6 +562,10 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Este método elimina los chats del usuario.
+     * @param userId String : UID del usuario
+     */
     private fun deleteChatList(userId: String) {
         val ref = database.reference.child("ChatList")
         ref.child(userId).addValueEventListener(object: ValueEventListener {
@@ -547,9 +578,12 @@ class SettingsActivity : AppCompatActivity() {
             override fun onCancelled(error: DatabaseError) {
             }
         })
-
     }
 
+    /**
+     * Este método, en el caso de los profesionales, elimina los artículos publicados.
+     * @param userId String : UID del usuario
+     */
     private fun deleteUserArticulos(userId: String) {
         firestore.collection("Artículos").whereEqualTo("professionalID",userId).addSnapshotListener { value, error ->
             if(value!!.documents.isNotEmpty()){
@@ -557,6 +591,10 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Este método elimina las solicitudes de amistad.
+     * @param userId String : UID del usuario
+     */
     private fun deleteUserFriendRequests(userId: String) {
         val reference = firestore.collection("Friendship")
         reference.document(userId).collection("FriendRequest").addSnapshotListener { value, error ->
@@ -566,6 +604,10 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Este método elimina los amigos del usuario.
+     * @param userId String : UID del usuario
+     */
     private fun deleteUserFriends(userId: String){
         val reference = firestore.collection("Friendship")
         reference.document(userId).collection("Friends").addSnapshotListener { value, error ->
@@ -604,6 +646,9 @@ class SettingsActivity : AppCompatActivity() {
         currentUser(uid)
     }
 
+    /**
+     * Este método permite cerrar la sesión
+     */
     private fun logOut() {
         prefs.editor?.clear()
         prefs.editor?.commit()

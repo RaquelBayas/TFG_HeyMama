@@ -43,6 +43,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView8">
         </TextView>
         <TextView
+            android:visibility="invisible"
             android:id="@+id/txt_foro_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

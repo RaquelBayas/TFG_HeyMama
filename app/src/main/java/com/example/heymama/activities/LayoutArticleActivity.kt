@@ -34,9 +34,7 @@ class LayoutArticleActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLayoutArticleBinding
 
     /**
-     *
      * @param savedInstanceState Bundle
-     *
      */
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,10 +109,8 @@ class LayoutArticleActivity : AppCompatActivity() {
 
     /**
      * Este método permite añadir el artículo en la base de datos
-     *
      * @param articulo Article
      * @param article_ref DocumentReference
-     *
      */
     private fun addArticle(articulo: Article, article_ref: DocumentReference) {
         article_ref.set(articulo)

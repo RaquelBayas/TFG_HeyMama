@@ -204,6 +204,17 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
                             holder.likeButton.setButtonDrawable(R.drawable.ic_corazon)
                         }
                     }
+                firestore.collection("Likes").document(auth.uid.toString()).collection("Likes").document(post_tl.postId.toString())
+                    .addSnapshotListener { value, error ->
+                        if (error != null) {
+                            return@addSnapshotListener
+                        }
+                        if (value!!.exists()) {
+                            holder.likeButton.setButtonDrawable(R.drawable.ic_corazon_rojo)
+                        } else {
+                            holder.likeButton.setButtonDrawable(R.drawable.ic_corazon)
+                        }
+                    }
             }
         }
     }

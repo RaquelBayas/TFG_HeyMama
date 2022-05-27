@@ -49,22 +49,24 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
         temas = resources.getStringArray(R.array.temasConsultas)
         val adapter = ArrayAdapter(this,R.layout.spinner_item,temas)
         spinnerConsultas.adapter = adapter
-
-        //binding.swipeRefreshTL.setOnRefreshListener { getDataUser() }
     }
 
+    /**
+     * Este método permite inicializar los objetos de Firebase
+     */
     private fun initFirebase() {
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
         firestore = FirebaseFirestore.getInstance()
     }
 
-
+    /**
+     * Este método permite inicializar el recyclerview, el adapter y el arraylist de consultas
+     */
     private fun initRecycler() {
         recyclerView = binding.recyclerViewConsultas
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.setHasFixedSize(true)
-
         consultasArraylist = arrayListOf()
         adapter = ConsultaAdapter(this, consultasArraylist, this)
         adapter.setHasStableIds(true)
@@ -86,6 +88,9 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
         })
     }
 
+    /**
+     * Este método permite mirar la lista de consultas específicas de un tema
+     */
     private fun getSpinner() {
         spinnerConsultas.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
@@ -96,7 +101,6 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     getConsultas(temas[position])
                 }
             }
-
             override fun onNothingSelected(p0: AdapterView<*>?) {
                 if(rol == "Usuario") {
                     getMisConsultas("Embarazo")
@@ -134,12 +138,10 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
                 adapter.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
                     override fun onItemClicked(position: Int) {
-                        Toast.makeText(this@ConsultasActivity,"Item number: $position",Toast.LENGTH_SHORT).show()
                         val id_consulta = consultasArraylist[position].id.toString()
                         val tema_consulta = consultasArraylist[position].tema.toString()
                         val id_user_consulta = consultasArraylist[position].userID.toString()
                         val consulta = consultasArraylist[position].consulta.toString()
-
                         open(id_consulta,tema_consulta,id_user_consulta,consulta)
                     }
                 })
@@ -154,9 +156,7 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
      */
     private fun getConsultas(temaConsulta: String) {
         consultasArraylist.clear()
-
         firestore = FirebaseFirestore.getInstance()
-
         firestore.collection("Consultas").document(temaConsulta).collection("Consultas")
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
@@ -195,7 +195,6 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     /**
      * Método para abrir una nueva actividad en la cual el profesional puede responder la consulta seleccionada.
-     *
      * @param id_consulta String : ID de la consulta.
      * @param tema_consulta String : Tema de la consulta.
      * @param id_user_consulta String : ID del usuario que ha realizado la consulta.

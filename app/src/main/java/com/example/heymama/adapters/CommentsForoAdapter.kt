@@ -1,6 +1,5 @@
 package com.example.heymama.adapters
 
-import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +18,7 @@ import com.google.firebase.database.ValueEventListener
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 
-class CommentsForoAdapter(private val context: Context, private val commentsForoArrayList: ArrayList<Comment>, private val foroItemListener: ItemRecyclerViewListener
+class CommentsForoAdapter(private val commentsForoArrayList: ArrayList<Comment>, private val foroItemListener: ItemRecyclerViewListener
 ) : RecyclerView.Adapter<CommentsForoAdapter.HolderForo>() {
 
     private lateinit var auth : FirebaseAuth
@@ -49,18 +48,24 @@ class CommentsForoAdapter(private val context: Context, private val commentsForo
             foroItemListener.onItemClicked(position)
         }
 
-        var timestamp = commentsForoArrayList[position].timestamp.toString()
-        var timestamp1 = Timestamp.parse(timestamp)
+        val timestamp = commentsForoArrayList[position].timestamp.toString()
+        val timestamp1 = Timestamp.parse(timestamp)
         val dateFormat = SimpleDateFormat("dd/MM/yy HH:mm")
 
         holder.time.text = dateFormat.format(timestamp1)
     }
 
+    /**
+     * Este método permite obtener los datos del usuario
+     * @param userID String
+     * @param holder CommentsForoAdapter.HolderForo
+     */
     private fun getDataUser(userID: String, holder: CommentsForoAdapter.HolderForo) {
         database.reference.child("Usuarios").child(userID).addValueEventListener(object:
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                var user : User? = snapshot.getValue(User::class.java)
+                val user : User? = snapshot.getValue(User::class.java)
+                holder.user.visibility = View.VISIBLE
                 holder.user.text = user!!.username
             }
             override fun onCancelled(error: DatabaseError) {
@@ -68,10 +73,16 @@ class CommentsForoAdapter(private val context: Context, private val commentsForo
         })
     }
 
+    /**
+     * Devuelve la cantidad de elementos del arraylist.
+     */
     override fun getItemCount(): Int {
         return commentsForoArrayList.size
     }
 
+    /**
+     * ViewHolder
+     */
     inner class HolderForo(itemView: View) : RecyclerView.ViewHolder(itemView){
         val comment_foro: TextView = itemView.findViewById(R.id.textView8)
         val user: TextView = itemView.findViewById(R.id.txt_foro_name)

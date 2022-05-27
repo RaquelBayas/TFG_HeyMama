@@ -43,25 +43,29 @@ class FriendsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityFriendsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        auth = FirebaseAuth.getInstance()
-        user = auth.currentUser!!
-
+        initFirebase()
         val intent = intent
         if(intent.getStringExtra("UID") != null) {
             uid = intent.getStringExtra("UID").toString()
         } else {
             uid = auth.currentUser?.uid!!
         }
+        initRecycler()
+        getFriends()
+        searchView()
+    }
 
+    /**
+     * Este método permite inicializar los objetos de Firebase
+     */
+    private fun initFirebase() {
+        auth = FirebaseAuth.getInstance()
+        user = auth.currentUser!!
         database = FirebaseDatabase.getInstance()
         dataBaseReference = database.getReference("Usuarios")
         firestore = FirebaseFirestore.getInstance()
         firebaseStore = FirebaseStorage.getInstance()
         storageReference = FirebaseStorage.getInstance().reference
-        initRecycler()
-        getFriends()
-        searchView()
     }
 
     /**

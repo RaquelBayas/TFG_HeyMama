@@ -53,11 +53,7 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
         prefs = PreferencesManager(this)
         binding = ActivityHomeProfBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        auth = FirebaseAuth.getInstance()
-        database = FirebaseDatabase.getInstance()
-        firebaseStorage = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
-        storageReference = firebaseStorage.reference
+        initFirebase()
 
         val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar_main)
         setSupportActionBar(toolbar)
@@ -89,7 +85,19 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
         initButtons()
     }
 
+    /**
+     * Este método permite inicializar los objetos de Firebase
+     */
+    private fun initFirebase() {
+        auth = FirebaseAuth.getInstance()
+        database = FirebaseDatabase.getInstance()
+        firebaseStorage = FirebaseStorage.getInstance()
+        storageReference = firebaseStorage.reference
+    }
 
+    /**
+     * Este método permite inicializar el bottom navigation view
+     */
     private fun initBottomNav() {
         bottomNavigationView = binding.bottomNavigationView
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
@@ -101,6 +109,9 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
         }
     }
 
+    /**
+     * Este método permite inicializar los objetos de Firebase
+     */
     private fun initButtons() {
         binding.txtConsultas.setOnClickListener{
             startActivity(Intent(this,ConsultasActivity::class.java))
@@ -120,7 +131,6 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
     /**
      * Menú lateral
      * @param item MenuItem
-     *
      */
     override fun onNavigationItemSelected(item: MenuItem) : Boolean {
         when (item.itemId) {
@@ -156,6 +166,9 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
         startActivity(intent)
     }
 
+    /**
+     * Este método obtiene el nombre del usuario
+     */
     private fun getUserName() {
         database.reference.child("Usuarios").child(auth.uid.toString()).child("name").addValueEventListener(object:
             ValueEventListener {
@@ -179,9 +192,8 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
     }
 
     /**
-     *
+
      * @param newConfig Configuration
-     *
      */
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)

@@ -21,11 +21,19 @@ class InfoArticleAdapter(private val context: Context, private var articleArrayL
         notifyDataSetChanged()
     }
 
+    /**
+     * @param parent ViewGroup
+     * @param viewType Int
+     */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderArticle {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.tema_info,parent,false)
         return HolderArticle(view)
     }
 
+    /**
+     * @param holder HolderArticle
+     * @param position Int
+     */
     override fun onBindViewHolder(holder: HolderArticle, position: Int) {
         dataBase = FirebaseDatabase.getInstance()
 

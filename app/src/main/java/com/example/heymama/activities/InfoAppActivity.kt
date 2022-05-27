@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.heymama.R
 import com.example.heymama.databinding.ActivityInfoAppBinding
+import com.example.heymama.fragments.TutorialFragment
 import com.example.heymama.fragments.VersionAppFragment
 
 
@@ -18,17 +19,13 @@ class InfoAppActivity : AppCompatActivity() {
         openFragments()
     }
 
+    /**
+     * Este método permite comprobar el tutorial de la app o la versión.
+     */
     private fun openFragments(){
         binding.txtTutorial.setOnClickListener {
-
-        }
-
-        binding.txtTerminos.setOnClickListener {
-
-        }
-
-        binding.txtPoliticas.setOnClickListener {
-
+            val fragment = TutorialFragment()
+            supportFragmentManager.beginTransaction().replace(R.id.activityInfoApp,fragment).addToBackStack(null).commit()
         }
 
         binding.txtVersion.setOnClickListener {

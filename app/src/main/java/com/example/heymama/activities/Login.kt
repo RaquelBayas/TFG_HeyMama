@@ -64,28 +64,29 @@ class Login : AppCompatActivity() {
                     override fun onCancelled(p0: DatabaseError) {
                     }
                     override fun onDataChange(p0: DataSnapshot) {
-                        for (dataSnapShot in p0.children) {
-                            dataBaseReference.child(dataSnapShot.key.toString())
-                                .addValueEventListener(object : ValueEventListener {
-                                    override fun onCancelled(p1: DatabaseError) {
-                                    }
+                        if(p0.exists()) {
+                            for (dataSnapShot in p0.children) {
+                                dataBaseReference.child(dataSnapShot.key.toString())
+                                    .addValueEventListener(object : ValueEventListener {
+                                        override fun onCancelled(p1: DatabaseError) {
+                                        }
 
-                                    override fun onDataChange(p1: DataSnapshot) {
-                                        val data = p1.child("email").value
-                                        UserInfo.listaMails.add(data.toString())
-                                    }
-                                })
+                                        override fun onDataChange(p1: DataSnapshot) {
+                                            val data = p1.child("email").value
+                                            UserInfo.listaMails.add(data.toString())
+                                        }
+                                    })
+                            }
                         }
                     }
                 })
-                logIn()
+            logIn()
             }
         }
     }
 
     /**
      * Este método permite iniciar sesión en la aplicación
-     *
      */
     private fun logIn() {
         val email: String = txt_email.text.toString()
@@ -97,7 +98,6 @@ class Login : AppCompatActivity() {
                     if (task.isSuccessful) {
                         val emailFireBase = auth.currentUser!!
                         val mailVerified = emailFireBase.isEmailVerified
-
                         auth.currentUser?.reload()
                         if(mailVerified) {
                             checkRol(email,password)
@@ -115,10 +115,9 @@ class Login : AppCompatActivity() {
     }
 
     /**
-     *
+     * Este método permite comprobar el registro del usuario
      * @param email FirebaseUser
      * @param mailVerified Boolean
-     *
      */
     private fun checkRegister(email: FirebaseUser,mailVerified:Boolean) {
         dataBaseReference.get().addOnSuccessListener { value ->
@@ -137,19 +136,22 @@ class Login : AppCompatActivity() {
 
     /**
      * Este método permite comprobar el rol del usuario logueado
-     *
      * @param email String
      * @param databaseReference DatabaseReference
-     *
      */
     private fun  checkRol(email:String, password:String)  {
         dataBaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                for(s in snapshot.children) {
-                    if (s.child("email").value.toString() == email) {
-                        rol = s.child("rol").value.toString()
-                        prefs.createLoginSession(email,password,rol)
-                        goHomeActivity(rol)
+                if(snapshot.exists()) {
+                    for (s in snapshot.children) {
+                        if (s.child("email").value.toString() == email) {
+                            rol = s.child("rol").value.toString()
+                            prefs.createLoginSession(email, password, rol)
+                            goHomeActivity(rol)
+                        }
+                    }
+                    if(!snapshot.child(auth.uid.toString()).exists()) {
+                        Utils.showToast(this@Login,"Tu cuenta ha sido bloqueada")
                     }
                 }
             }
@@ -159,7 +161,8 @@ class Login : AppCompatActivity() {
     }
 
     /**
-     *
+     * Este método permite iniciar la aplicación dependiendo del rol del usuario
+     * @param rol String : Rol del usuario
      */
     private fun goHomeActivity(rol: String){
         when (rol) {
@@ -182,19 +185,4 @@ class Login : AppCompatActivity() {
         }
     }
 
-    /**
-     * Cambia el estado del usuario a "offline".
-     */
-    override fun onPause() {
-        super.onPause()
-        Utils.updateStatus("offline")
-    }
-
-    /**
-     * Cambia el estado del usuario a "online".
-     */
-    override fun onResume() {
-        super.onResume()
-        Utils.updateStatus("online")
-    }
 }

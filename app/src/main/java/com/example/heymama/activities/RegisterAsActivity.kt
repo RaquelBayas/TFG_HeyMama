@@ -14,15 +14,14 @@ class RegisterAsActivity : AppCompatActivity() {
         binding = ActivityRegisterAsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.btnUsuario.setOnClickListener {
-            initRegister("Usuario")
-        }
-
-        binding.btnProfesional.setOnClickListener {
-          initRegister("Profesional")
-        }
+        binding.btnUsuario.setOnClickListener { initRegister("Usuario") }
+        binding.btnProfesional.setOnClickListener { initRegister("Profesional") }
     }
 
+    /**
+     * Este método permite acceder al registro.
+     * @param rol String : Rol
+     */
     private fun initRegister(rol: String){
         val intent = Intent(this, RegisterActivity::class.java)
         intent.putExtra("Rol",rol)

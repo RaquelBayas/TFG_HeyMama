@@ -30,11 +30,9 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private lateinit var firebaseStorage: FirebaseStorage
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageReference: StorageReference
-
     private lateinit var recyclerViewCommentsTimeline: RecyclerView
     private lateinit var commentsPostsTLArraylist: ArrayList<PostTimeline>
     private lateinit var adapterCommentsPostsTL: CommentsPostTLAdapter
-
     private lateinit var idpost: String
     private lateinit var iduser: String
     private lateinit var nameuser: String
@@ -43,10 +41,9 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private lateinit var photo_comment: CircleImageView
 
     private lateinit var binding: ActivityCommentPostTlactivityBinding
+
     /**
-     *
      * @param savedInstanceState Bundle
-     *
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +60,7 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
         auth = FirebaseAuth.getInstance()
         uid = auth.currentUser!!.uid
         firebaseStorage = FirebaseStorage.getInstance()
-        storageReference = FirebaseStorage.getInstance().reference //.getReference("Usuarios/$uid/images/perfil")
+        storageReference = FirebaseStorage.getInstance().reference
         firestore = FirebaseFirestore.getInstance()
 
         initRecycler()
@@ -101,7 +98,7 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
         recyclerViewCommentsTimeline.layoutManager = LinearLayoutManager(this)
         recyclerViewCommentsTimeline.setHasFixedSize(true)
         commentsPostsTLArraylist = arrayListOf()
-        adapterCommentsPostsTL = CommentsPostTLAdapter(this, idpost, commentsPostsTLArraylist, this)
+        adapterCommentsPostsTL = CommentsPostTLAdapter(this, idpost, iduser, commentsPostsTLArraylist, this)
         recyclerViewCommentsTimeline.adapter = adapterCommentsPostsTL
     }
 
@@ -131,7 +128,7 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
         val comment = PostTimeline(doc_id, uid, Date(), edt_comment,0,0)
         doctlfb.set(comment).addOnSuccessListener {
             val notificationRef = database.reference.child("NotificationsTL").child(iduser)
-            val notification = Notification(uid,"",idpost,textpost,"ha comentado en tu post",Date())
+            val notification = Notification(uid,"",idpost,edt_comment,"ha comentado en tu post",Date())
             notificationRef.push().setValue(notification)
         }.addOnFailureListener {
             Log.i("CommentPostTLActivity","No se ha podido añadir el comentario.")
@@ -164,11 +161,18 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
         }
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
+    }
+
     /**
-     *
+     * Este método permite añadir el nombre del usuario y el comentario del post.
      */
     private fun getPostTLInfo() {
-        binding.txtNameCommentPosttl.text = nameuser
+        firestore.collection("Usuarios").document(iduser).addSnapshotListener { value, error ->
+            binding.txtNameCommentPosttl.text = value!!["name"].toString()
+        }
         binding.txtCommentPosttl.text = textpost
     }
 }

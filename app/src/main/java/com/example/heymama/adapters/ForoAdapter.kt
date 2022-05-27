@@ -1,6 +1,5 @@
 package com.example.heymama.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +15,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 
-class ForoAdapter(private val context: Context, private var foroArrayList: ArrayList<Post>, private val foroItemListener: ItemRecyclerViewListener
+class ForoAdapter(private var foroArrayList: ArrayList<Post>, private val foroItemListener: ItemRecyclerViewListener
     ) : RecyclerView.Adapter<ForoAdapter.HolderForo>() {
 
     private lateinit var database: FirebaseDatabase
@@ -27,7 +26,6 @@ class ForoAdapter(private val context: Context, private var foroArrayList: Array
     }
 
     /**
-     *
      * @param parent ViewGroup
      * @param viewType Int
      */
@@ -37,7 +35,6 @@ class ForoAdapter(private val context: Context, private var foroArrayList: Array
     }
 
     /**
-     *
      * @param holder HolderForo
      * @param position Int
      */
@@ -62,6 +59,7 @@ class ForoAdapter(private val context: Context, private var foroArrayList: Array
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 var user : User? = snapshot.getValue(User::class.java)
+                holder.user_foro.visibility = View.VISIBLE
                 holder.user_foro.text = user!!.username
             }
             override fun onCancelled(error: DatabaseError) {
@@ -77,7 +75,7 @@ class ForoAdapter(private val context: Context, private var foroArrayList: Array
     }
 
     /**
-     *
+     * ViewHolder
      * @param itemView View
      */
     inner class HolderForo(itemView: View) : RecyclerView.ViewHolder(itemView){

@@ -48,6 +48,7 @@ class NotificationsActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private fun initRecycler() {
         recyclerViewNotifications = binding.recyclerViewNotifications
         recyclerViewNotifications.layoutManager = LinearLayoutManager(this)
+        recyclerViewNotifications.setHasFixedSize(true)
         notificationsArraylist = arrayListOf()
         adapterNotifications = NotificationsAdapter(this,notificationsArraylist,this)
         recyclerViewNotifications.adapter = adapterNotifications
@@ -77,31 +78,27 @@ class NotificationsActivity : AppCompatActivity(), ItemRecyclerViewListener {
      * por el usuario en la timeline.
      */
     private fun getNotificationsTL() {
-        notificationsArraylist.clear()
+
         val ref = database.reference.child("NotificationsTL").child(uid)
-        ref.get().addOnSuccessListener { it ->
-            if(it.exists()) {
-                it.children.iterator().forEach {
+        ref.addValueEventListener(object:ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                notificationsArraylist.clear()
+                snapshot.children.iterator().forEach {
                     val notification = it.getValue(Notification::class.java)
-                    if(notification!!.uid != auth.uid.toString()) {
-                        firestore.collection("Timeline").document(notification.idpost.toString()).collection("Replies")
-                            .whereEqualTo("comment",notification.textpost).addSnapshotListener { value, error ->
-                                value!!.documents.iterator().forEach {
-                                    if(it.exists()) {
-                                        notificationsArraylist.add(notification)
-                                    }
-                                }
-                            }
-                    }
-                    adapterNotifications.notifyDataSetChanged()
+                    notificationsArraylist.add(notification!!)
                     adapterNotifications.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
                         override fun onItemClicked(position: Int) {
                         }
                     })
                 }
+                adapterNotifications.notifyDataSetChanged()
+                if(notificationsArraylist.size > 1) {
+                    notificationsArraylist.sort()
+                }
             }
-        }
-
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
     }
 
     /**

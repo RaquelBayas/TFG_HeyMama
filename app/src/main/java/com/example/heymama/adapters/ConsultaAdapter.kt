@@ -24,20 +24,25 @@ class ConsultaAdapter(private val context: Context, private val consultasArrayLi
         this.listener = listener
     }
 
+    /**
+     * @param parent ViewGroup
+     * @param viewType Int
+     */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderConsulta {
-
         val view = LayoutInflater.from(parent.context).inflate(R.layout.consulta,parent,false)
         return HolderConsulta(view, listener)
     }
 
+    /**
+     * @param holder HolderConsulta
+     * @param position Int
+     */
     override fun onBindViewHolder(holder: HolderConsulta, position: Int) {
         firestore = FirebaseFirestore.getInstance()
 
         getUserData(consultasArrayList[position].userID.toString(), holder)
         with(holder) {
-
             consulta.text = consultasArrayList[position].consulta.toString()
-
             holder.btn_menu_consulta_.visibility = View.VISIBLE
             btn_menu_consulta_.setOnClickListener {
                 menuBtnConsulta(holder,consultasArrayList[position])
@@ -47,10 +52,8 @@ class ConsultaAdapter(private val context: Context, private val consultasArrayLi
 
     /**
      * Este método permite obtener los datos del usuario a partir de su uid
-     *
      * @param uid String
      * @param holder HolderConsulta
-     *
      */
     private fun getUserData(uid: String, holder:HolderConsulta) {
         firestore.collection("Usuarios").document(uid).addSnapshotListener { value, error ->
@@ -64,6 +67,11 @@ class ConsultaAdapter(private val context: Context, private val consultasArrayLi
         }
     }
 
+    /**
+     * Menú consulta: permite eliminar la consulta
+     * @param holder HolderConsulta
+     * @param consulta Consulta
+     */
     private fun menuBtnConsulta(holder: HolderConsulta, consulta: Consulta) {
         val popupMenu: PopupMenu = PopupMenu(context,holder.btn_menu_consulta_)
         popupMenu.menuInflater.inflate(R.menu.post_tl_menu,popupMenu.menu)
@@ -92,6 +100,9 @@ class ConsultaAdapter(private val context: Context, private val consultasArrayLi
         return consultasArrayList.size
     }
 
+    /**
+     * ViewHolder
+     */
     inner class HolderConsulta(itemView: View, listener:ItemRecyclerViewListener) : RecyclerView.ViewHolder(itemView){
         var userc_consulta: TextView = itemView.findViewById(R.id.txt_consulta_user)
         var name_consulta: TextView = itemView.findViewById(R.id.txt_consulta_name)
@@ -100,7 +111,7 @@ class ConsultaAdapter(private val context: Context, private val consultasArrayLi
 
         init {
             itemView.setOnClickListener {
-                Log.i("ONCLICK: ",listener.onItemClicked(adapterPosition).toString())
+                Log.i("ConsultaAdapter",listener.onItemClicked(adapterPosition).toString())
                 true
             }
         }

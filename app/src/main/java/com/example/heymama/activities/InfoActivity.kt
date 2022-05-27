@@ -69,11 +69,13 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
         auth = FirebaseAuth.getInstance()
     }
 
+    /**
+     * Este método permite inicializar el recyclerview, el adapter, y el arraylist de artículos.
+     */
     private fun initRecycler() {
         recyclerView = findViewById(R.id.articles_recyclerView)
         recyclerView.layoutManager = GridLayoutManager(this,2)
         recyclerView.setHasFixedSize(true)
-
         articlesArraylist = arrayListOf()
         idArticlesArrayList = arrayListOf()
         adapter = InfoArticleAdapter(this,articlesArraylist,this)
@@ -114,6 +116,9 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
         }
     }
 
+    /**
+     * Este método permite implementar la búsqueda de artículos.
+     */
     private fun searchView() {
         binding.searchViewInfo.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
@@ -127,6 +132,9 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
         })
     }
 
+    /**
+     * Este método permite filtrar la búsqueda de artículos.
+     */
     private fun filter(articleSearch: String) {
         val articleSearchArrayList = ArrayList<Article>()
         for(article in articlesArraylist) {
@@ -138,9 +146,8 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
     }
 
     /**
-     *
+     * Este método permite seleccionar un artículo
      * @param position Int
-     *
      */
     override fun onItemClicked(position: Int) {
         val intent = Intent(this, ArticleActivity::class.java)

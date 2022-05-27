@@ -37,17 +37,18 @@ class ForosActivity : AppCompatActivity(){
         binding = ActivityForosBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        database = FirebaseDatabase.getInstance("https://heymama-8e2df-default-rtdb.firebaseio.com/")
+        database = FirebaseDatabase.getInstance()
         auth = FirebaseAuth.getInstance()
-
         user = auth.currentUser!!
         firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
 
         getDataUser()
-
         initForos()
     }
 
+    /**
+     * Este método permite inicializar los foros.
+     */
     private fun initForos() {
         txt_depresion = binding.txtDepresion
         binding.txtDepresion.setOnClickListener{
@@ -71,15 +72,14 @@ class ForosActivity : AppCompatActivity(){
     }
 
     /**
-     * Obtener el rol del usuario
-     *
+     * Este método permite obtener el rol del usuario
      */
     private fun getDataUser() {
         database.reference.child("Usuarios").child(auth.uid.toString())
             .addValueEventListener(object :
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    var user: User? = snapshot.getValue(User::class.java)
+                    val user: User? = snapshot.getValue(User::class.java)
                     rol = user!!.rol.toString()
                 }
 
@@ -88,6 +88,12 @@ class ForosActivity : AppCompatActivity(){
             })
     }
 
+    /**
+     * Este método permite entrar en el foro seleccionado.
+     * @param activity Activity
+     * @param nameclass Class<*>
+     * @param foroName String
+     */
     private fun initForo(activity: Activity, nameclass: Class<*>?, foroName: String){
         val intent = Intent(activity, nameclass)
         intent.putExtra("ForoName",foroName)

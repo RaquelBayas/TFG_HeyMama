@@ -8,6 +8,9 @@ import com.google.firebase.database.FirebaseDatabase
 
 object Utils {
 
+    fun showErrorToast(context: Context) {
+        Toast.makeText(context,"Se ha producido un error.",Toast.LENGTH_SHORT).show()
+    }
     fun showToast(context: Context, message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }

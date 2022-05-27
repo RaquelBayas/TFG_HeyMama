@@ -31,7 +31,6 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
      *
      * @constructor
      * @param savedInstanceState Bundle
-     *
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,15 +42,7 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
 
         dataBase = FirebaseDatabase.getInstance()
         auth = FirebaseAuth.getInstance()
-
-        temasArraylist = arrayListOf()
-        idTemasArrayList = arrayListOf()
-        adapter = ForoAdapter(this,temasArraylist,this)
-        recyclerView = binding.foroRecyclerView
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.setHasFixedSize(true)
-        recyclerView.adapter = adapter
-
+        initRecycler()
         getTemasData(foroName)
 
         binding.swipeRefreshTL.setOnRefreshListener {
@@ -65,6 +56,22 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
         searchView()
     }
 
+    /**
+     * Este método inicializa el recyclerview, el adapter y los arraylists
+     */
+    private fun initRecycler() {
+        temasArraylist = arrayListOf()
+        idTemasArrayList = arrayListOf()
+        adapter = ForoAdapter(temasArraylist,this)
+        recyclerView = binding.foroRecyclerView
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.setHasFixedSize(true)
+        recyclerView.adapter = adapter
+    }
+
+    /**
+     * Este método permite implementar la búsqueda de foros.
+     */
     private fun searchView() {
         binding.searchViewForos.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
@@ -77,6 +84,9 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
         })
     }
 
+    /**
+     * Este método permite filtrar la búsqueda de foros.
+     */
     private fun filter(text: String) {
         val postSearchArrayList = ArrayList<Post>()
         for(post in temasArraylist) {
@@ -89,7 +99,6 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
 
     /**
      * Este método sirve para obtener los datos del respectivo tema seleccionado.
-     *
      * @param foroName String : Nombre del foro seleccionado.
      */
     private fun getTemasData(foroName: String?) {
@@ -97,6 +106,7 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
             binding.swipeRefreshTL.isRefreshing = false
         }
         temasArraylist.clear()
+        idTemasArrayList.clear()
         firestore = FirebaseFirestore.getInstance()
 
         firestore.collection("Foros").document("SubForos").collection(foroName.toString())
@@ -122,7 +132,7 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
     }
 
     /**
-     *
+     * Este método permite abrir el tema seleccionado.
      * @param position Int
      */
     override fun onItemClicked(position: Int) {

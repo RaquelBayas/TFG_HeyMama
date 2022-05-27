@@ -10,12 +10,12 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.heymama.*
 import com.example.heymama.R
-import com.example.heymama.Utils
 import com.example.heymama.adapters.CommentsForoAdapter
 import com.example.heymama.databinding.ActivityTemaForoBinding
+import com.example.heymama.interfaces.APIService
 import com.example.heymama.interfaces.ItemRecyclerViewListener
-
 import com.example.heymama.models.Comment
 import com.example.heymama.models.User
 import com.google.firebase.auth.FirebaseAuth
@@ -32,11 +32,9 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var firestore: FirebaseFirestore
-
     private lateinit var recyclerViewComments: RecyclerView
     private lateinit var commentsArraylist: ArrayList<Comment>
     private lateinit var adapterComments: CommentsForoAdapter
-
     private lateinit var id_tema: String
     private lateinit var title_tema: String
     private lateinit var description_tema: String
@@ -52,7 +50,7 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private lateinit var binding: ActivityTemaForoBinding
 
     /**
-     *
+     * @constructor
      * @param savedInstanceState Bundle
      */
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,14 +60,13 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         database = FirebaseDatabase.getInstance()
         auth = FirebaseAuth.getInstance()
-
         user = auth.currentUser!!
         uid = auth.uid.toString()
 
        initExtras()
 
         binding.button9.setOnClickListener {
-            showDialog(user!!, foroName, id_tema)
+            showDialog(user!!, foroName)
         }
 
         initRecycler()
@@ -92,8 +89,8 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener {
         time = intent.getStringExtra("Time").toString()
         privacidad = intent.getStringExtra("Privacidad").toString()
 
-        var timestamp = time
-        var timestamp1 = Timestamp.parse(timestamp)
+        val timestamp = time
+        val timestamp1 = Timestamp.parse(timestamp)
         val dateFormat = SimpleDateFormat("dd/MM/yy HH:mm")
 
         binding.txtForoHora.text = dateFormat.format(timestamp1)
@@ -101,15 +98,22 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener {
         binding.txtForoDescripcion.text = description_tema
     }
 
+    /**
+     * Este método permite inicializar el recyclerview, el adapter y el arraylist
+     */
     private fun initRecycler() {
         recyclerViewComments = binding.recyclerViewCommentsForo
         recyclerViewComments.layoutManager = LinearLayoutManager(this)
-        recyclerViewComments.setHasFixedSize(true)
+        recyclerViewComments.setHasFixedSize(false)
         commentsArraylist = arrayListOf()
-        adapterComments = CommentsForoAdapter(this,commentsArraylist,this)
+        adapterComments = CommentsForoAdapter(commentsArraylist,this)
         recyclerViewComments.adapter = adapterComments
+        recyclerViewComments.recycledViewPool.setMaxRecycledViews(0,0)
     }
 
+    /**
+     * Este método permite inicializar el menú del foro
+     */
     private fun btnMenuForo() {
         btn_menu_foro = findViewById(R.id.btn_menu_foro)
         btn_menu_foro.visibility = View.VISIBLE
@@ -123,6 +127,7 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener {
      *
      */
     private fun getDataUser(){
+        Log.i("GETDATAUSER",userID)
         database.reference.child("Usuarios").child(userID).addValueEventListener(object:
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -132,9 +137,8 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     binding.txtForoUser.text = user.username
                 }
                 binding.txtForoUser.setOnClickListener {
-                    finish()
                     val intent = Intent(applicationContext,PerfilActivity::class.java)
-                    intent.putExtra("userID",userID)
+                    intent.putExtra("UserUID",userID)
                     startActivity(intent)
                 }
             }
@@ -147,7 +151,7 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener {
         database.reference.child("Usuarios").child(uid).addValueEventListener(object:
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                var user : User? = snapshot.getValue(User::class.java)
+                val user : User? = snapshot.getValue(User::class.java)
                 rol = user!!.rol.toString()
                 if((userID == auth.uid.toString()) || (rol == "Admin") ){
                     btnMenuForo()
@@ -169,8 +173,7 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
             when(it.itemId) {
-                R.id.eliminar -> {
-                    ""
+                R.id.eliminar_post_tl -> {
                     val reference = firestore.collection("Foros").document("SubForos")
                         .collection(foroName).document(id)
                     reference.delete()
@@ -179,7 +182,6 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener {
                         for(i in data!!.iterator()) {
                             i.reference.delete()
                         }
-                       Utils.showToast(this,"Deleted successfully")
                     }
                     finish()
                 }
@@ -189,13 +191,11 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener {
     }
     /**
      * Muestra un diálogo que sirve para escribir el comentario que se desea añadir.
-     *
      * @param user FirebaseUser
      * @param foroName String
      * @param urlTema String
-     *
      */
-    private fun showDialog(user: FirebaseUser, foroName: String, urlTema: String) {
+    private fun showDialog(user: FirebaseUser, foroName: String) {
         val builder = AlertDialog.Builder(this,R.style.CustomForoCommentsLayout).create()
         val inflater: LayoutInflater = layoutInflater
         val dialogLayout: View = inflater.inflate(R.layout.add_comment_foro_layout,null)
@@ -229,8 +229,7 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener {
     }
 
     /**
-     *
-     *
+     * Este método permite añadir un comentario
      * @param edt_comment String
      * @param user FirebaseUser
      * @param foroName String
@@ -245,7 +244,6 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     /**
      * Obtiene los comentarios de la base de datos
-     *
      * @param foroName String : Nombre del foro
      * @param id String : ID del comentario
      */
@@ -275,25 +273,28 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     override fun onItemLongClicked(position: Int) {
                         if(commentsArraylist[position].userID == uid) {
                             deleteComment(commentsArraylist[position])
-                            adapterComments.notifyItemRemoved(position)
                         }
                     }
                 })
             }
     }
 
+    /**
+     * Este método permite eliminar un comentario.
+     * @param comment Comment
+     */
     private fun deleteComment(comment: Comment) {
         val dialog = AlertDialog.Builder(this)
             .setTitle(R.string.eliminar)
-            .setMessage(R.string.alert_eliminar)
+            .setMessage("¿Deseas eliminar el comentario?")
             .setNegativeButton("Cancelar") { view, _ ->
                 view.dismiss()
             }
             .setPositiveButton("Eliminar") { view, _ ->
-                commentsArraylist.remove(comment)
                 firestore.collection("Foros").document("SubForos").collection(foroName).document(id).collection("Comentarios")
                   .document(comment.id).delete()
-            }.setCancelable(false)
+                adapterComments.notifyDataSetChanged()
+            }
             .create()
         dialog.show()
     }

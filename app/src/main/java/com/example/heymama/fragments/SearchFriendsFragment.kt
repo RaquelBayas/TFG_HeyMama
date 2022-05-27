@@ -27,7 +27,6 @@ class SearchFriendsFragment : Fragment() {
     private lateinit var adapter: ListaUsuariosAdapter
     private lateinit var database: FirebaseDatabase
     private lateinit var uid: String
-    private lateinit var rol: String
     private var _binding : FragmentSearchFriendsBinding? = null
     private val binding get() = _binding
 
@@ -90,7 +89,7 @@ class SearchFriendsFragment : Fragment() {
         val reference = database.reference.child("Usuarios")
         reference.get().addOnSuccessListener {
             it.children.iterator().forEach { va ->
-                var user = va.getValue(User::class.java)
+                val user = va.getValue(User::class.java)
                 if(user!!.rol != "Admin") {
                     listaUsuariosArraylist.add(user!!)
                 }

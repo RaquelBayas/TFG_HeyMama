@@ -2,6 +2,7 @@ package com.example.heymama.adapters
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,10 @@ import com.example.heymama.R
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.PostTimeline
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -21,11 +26,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class CommentsPostTLAdapter(private val context: Context, private val idpost_origin: String, private val commentsPostsList: ArrayList<PostTimeline>, private val commentsPostsListener: ItemRecyclerViewListener
+class CommentsPostTLAdapter(private val context: Context, private val idpost_origin: String, private val iduser_origin: String, private val commentsPostsList: ArrayList<PostTimeline>, private val commentsPostsListener: ItemRecyclerViewListener
 ) : RecyclerView.Adapter<CommentsPostTLAdapter.HolderForo>() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var firebaseStorage: FirebaseStorage
+    private lateinit var database: FirebaseDatabase
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageReference: StorageReference
     private lateinit var idUser: String
@@ -47,6 +53,7 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
 
         auth = FirebaseAuth.getInstance()
         firebaseStorage = FirebaseStorage.getInstance()
+        database = FirebaseDatabase.getInstance()
         storageReference = firebaseStorage.reference
         firestore = FirebaseFirestore.getInstance()
 
@@ -86,6 +93,19 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
                     when(it.itemId) {
                         R.id.eliminar_post_tl -> {
                             firestore.collection("Timeline").document(idpost_origin).collection("Replies").document(post_tl.postId.toString()).delete()
+                            database.reference.child("NotificationsTL").child(iduser_origin).orderByChild("textpost").addValueEventListener(object:ValueEventListener {
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    snapshot.children.iterator().forEach { datasnapshot ->
+                                        datasnapshot.children.iterator().forEach {
+                                            if(it.value.toString() == post_tl.comment.toString()){
+                                                datasnapshot.ref.removeValue()
+                                            }
+                                        }
+                                    }
+                                }
+                                override fun onCancelled(error: DatabaseError) {
+                                }
+                            })
                         }
                     }
                     true
@@ -101,6 +121,9 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
         return commentsPostsList.size
     }
 
+    /**
+     * ViewHolder
+     */
     inner class HolderForo(itemView: View) : RecyclerView.ViewHolder(itemView){
         var user_post: TextView = itemView.findViewById(R.id.txt_user_comment_posttl)
         var name_post: TextView = itemView.findViewById(R.id.txt_name_comment_posttl)

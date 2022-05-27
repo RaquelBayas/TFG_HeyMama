@@ -70,6 +70,9 @@ class UserAdapter(private val context: Context, private var usersList: ArrayList
         menuFriend(holder,usersList[position].username)
     }
 
+    /**
+     * Devuelve la cantidad de elementos del arraylist "commentsPostsList"
+     */
     override fun getItemCount(): Int {
         return usersList.size
     }

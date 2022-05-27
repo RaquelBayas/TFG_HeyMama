@@ -73,23 +73,25 @@ class HomeActivityAdmin : AppCompatActivity(), NavigationView.OnNavigationItemSe
         viewNav = navigationView.getHeaderView(0)
         toggle = object : ActionBarDrawerToggle(this,drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close){
             override fun onDrawerStateChanged(newState: Int) {
-                var profileImage_nav = viewNav.findViewById<ImageView>(R.id.nav_header_icon)
+                val profileImageNav = viewNav.findViewById<ImageView>(R.id.nav_header_icon)
                 storageReference = firebaseStorage.getReference("/Usuarios/"+auth.currentUser?.uid+"/images/perfil")
                 GlideApp.with(applicationContext)
                     .load(storageReference)
                     .error(R.drawable.wallpaper_profile)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
-                    .into(profileImage_nav)
+                    .into(profileImageNav)
             }
         }
 
         drawer.addDrawerListener(toggle)
-
         initBottomNavigation()
         getUserName()
     }
 
+    /**
+     * Este método permite inicializar los objetos de Firebase
+     */
     private fun initFirebase() {
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()

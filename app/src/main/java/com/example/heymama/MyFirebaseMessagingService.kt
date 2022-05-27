@@ -1,23 +1,17 @@
 package com.example.heymama
 
 import android.app.Notification
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import android.media.RingtoneManager
-
 import android.app.PendingIntent
-
 import android.content.Intent
 import android.net.Uri
-
 import android.os.Bundle
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -44,38 +38,6 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
                 }
             }
         }
-        /*Looper.prepare()
-        Handler().post  {
-            Toast.makeText(this,p0.notification?.title,Toast.LENGTH_LONG).show()
-        }
-        Looper.loop()
-        */
-
-        /*var title : String = p0.notification?.title.toString()
-
-        var body : String = p0.notification?.body.toString()
-
-        var builder : NotificationCompat.Builder = NotificationCompat.Builder(applicationContext,101)
-            .setContentTitle("New mail from " + title)
-            .setContentText(body)
-            .setSmallIcon(R.drawable.iconohome)
-
-
-        var manager : NotificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        manager.notify(123,builder)
-        */
-
-        /*FirebaseMessaging.getInstance().token.addOnCompleteListener { task: Task<String> ->
-            if (!task.isSuccessful) {
-                return@addOnCompleteListener
-            }
-
-            var pushToken = task.result
-            Log.i("PUSH_TOKEN", "pushToken: $pushToken")
-        }
-
-        Log.e("msg:","msg received")
-    */
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -130,9 +92,7 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
         val defaultSound: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
         val oreoNotification = OreoNotification(this)
-        val builder: Notification.Builder =
-            oreoNotification.getOreoNotification(title, body, pendingIntent,
-                defaultSound, icon)
+        val builder: Notification.Builder = oreoNotification.getOreoNotification(title, body, pendingIntent, defaultSound, icon)
 
         var i = 0
         if (j > 0) {

@@ -23,25 +23,27 @@ class ContactoActivity : AppCompatActivity() {
     private lateinit var binding: ActivityContactoBinding
 
     /**
-     *
      * @param savedInstanceState Bundle
-     *
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityContactoBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        auth = FirebaseAuth.getInstance()
-        firestore = FirebaseFirestore.getInstance()
-        database = FirebaseDatabase.getInstance()
-
+        initFirebase()
         spinnerConsultas = binding.spinnerConsultas
         temas = resources.getStringArray(R.array.temasConsultas)
         val adapter = ArrayAdapter(this,R.layout.spinner_item,temas)
         spinnerConsultas.adapter = adapter
-
         initButtons()
+    }
+
+    /**
+     * Este método permite inicializar los objetos de Firebase
+     */
+    private fun initFirebase() {
+        auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
+        database = FirebaseDatabase.getInstance()
     }
 
     private fun initButtons() {
@@ -99,7 +101,7 @@ class ContactoActivity : AppCompatActivity() {
             Toast.makeText(this,"Consulta enviada correctamente",Toast.LENGTH_SHORT).show()
             txt_consulta.setText("")
         } else {
-            Toast.makeText(this, "Se ha producido un error", Toast.LENGTH_SHORT).show()
+            Utils.showErrorToast(this)
         }
     }
 

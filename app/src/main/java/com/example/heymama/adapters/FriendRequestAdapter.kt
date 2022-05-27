@@ -1,9 +1,7 @@
 package com.example.heymama.adapters
 
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.heymama.GlideApp
@@ -19,7 +16,6 @@ import com.example.heymama.R
 import com.example.heymama.activities.PerfilActivity
 import com.example.heymama.models.FriendRequest
 import com.example.heymama.models.User
-import com.google.android.datatransport.runtime.scheduling.jobscheduling.SchedulerConfig
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.firestore.CollectionReference
@@ -37,7 +33,6 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
     private lateinit var storageReference: StorageReference
 
     /**
-     *
      * @param parent ViewGroup
      * @param viewType Int
      */
@@ -50,7 +45,6 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
     }
 
     /**
-     *
      * @param holder FriendRequestAdapter.HolderForo
      * @param position Int
      */
@@ -99,29 +93,27 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
     }
 
     /**
-     *
+     * Este método permite actualizar el estado de una solicitud de amistad
      * @param id String
      * @param request String
-     *
      */
     private fun updateFriendRequest(id:String,request:String){
-        var friendship_reference = firestore.collection("Friendship")
+        val friendshipReference = firestore.collection("Friendship")
 
         // ACEPTAR -> ESTABLECE LA AMISTAD
         if(request.equals("aceptar")) {
-            var friends = FriendRequest(auth.currentUser?.uid.toString(), id, "friends")
-            friendship_reference.document(auth.currentUser?.uid.toString())
+            val friends = FriendRequest(auth.currentUser?.uid.toString(), id, "friends")
+            friendshipReference.document(auth.currentUser?.uid.toString())
                 .collection("Friends").document(id).set(friends)
-
-            friendship_reference.document(id).collection("Friends")
+            friendshipReference.document(id).collection("Friends")
                 .document(auth.currentUser?.uid.toString()).set(friends)
         }
         // ELIMINA LA SOLICITUD DE AMISTAD
-        deleteFriendRequest(friendship_reference,id)
+        deleteFriendRequest(friendshipReference,id)
     }
 
     /**
-     *
+     * Este método permite eliminar una solicitud de amistad
      * @param reference CollectionReference
      * @param id String
      */
@@ -134,7 +126,6 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
     }
 
     /**
-     *
      * @param id String
      * @param request String
      */
@@ -165,8 +156,9 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
     }
 
     /**
-     *
+     * Este método permite aceptar/rechazar la solicitud de amistad
      * @param holder FriendRequestAdapter.HolderForo
+     * @param request String : tipo de acción ("Aceptar"/"Rechazar")
      */
     private fun acceptDenyFriendRequest(holder: Holder, request: String) {
         val holder_username = holder.txt_user_solicitud.text.toString()
@@ -193,7 +185,7 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
     }
 
     /**
-     *
+     * ViewHolder
      * @param itemView View
      */
     inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {

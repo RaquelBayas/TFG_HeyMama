@@ -49,9 +49,6 @@ class RegisterActivity : AppCompatActivity() {
         focusPassword()
         focusName()
 
-        binding.btnCheckUsername.setOnClickListener {
-            validUsername()
-        }
         binding.btnCrearCuenta.setOnClickListener {
             validate()
         }
@@ -123,14 +120,6 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    private fun validPassword(): String? {
-        val password = binding.txtPassword.text.toString()
-        if(password == null || password.length < 7){
-            return "Contraseña inválida"
-        }
-        return null
-    }
-
     private fun focusEmail() {
         binding.txt0Email.setOnFocusChangeListener { view, focused ->
             if(!focused) {
@@ -144,9 +133,6 @@ class RegisterActivity : AppCompatActivity() {
         if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
             return "Correo electrónico inválido"
         }
-        /*if(email.isEmpty()) {
-            return "Escribe un correo electrónico"
-        }*/
         return null
     }
 

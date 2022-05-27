@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
 import com.example.heymama.activities.CommentPostTLActivity
@@ -22,9 +21,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.toObject
 
-class NotificationsAdapter(private val context: Context?, private val notificationsList: ArrayList<Notification>, private val notificationsListener: ItemRecyclerViewListener
+class NotificationsAdapter(private val context: Context, private val notificationsList: ArrayList<Notification>, private val notificationsListener: ItemRecyclerViewListener
 ) : RecyclerView.Adapter<NotificationsAdapter.Holder>() {
     private lateinit var database: FirebaseDatabase
     private lateinit var auth: FirebaseAuth
@@ -32,19 +30,25 @@ class NotificationsAdapter(private val context: Context?, private val notificati
     private lateinit var listener: ItemRecyclerViewListener
 
     /**
-     *
      * @param listener ItemRecyclerViewListener
-     *
      */
     fun setOnItemRecyclerViewListener(listener: ItemRecyclerViewListener) {
         this.listener = listener
     }
 
+    /**
+     * @param parent ViewGroup
+     * @param viewType Int
+     */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationsAdapter.Holder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.tema_notification,parent,false)
         return Holder(view)
     }
 
+    /**
+     * @param holder NotificationsAdapter.Holder
+     * @param position Int
+     */
     override fun onBindViewHolder(holder: NotificationsAdapter.Holder, position: Int) {
         database = FirebaseDatabase.getInstance()
         auth = FirebaseAuth.getInstance()
@@ -52,7 +56,10 @@ class NotificationsAdapter(private val context: Context?, private val notificati
 
         with(holder) {
             val uid = notificationsList[position].uid.toString()
-            comment.text = notificationsList[position].textpost
+            firestore.collection("Timeline").document(notificationsList[position].idpost.toString()).addSnapshotListener { value, error ->
+                comment.text = value!!["comment"].toString()
+            }
+            //comment.text = notificationsList[position].textpost
             type.text = notificationsList[position].type
             database.reference.child("Usuarios").child(uid).addListenerForSingleValueEvent(object: ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -78,11 +85,14 @@ class NotificationsAdapter(private val context: Context?, private val notificati
         }
     }
 
+    /**
+     * Este método permite obtener el comentario
+     */
     private fun getComment(idpost: String,comment: String) {
         firestore.collection("Timeline").document(idpost).addSnapshotListener { value, error ->
             value!!.reference.collection("Replies").whereEqualTo("comment",comment).addSnapshotListener { value, error ->
                 if(value!!.documents.isNotEmpty()) {
-                    Log.i("NOT-ADAPTER",value.toString())
+                    Log.i("NotificationsAdapter",value.toString())
                 }
             }
         }
@@ -90,6 +100,7 @@ class NotificationsAdapter(private val context: Context?, private val notificati
 
     /**
      * Este método permite buscar la consulta en la base de datos a partir del id de la misma
+     * @param idconsulta String : ID de la consulta
      */
     private fun consulta(idconsulta: String) {
         firestore.collection("Consultas").addSnapshotListener { value, error ->
@@ -132,7 +143,8 @@ class NotificationsAdapter(private val context: Context?, private val notificati
         intent.putExtra("comment",comment)
         intent.putExtra("idpost",idpost)
         intent.putExtra("iduser",iduser)
-        this.context!!.startActivity(intent)
+        context.startActivity(intent)
+
     }
 
     /**
@@ -142,6 +154,9 @@ class NotificationsAdapter(private val context: Context?, private val notificati
        return notificationsList.size
     }
 
+    /**
+     * ViewHolder
+     */
     inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var name : TextView = itemView.findViewById(R.id.txt_user_notification)
         var comment : TextView = itemView.findViewById(R.id.txt_post_notification)

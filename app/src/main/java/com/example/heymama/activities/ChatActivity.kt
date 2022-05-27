@@ -7,7 +7,6 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import com.example.heymama.models.Message
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
@@ -50,7 +49,6 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private var apiService: APIService?=null
 
     /**
-     *
      * @param savedInstanceState Bundle
      */
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -200,7 +198,7 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
             if(progressDialog.isShowing) progressDialog.dismiss()
         }.addOnFailureListener{
             if(progressDialog.isShowing) progressDialog.dismiss()
-            Toast.makeText(this,"Hubo un error",Toast.LENGTH_SHORT).show()
+            Utils.showErrorToast(this)
         }
     }
 
@@ -269,13 +267,10 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     .updateChildren(lastMessage)
                     .addOnSuccessListener {
                         binding.txtMessageChat.setText("")
-                        Toast.makeText(applicationContext,
-                            "El mensaje se ha enviado correctamente",
-                            Toast.LENGTH_SHORT).show()
                     }
             }
 
-        var refNotify = database.reference.child("Usuarios").child(uid)
+        val refNotify = database.reference.child("Usuarios").child(uid)
         refNotify.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 val user = snapshot.getValue(User::class.java)
@@ -288,12 +283,17 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 }
                 notify=false
             }
-
             override fun onCancelled(error: DatabaseError) {
             }
         })
     }
 
+    /**
+     * Este método permite enviar una notificación cuando se envía un mensaje.
+     * @param receiverId String
+     * @param userName String
+     * @param message String
+     */
     private fun sendNotification(receiverId: String?, userName: String?, message: String) {
         val ref = FirebaseDatabase.getInstance().reference.child("Tokens")
         val query = ref.orderByKey().equalTo(receiverId)
@@ -302,7 +302,7 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
             override fun onDataChange(p0: DataSnapshot) {
                 for(dataSnapshot in p0.children) {
                     val token: Token?=dataSnapshot.getValue(Token::class.java)
-                    val data = Data(uid,R.drawable.logoapp,"$userName: $message","New Message",friendUID)
+                    val data = Data(uid,R.drawable.logoapp,"$userName: $message","Nuevo mensaje",friendUID)
                     val sender = Sender(data,token!!.getToken().toString())
 
                     apiService!!.sendNotification(sender)
@@ -310,7 +310,7 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
                             override fun onResponse(call: Call<MyResponse?>, response: Response<MyResponse?>) {
                                 if(response.code()==200) {
                                     if(response.body()!!.success!==1) {
-                                        Toast.makeText(this@ChatActivity,"Failed, Nothing happened.",Toast.LENGTH_SHORT).show()
+                                        Utils.showErrorToast(this@ChatActivity)
                                     }
                                 }
                             }
@@ -325,7 +325,7 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
     }
 
     /**
-     *
+     * Este método permite obtener los mensajes.
      * @param senderUID String
      * @param receiverUID String
      *
@@ -357,39 +357,31 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
     }
 
     /**
-     *
-     *
+     * Este método permite actualizar el nombre del usuario con el que hablamos en el chat
      */
     private fun updateFriendName(){
-        val txt_chat_friend_name = findViewById<TextView>(R.id.txt_chat_friend_name)
         firestore.collection("Usuarios").document(friendUID).get().addOnSuccessListener {
-            txt_chat_friend_name.text = it.get("name").toString()
+            binding.txtChatFriendName.text = it.get("name").toString()
         }
     }
 
     /**
-     *
+     * Este método permite cargar la imagen del usuario con el que hablamos en el chat
      */
     private fun updatePicture(){
-        val imageView_chat = findViewById<ImageView>(R.id.imageView_chat)
-        glidePicture(friendUID,imageView_chat)
+        firebaseStorageRef = firebaseStorage.getReference("/Usuarios/$friendUID/images/perfil")
+        GlideApp.with(applicationContext)
+            .load(firebaseStorageRef)
+            .error(R.drawable.wallpaper_profile)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
+            .into(binding.imageViewChat)
     }
 
     /**
-     *
-     * @param uid String
-     * @param image ImageView
+     * Este método guarda el uid del usuario actual en SharedPreferences
+     * @param userid String
      */
-    private fun glidePicture(uid: String, image: ImageView) {
-        firebaseStorageRef = firebaseStorage.getReference("/Usuarios/$uid/images/perfil")
-        GlideApp.with(applicationContext)
-                .load(firebaseStorageRef)
-                .error(R.drawable.wallpaper_profile)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .into(image)
-    }
-
     private fun currentUser(userid: String?) {
         val editor = getSharedPreferences("PREFS", MODE_PRIVATE).edit()
         editor.putString("currentUser", userid)

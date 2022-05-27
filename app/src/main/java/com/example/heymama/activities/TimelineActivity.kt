@@ -80,8 +80,8 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
      * Dependiendo del rol que tenga, obtendrá los comentarios de la Timeline con el método getCommentsTLAdmin() o getCommentsTL().
      */
     private fun getUserData() {
-        var ref = database.reference.child("Usuarios").child(auth.uid.toString()).child("rol")
-        ref.addValueEventListener(object: ValueEventListener {
+        val reference = database.reference.child("Usuarios").child(auth.uid.toString()).child("rol")
+        reference.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 rol = snapshot.value.toString()
                 if(rol == "Admin"){
@@ -161,15 +161,16 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
          * Comprobamos si el usuario tiene amigos:
          *
          */
+
         firestore.collection("Friendship").document(auth.uid.toString()).collection("Friends").get().addOnSuccessListener { it ->
             val documents = it.documents
             friendsIds.add(auth.uid.toString())
             if(documents.isEmpty()){
                 firestore.collection("Usuarios").whereEqualTo("protected",false).addSnapshotListener { value, error ->
-                    value!!.documents.iterator().forEach {
+                    /*value!!.documents.iterator().forEach {
                         if(it.id != auth.uid.toString()) {
                         friendsIds.add(it.id)}
-                    }
+                    }*/
                     friendsIds.iterator().forEach {
                         firestore.collection("Timeline").whereEqualTo("userId",it).addSnapshotListener { snapshots, e ->
                             if (e!= null) {

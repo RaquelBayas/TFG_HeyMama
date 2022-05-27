@@ -70,14 +70,6 @@
                 android:hint="@string/usuario"
                 android:padding="10dp"></com.google.android.material.textfield.TextInputEditText>
         </com.google.android.material.textfield.TextInputLayout>
-
-        <Button
-            android:id="@+id/btn_check_username"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:background="@drawable/ic_check_username"
-           ></Button>
     </LinearLayout>
 
 

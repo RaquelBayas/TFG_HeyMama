@@ -32,9 +32,7 @@ class ArticleActivity : AppCompatActivity() {
     private lateinit var txt_description_article: TextView
     private lateinit var binding: ActivityArticleBinding
     /**
-     *
      * @param savedInstanceState Bundle
-     *
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +44,6 @@ class ArticleActivity : AppCompatActivity() {
 
         val intent = intent
         id_article = intent.getStringExtra("ID_Article")!!
-
         title_article = intent.getStringExtra("Title_Article")!!
         description_article = intent.getStringExtra("Description_Article")!!
         professional_article = intent.getStringExtra("Professional_Article")!!
@@ -68,7 +65,7 @@ class ArticleActivity : AppCompatActivity() {
     }
 
     /**
-     *
+     * Este método permite eliminar el artículo.
      * @param firestore FirebaseFirestore
      * @param articlesArraylist ArrayList<Article>
      */
@@ -105,11 +102,10 @@ class ArticleActivity : AppCompatActivity() {
             .create()
         dialog.show()
     }
-    // Menú: editar, eliminar
+
     /**
-     *
+     * Menú: editar, eliminar
      * @param menu Menu
-     *
      */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater
@@ -118,7 +114,7 @@ class ArticleActivity : AppCompatActivity() {
     }
 
     /**
-     *
+     * Opciones del menú: editar artículo, eliminar artículo.
      * @param item MenuItem
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

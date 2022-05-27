@@ -38,14 +38,19 @@ class ListChatItemAdapter(private val context: Context, private val listChatItem
         this.listener = listener
     }
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int,
-    ): ListChatItemAdapter.ChatItemForo {
+    /**
+     * @param parent ViewGroup
+     * @param viewType Int
+     */
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int, ): ListChatItemAdapter.ChatItemForo {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.list_chats_item, parent, false)
         return ChatItemForo(view,listener)
     }
 
+    /**
+     * @param holder ListChatItemAdapter.ChatItemForo
+     * @param position Int
+     */
     override fun onBindViewHolder(holder: ListChatItemAdapter.ChatItemForo, position: Int) {
         firebaseStorage = FirebaseStorage.getInstance()
         database = FirebaseDatabase.getInstance()
@@ -81,6 +86,11 @@ class ListChatItemAdapter(private val context: Context, private val listChatItem
         menuItem(holder,idUser)
     }
 
+    /**
+     * Este método permite mostrar el menú para eliminar un chat.
+     * @param holder ChatItemForo
+     * @param idUser String
+     */
     private fun menuItem(holder: ChatItemForo, idUser: String) {
         holder.btn_menu_list_chats_item.visibility = View.VISIBLE
         holder.btn_menu_list_chats_item.setOnClickListener {
@@ -129,7 +139,7 @@ class ListChatItemAdapter(private val context: Context, private val listChatItem
     }
 
     /**
-     *
+     * ViewHolder
      */
     inner class ChatItemForo(itemView: View, listener:ItemRecyclerViewListener) : RecyclerView.ViewHolder(itemView) {
         var txt_name_chat_item: TextView = itemView.findViewById(R.id.txt_name_chat_item)
