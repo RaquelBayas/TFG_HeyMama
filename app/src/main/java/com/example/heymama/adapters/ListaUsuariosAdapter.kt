@@ -56,12 +56,14 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
         database.reference.child("Usuarios").child(auth.uid.toString()).addValueEventListener(object:
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                var user : User? = snapshot.getValue(User::class.java)
-                rol = user!!.rol.toString()
-                if(rol == "Admin") {
-                    holder.btn_menu_user.visibility = View.VISIBLE
-                    holder.btn_menu_user.setOnClickListener {
-                        menuUser(holder,listaUsuarios[position])
+                if(snapshot.exists()) {
+                    var user: User? = snapshot.getValue(User::class.java)
+                    rol = user!!.rol.toString()
+                    if (rol == "Admin") {
+                        holder.btn_menu_user.visibility = View.VISIBLE
+                        holder.btn_menu_user.setOnClickListener {
+                            menuUser(holder, listaUsuarios[position])
+                        }
                     }
                 }
             }
@@ -215,18 +217,15 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
                         return@addSnapshotListener
                     }
                     for(doc in value!!.documents) {
-                        doc.reference.delete().addOnSuccessListener {
-                            doc.reference.collection("Comentarios").addSnapshotListener { value, error ->
-                                if(error != null) {
-                                    Log.e("SettingsActivity",error.toString())
-                                }
-                                for (doc in value!!.documents) {
-                                    doc.reference.delete()
-                                }
+                        doc.reference.collection("Comentarios").addSnapshotListener { value, error ->
+                            if(error != null) {
+                                Log.e("SettingsActivity",error.toString())
                             }
-                        }.addOnFailureListener {
-                            Log.e("SettingsActivity",it.toString())
+                            for (doc in value!!.documents) {
+                                doc.reference.delete()
+                            }
                         }
+                        doc.reference.delete()
                     }
                 }
         }
@@ -245,7 +244,7 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
     private fun deleteUserConsultas(userId: String) {
         val arrayTemas = arrayListOf("Embarazo","Familia","Parto","Posparto","Otros")
         for(tema in arrayTemas) {
-            firestore.collection("Consultas").document(tema).collection("Consultas").whereEqualTo("userId",userId).addSnapshotListener { value, error ->
+            firestore.collection("Consultas").document(tema).collection("Consultas").whereEqualTo("userID",userId).addSnapshotListener { value, error ->
                 if(error != null) {
                     Log.e("SettingsActivity",error.toString())
                     return@addSnapshotListener

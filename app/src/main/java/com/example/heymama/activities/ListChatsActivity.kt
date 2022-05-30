@@ -80,18 +80,21 @@ class ListChatsActivity : AppCompatActivity(), ItemRecyclerViewListener {
         ref.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 chatsArraylist.clear()
-                for(snapshot in snapshot.children) {
-                    val chatlist = snapshot.getValue(ListChat::class.java)
-                    chatsArraylist.add(chatlist!!)
-                    adapterChats.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
-                        override fun onItemClicked(position: Int) {
-                            val intent = Intent(applicationContext, ChatActivity::class.java)
-                            intent.putExtra("friendUID", chatsArraylist[position].id)
-                            startActivity(intent)
-                        }
-                    })
+                if(snapshot.exists()) {
+                    for (snapshot in snapshot.children) {
+                        val chatlist = snapshot.getValue(ListChat::class.java)
+                        chatsArraylist.add(chatlist!!)
+                        adapterChats.setOnItemRecyclerViewListener(object :
+                            ItemRecyclerViewListener {
+                            override fun onItemClicked(position: Int) {
+                                val intent = Intent(applicationContext, ChatActivity::class.java)
+                                intent.putExtra("friendUID", chatsArraylist[position].id)
+                                startActivity(intent)
+                            }
+                        })
+                    }
+                    adapterChats.notifyDataSetChanged()
                 }
-                adapterChats.notifyDataSetChanged()
             }
             override fun onCancelled(error: DatabaseError) {
             }

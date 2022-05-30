@@ -60,8 +60,11 @@ class TimelineFragment : Fragment(), ItemRecyclerViewListener {
         adapterPostsTL = PostTimelineAdapter(requireContext().applicationContext,postsTLArraylist,this)
         recyclerViewTimeline.adapter = adapterPostsTL
 
-        checkPublicUser()
-
+        if(uid == auth.uid.toString()) {
+            loadPostsTL()
+        } else {
+            checkPublicUser()
+        }
         return binding.root
     }
 

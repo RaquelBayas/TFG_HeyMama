@@ -89,11 +89,13 @@ class SearchFriendsFragment : Fragment() {
         val reference = database.reference.child("Usuarios")
         reference.get().addOnSuccessListener {
             it.children.iterator().forEach { va ->
-                val user = va.getValue(User::class.java)
-                if(user!!.rol != "Admin") {
-                    listaUsuariosArraylist.add(user!!)
+                if(va.exists()) {
+                    val user = va.getValue(User::class.java)
+                    if (user!!.rol != "Admin") {
+                        listaUsuariosArraylist.add(user!!)
+                    }
+                    adapter.notifyDataSetChanged()
                 }
-                adapter.notifyDataSetChanged()
             }
         }
 

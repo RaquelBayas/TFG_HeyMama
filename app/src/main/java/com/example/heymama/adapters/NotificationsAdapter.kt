@@ -56,9 +56,7 @@ class NotificationsAdapter(private val context: Context, private val notificatio
 
         with(holder) {
             val uid = notificationsList[position].uid.toString()
-            firestore.collection("Timeline").document(notificationsList[position].idpost.toString()).addSnapshotListener { value, error ->
-                comment.text = value!!["comment"].toString()
-            }
+
             //comment.text = notificationsList[position].textpost
             type.text = notificationsList[position].type
             database.reference.child("Usuarios").child(uid).addListenerForSingleValueEvent(object: ValueEventListener{
@@ -69,15 +67,25 @@ class NotificationsAdapter(private val context: Context, private val notificatio
 
                     }
                 }
-
                 override fun onCancelled(error: DatabaseError) {
                 }
             })
             if(type.text == "ha comentado en tu post") {
+                firestore.collection("Timeline").document(notificationsList[position].idpost.toString()).addSnapshotListener { value, error ->
+                    comment.text = value!!["comment"].toString()
+                }
+
                 comment.setOnClickListener {
                     getComment(notificationsList[position].idpost.toString(),comment.text.toString())
                     comment(name.text.toString(),comment.text.toString(),notificationsList[position].idpost.toString(),auth.uid.toString()) }
             } else {
+                val arrayTemas = arrayListOf("Embarazo","Familia","Parto","Posparto","Otros")
+                for(tema in arrayTemas) {
+                    firestore.collection("Consultas").document(tema).collection("Consultas").whereEqualTo("id",notificationsList[position].idpost.toString())
+                        .addSnapshotListener { value, error ->
+                            value!!.documents.iterator().forEach { comment.text = it["consulta"].toString() }
+                        }
+                }
                 comment.setOnClickListener {
                     consulta(notificationsList[position].idpost.toString())
                 }
@@ -106,9 +114,11 @@ class NotificationsAdapter(private val context: Context, private val notificatio
         firestore.collection("Consultas").addSnapshotListener { value, error ->
             value!!.documents.iterator().forEach {
                 it.reference.collection("Consultas").whereEqualTo("id",idconsulta).addSnapshotListener { value, error ->
-                    value!!.documents.iterator().forEach {
-                        val consulta = it.toObject(Consulta::class.java)
-                        openConsulta(consulta!!)
+                    if(value!!.documents.isNotEmpty()) {
+                        value!!.documents.iterator().forEach {
+                            val consulta = it.toObject(Consulta::class.java)
+                            openConsulta(consulta!!)
+                        }
                     }
                 }
             }

@@ -198,7 +198,6 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
             if(progressDialog.isShowing) progressDialog.dismiss()
         }.addOnFailureListener{
             if(progressDialog.isShowing) progressDialog.dismiss()
-            Utils.showErrorToast(this)
         }
     }
 
@@ -273,15 +272,17 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
         val refNotify = database.reference.child("Usuarios").child(uid)
         refNotify.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                val user = snapshot.getValue(User::class.java)
-                if (notify) {
-                    if(imagePath=="") {
-                        sendNotification(friendUID, user!!.name, txtMessage)
-                    }else {
-                        sendNotification(friendUID,user!!.name,"Te ha enviado una imagen")
+                if(snapshot.exists()) {
+                    val user = snapshot.getValue(User::class.java)
+                    if (notify) {
+                        if (imagePath == "") {
+                            sendNotification(friendUID, user!!.name, txtMessage)
+                        } else {
+                            sendNotification(friendUID, user!!.name, "Te ha enviado una imagen")
+                        }
                     }
+                    notify = false
                 }
-                notify=false
             }
             override fun onCancelled(error: DatabaseError) {
             }
@@ -334,22 +335,24 @@ class ChatActivity : AppCompatActivity(), ItemRecyclerViewListener {
         database.reference.child("Chats").child(senderUID).child("Messages").child(receiverUID).addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 chatsArraylist.clear()
-                for (datasnapshot: DataSnapshot in snapshot.children) {
-                    if(!datasnapshot.key.equals("LastMessage")) {
-                        val message = datasnapshot.getValue(Message::class.java)
-                        chatsArraylist.add(message!!)
+                if(snapshot.exists()) {
+                    for (datasnapshot: DataSnapshot in snapshot.children) {
+                        if (!datasnapshot.key.equals("LastMessage")) {
+                            val message = datasnapshot.getValue(Message::class.java)
+                            chatsArraylist.add(message!!)
+                        }
                     }
-                }
-                if(chatsArraylist.size>1) {
-                    chatsArraylist.sort()
-                }
-                adapterChats.notifyDataSetChanged()
-                adapterChats.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
-                    override fun onItemLongClicked(position: Int) {
-                        deleteMsg(chatsArraylist[position])
+                    if (chatsArraylist.size > 1) {
+                        chatsArraylist.sort()
+                    }
+                    adapterChats.notifyDataSetChanged()
+                    adapterChats.setOnItemRecyclerViewListener(object : ItemRecyclerViewListener {
+                        override fun onItemLongClicked(position: Int) {
+                            deleteMsg(chatsArraylist[position])
 
-                    }
-                })
+                        }
+                    })
+                }
             }
             override fun onCancelled(error: DatabaseError) {
             }

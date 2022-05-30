@@ -64,9 +64,11 @@ class CommentsForoAdapter(private val commentsForoArrayList: ArrayList<Comment>,
         database.reference.child("Usuarios").child(userID).addValueEventListener(object:
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val user : User? = snapshot.getValue(User::class.java)
-                holder.user.visibility = View.VISIBLE
-                holder.user.text = user!!.username
+                if(snapshot.exists()) {
+                    val user: User? = snapshot.getValue(User::class.java)
+                    holder.user.visibility = View.VISIBLE
+                    holder.user.text = user!!.username
+                }
             }
             override fun onCancelled(error: DatabaseError) {
             }

@@ -62,21 +62,24 @@ class ListChatItemAdapter(private val context: Context, private val listChatItem
 
             database.reference.child("Usuarios").child(idUser).addValueEventListener(object:ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    var user = snapshot.getValue(User::class.java)
-                    txt_name_chat_item.text = user!!.name
-                    txt_username_chat_item.text = user.username
-                    storageReference = firebaseStorage.getReference("Usuarios/"+idUser+"/images/perfil")
-                    GlideApp.with(context)
-                        .load(storageReference)
-                        .error(R.drawable.wallpaper_profile)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .skipMemoryCache(true)
-                        .into(img_chat_item)
-                    var status = user.status
-                    if(status == "online"){
-                        img_chat_status.setImageResource(R.drawable.ic_online)
-                    } else {
-                        img_chat_status.setImageResource(R.drawable.ic_offline)
+                    if(snapshot.exists()) {
+                        var user = snapshot.getValue(User::class.java)
+                        txt_name_chat_item.text = user!!.name
+                        txt_username_chat_item.text = user.username
+                        storageReference =
+                            firebaseStorage.getReference("Usuarios/" + idUser + "/images/perfil")
+                        GlideApp.with(context)
+                            .load(storageReference)
+                            .error(R.drawable.wallpaper_profile)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .skipMemoryCache(true)
+                            .into(img_chat_item)
+                        var status = user.status
+                        if (status == "online") {
+                            img_chat_status.setImageResource(R.drawable.ic_online)
+                        } else {
+                            img_chat_status.setImageResource(R.drawable.ic_offline)
+                        }
                     }
                 }
                 override fun onCancelled(error: DatabaseError) {
@@ -119,7 +122,9 @@ class ListChatItemAdapter(private val context: Context, private val listChatItem
             database.reference.child("Chats").child(auth.uid.toString()).child("Messages").child(idUser)
                 .addValueEventListener(object:ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        snapshot.children.iterator().forEach { it.ref.removeValue() }
+                        if(snapshot.exists()) {
+                            snapshot.children.iterator().forEach { it.ref.removeValue() }
+                        }
                     }
                     override fun onCancelled(error: DatabaseError) {
                     }

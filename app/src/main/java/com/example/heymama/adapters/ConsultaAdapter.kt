@@ -12,12 +12,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.R
 import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.Consulta
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 
 class ConsultaAdapter(private val context: Context, private val consultasArrayList: ArrayList<Consulta>, private val consultaItemListener: ItemRecyclerViewListener
 ) : RecyclerView.Adapter<ConsultaAdapter.HolderConsulta>() {
 
     private lateinit var firestore: FirebaseFirestore
+    private lateinit var database: FirebaseDatabase
     private lateinit var listener: ItemRecyclerViewListener
 
     fun setOnItemRecyclerViewListener(listener: ItemRecyclerViewListener) {
@@ -39,6 +45,7 @@ class ConsultaAdapter(private val context: Context, private val consultasArrayLi
      */
     override fun onBindViewHolder(holder: HolderConsulta, position: Int) {
         firestore = FirebaseFirestore.getInstance()
+        database = FirebaseDatabase.getInstance()
 
         getUserData(consultasArrayList[position].userID.toString(), holder)
         with(holder) {
@@ -60,10 +67,11 @@ class ConsultaAdapter(private val context: Context, private val consultasArrayLi
             if(error != null) {
                 return@addSnapshotListener
             }
-            val data = value!!.data
-            holder.name_consulta.text = data!!["name"].toString()
-            holder.userc_consulta.text = data!!["username"].toString()
-
+            if(value!!.exists()) {
+                val data = value!!.data
+                holder.name_consulta.text = data!!["name"].toString()
+                holder.userc_consulta.text = data!!["username"].toString()
+            }
         }
     }
 
@@ -87,6 +95,19 @@ class ConsultaAdapter(private val context: Context, private val consultasArrayLi
                         }
                         value.reference.delete()
                     }
+                    database.reference.child("NotificationsConsultas").addValueEventListener(object:ValueEventListener{
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            if(snapshot.exists()){
+                                snapshot.children.iterator().forEach {
+                                    if(it.child("idpost").value == consulta.id.toString()){
+                                        it.ref.removeValue()
+                                    }
+                                }
+                            }
+                        }
+                        override fun onCancelled(error: DatabaseError) {
+                        }
+                    })
                 }
             }
             true

@@ -1,5 +1,6 @@
 package com.example.heymama.activities
 
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -100,14 +101,20 @@ class MoodActivity : AppCompatActivity() {
             var pieChart = findViewById<PieChart>(R.id.pie_chart)
             pieChart.animateXY(1000,1000)
 
+
+            var colors = arrayListOf<Int>()
             val pieDataSet = PieDataSet(pieEntries,"Emociones")
-            pieDataSet.setColors(
-                resources.getColor(R.color.mood_feliz),
-                resources.getColor(R.color.mood_bien),
-                resources.getColor(R.color.mood_regular),
-                resources.getColor(R.color.mood_mal),
-                resources.getColor(R.color.mood_triste)
-            )
+            pieDataSet.values.iterator().forEach {
+                when(it.label.toString()) {
+                    MoodType.FELIZ.name -> colors.add(resources.getColor(R.color.pink2))
+                    MoodType.BIEN.name -> colors.add(resources.getColor(R.color.rectangle_purple))
+                    MoodType.REGULAR.name -> colors.add(resources.getColor(R.color.rectangle_orange))
+                    MoodType.TRISTE.name -> colors.add(resources.getColor(R.color.mood_triste))
+                    MoodType.MAL.name -> colors.add(resources.getColor(R.color.mood_mal))
+                }
+            }
+
+            pieDataSet.colors = colors
 
             val pieData = PieData(pieDataSet)
             pieData.setValueFormatter(PercentFormatter())

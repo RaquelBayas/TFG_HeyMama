@@ -120,8 +120,10 @@ class UserAdapter(private val context: Context, private var usersList: ArrayList
         firestore.collection("Usuarios").whereEqualTo("username",username).addSnapshotListener { value, error ->
             val docs = value!!.documents
             docs.iterator().forEach {
-                uidFriend = it["id"].toString()
-                removeFriend(uidFriend)
+                if(it.exists()) {
+                    uidFriend = it["id"].toString()
+                    removeFriend(uidFriend)
+                }
             }
         }
     }

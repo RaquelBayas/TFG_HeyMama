@@ -58,9 +58,11 @@ class ForoAdapter(private var foroArrayList: ArrayList<Post>, private val foroIt
         database.reference.child("Usuarios").child(userID).addValueEventListener(object:
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                var user : User? = snapshot.getValue(User::class.java)
-                holder.user_foro.visibility = View.VISIBLE
-                holder.user_foro.text = user!!.username
+                if(snapshot.exists()){
+                    val user : User? = snapshot.getValue(User::class.java)
+                    holder.user_foro.visibility = View.VISIBLE
+                    holder.user_foro.text = user!!.username
+                }
             }
             override fun onCancelled(error: DatabaseError) {
             }

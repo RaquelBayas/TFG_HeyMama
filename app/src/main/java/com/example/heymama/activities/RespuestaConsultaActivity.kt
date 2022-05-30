@@ -65,7 +65,6 @@ class RespuestaConsultaActivity : AppCompatActivity() {
         }
 
         txt_respuesta_consulta = binding.txtRespuestaConsulta
-
         binding.btnSendRespuestaConsulta.setOnClickListener {
             if(txt_respuesta_consulta.text.isEmpty()) {
                 Toast.makeText(this,"Introduce una respuesta",Toast.LENGTH_SHORT).show()
@@ -73,7 +72,6 @@ class RespuestaConsultaActivity : AppCompatActivity() {
                 sendReply()
             }
         }
-
         showConsultaRespuestas()
     }
 
@@ -91,7 +89,6 @@ class RespuestaConsultaActivity : AppCompatActivity() {
                 var consulta = value!!.toObject(Consulta::class.java)
                 if(consulta != null) {
                 consultasArraylist.add(consulta!!)}
-
                 respuestaConsultaAdapter = RespuestaConsultaAdapter(this, consultasArraylist)
                 respuestaConsultaAdapter.setHasStableIds(true)
                 respuestaConsultaAdapter.notifyDataSetChanged()

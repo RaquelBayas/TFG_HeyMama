@@ -60,8 +60,10 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
 
         dataBaseReference.child(friendRequest).addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                holder.txt_nombre_solicitud.text = snapshot.child("name").value.toString()
-                holder.txt_user_solicitud.text = snapshot.child("username").value.toString()
+                if(snapshot.exists()){
+                    holder.txt_nombre_solicitud.text = snapshot.child("name").value.toString()
+                    holder.txt_user_solicitud.text = snapshot.child("username").value.toString()
+                }
             }
             override fun onCancelled(error: DatabaseError) {
                 Log.e("FriendRequestAdapter",error.toString())
@@ -165,10 +167,12 @@ class FriendRequestAdapter(private val context: Context, private val friendReque
         //BUSCA EL ID DEL USERNAME CAPTURADO EN EL HOLDER
         dataBase.reference.child("Usuarios").addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                snapshot.children.iterator().forEach {
-                    val user = it.getValue(User::class.java)
-                    if(user!!.username == holder_username) {
-                        searchFriendRequest(user.id.toString(),request)
+                if(snapshot.exists()) {
+                    snapshot.children.iterator().forEach {
+                        val user = it.getValue(User::class.java)
+                        if (user!!.username == holder_username) {
+                            searchFriendRequest(user.id.toString(), request)
+                        }
                     }
                 }
             }

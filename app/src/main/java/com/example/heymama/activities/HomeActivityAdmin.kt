@@ -74,13 +74,22 @@ class HomeActivityAdmin : AppCompatActivity(), NavigationView.OnNavigationItemSe
         toggle = object : ActionBarDrawerToggle(this,drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close){
             override fun onDrawerStateChanged(newState: Int) {
                 val profileImageNav = viewNav.findViewById<ImageView>(R.id.nav_header_icon)
-                storageReference = firebaseStorage.getReference("/Usuarios/"+auth.currentUser?.uid+"/images/perfil")
-                GlideApp.with(applicationContext)
-                    .load(storageReference)
-                    .error(R.drawable.wallpaper_profile)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .into(profileImageNav)
+                var photoRef = database.reference.child("Usuarios").child(auth.uid.toString()).child("profilePhoto")
+                photoRef.addValueEventListener(object: ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if(snapshot.value != ""){
+                            storageReference = firebaseStorage.getReference(snapshot.value.toString())
+                            GlideApp.with(applicationContext)
+                                .load(storageReference)
+                                .error(R.drawable.wallpaper_profile)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .skipMemoryCache(true)
+                                .into(profileImageNav)
+                        }
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                    }
+                })
             }
         }
 

@@ -78,18 +78,21 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
         txt_username_perfil = binding.txtUsernamePerfil
         txt_user_biografia = binding.txtBiografia
         profileImage = binding.profileImage
-        if (profileImage.drawable == null) {
+        /*if (profileImage.drawable == null) {
             loadPicture(uid!!)
-        }
+        }*/
+        loadPicture(uid)
         var user_ref = dataBase.reference.child("Usuarios").child(uid)
         user_ref.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-               val user = snapshot.getValue(User::class.java)
-                txt_username_perfil.text = user!!.username.toString()
-                txt_user_perfil.text = user.name.toString()
-                txt_user_biografia.text = user.bio.toString()
-                if(user.rol == "Profesional") {
-                    binding.verified.visibility = View.VISIBLE
+                if(snapshot.exists()) {
+                    val user = snapshot.getValue(User::class.java)
+                    txt_username_perfil.text = user!!.username.toString()
+                    txt_user_perfil.text = user.name.toString()
+                    txt_user_biografia.text = user.bio.toString()
+                    if (user.rol == "Profesional") {
+                        binding.verified.visibility = View.VISIBLE
+                    }
                 }
             }
             override fun onCancelled(error: DatabaseError) {
@@ -402,7 +405,6 @@ class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
                 val profilePhoto: Map<String, String> = mapOf("profilePhoto" to storageReference.path)
                 dataBase.getReference("Usuarios").child(uid).updateChildren(profilePhoto)
             }
-            Toast.makeText(this,"Foto subida",Toast.LENGTH_SHORT).show()
             if(progressDialog.isShowing) progressDialog.dismiss()
         }.addOnFailureListener{
             if(progressDialog.isShowing) progressDialog.dismiss()

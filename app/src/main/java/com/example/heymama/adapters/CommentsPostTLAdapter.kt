@@ -62,23 +62,25 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
 
         with(holder) {
             firestore.collection("Usuarios").document(post_tl.userId!!).addSnapshotListener { value, error ->
-                if(error != null) {
+                if (error != null) {
                     return@addSnapshotListener
                 }
-                val docs = value!!.data
-                name_post.text = docs!!["name"].toString()
-                user_post.text = docs["username"].toString()
-                idUser = docs["id"].toString()
-                comment_post.text = post_tl.comment
-                GlideApp.with(context)
-                    .load(refPhoto)
-                    .error(R.drawable.wallpaper_profile)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .into(holder.photo_post)
-                var timestamp = post_tl.timestamp
-                val dateFormat = SimpleDateFormat("dd/MM/yy \n  HH:mm")
-                time_post.text = dateFormat.format(timestamp)
+                if (value!!.exists()){
+                    val docs = value!!.data
+                    name_post.text = docs!!["name"].toString()
+                    user_post.text = docs["username"].toString()
+                    idUser = docs["id"].toString()
+                    comment_post.text = post_tl.comment
+                    GlideApp.with(context)
+                        .load(refPhoto)
+                        .error(R.drawable.wallpaper_profile)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(true)
+                        .into(holder.photo_post)
+                    var timestamp = post_tl.timestamp
+                    val dateFormat = SimpleDateFormat("dd/MM/yy \n  HH:mm")
+                    time_post.text = dateFormat.format(timestamp)
+                }
             }
         }
 
@@ -95,10 +97,16 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
                             firestore.collection("Timeline").document(idpost_origin).collection("Replies").document(post_tl.postId.toString()).delete()
                             database.reference.child("NotificationsTL").child(iduser_origin).orderByChild("textpost").addValueEventListener(object:ValueEventListener {
                                 override fun onDataChange(snapshot: DataSnapshot) {
-                                    snapshot.children.iterator().forEach { datasnapshot ->
-                                        datasnapshot.children.iterator().forEach {
-                                            if(it.value.toString() == post_tl.comment.toString()){
-                                                datasnapshot.ref.removeValue()
+                                    if(snapshot.exists()) {
+                                        snapshot.children.iterator().forEach { datasnapshot ->
+                                            if(datasnapshot.exists()) {
+                                                datasnapshot.children.iterator().forEach {
+                                                    if(it.exists()) {
+                                                        if (it.value.toString() == post_tl.comment.toString()) {
+                                                            datasnapshot.ref.removeValue()
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                     }

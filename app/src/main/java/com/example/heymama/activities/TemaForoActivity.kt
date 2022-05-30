@@ -131,15 +131,17 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener {
         database.reference.child("Usuarios").child(userID).addValueEventListener(object:
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val user : User? = snapshot.getValue(User::class.java)
-                rol = user!!.rol.toString()
-                if(privacidad == "Público") {
-                    binding.txtForoUser.text = user.username
-                }
-                binding.txtForoUser.setOnClickListener {
-                    val intent = Intent(applicationContext,PerfilActivity::class.java)
-                    intent.putExtra("UserUID",userID)
-                    startActivity(intent)
+                if(snapshot.exists()) {
+                    val user: User? = snapshot.getValue(User::class.java)
+                    rol = user!!.rol.toString()
+                    if (privacidad == "Público") {
+                        binding.txtForoUser.text = user.username
+                    }
+                    binding.txtForoUser.setOnClickListener {
+                        val intent = Intent(applicationContext, PerfilActivity::class.java)
+                        intent.putExtra("UserUID", userID)
+                        startActivity(intent)
+                    }
                 }
             }
             override fun onCancelled(error: DatabaseError) {
@@ -151,10 +153,12 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener {
         database.reference.child("Usuarios").child(uid).addValueEventListener(object:
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val user : User? = snapshot.getValue(User::class.java)
-                rol = user!!.rol.toString()
-                if((userID == auth.uid.toString()) || (rol == "Admin") ){
-                    btnMenuForo()
+                if(snapshot.exists()) {
+                    val user: User? = snapshot.getValue(User::class.java)
+                    rol = user!!.rol.toString()
+                    if ((userID == auth.uid.toString()) || (rol == "Admin")) {
+                        btnMenuForo()
+                    }
                 }
             }
 

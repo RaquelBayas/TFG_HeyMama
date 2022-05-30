@@ -52,9 +52,11 @@ class RespuestaConsultaAdapter(private val context: Context, private val consult
         database.reference.child("Usuarios").child(userId).addValueEventListener(object:
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                var user : User? = snapshot.getValue(User::class.java)
-                holder.username_consulta.text = user!!.username.toString()
-                holder.name_consulta.text = user!!.name.toString()
+                if(snapshot.exists()) {
+                    var user: User? = snapshot.getValue(User::class.java)
+                    holder.username_consulta.text = user!!.username.toString()
+                    holder.name_consulta.text = user!!.name.toString()
+                }
             }
             override fun onCancelled(error: DatabaseError) {
             }

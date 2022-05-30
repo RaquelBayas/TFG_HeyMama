@@ -50,7 +50,6 @@
                 android:layout_marginTop="52dp"
                 app:civ_border_color="@color/purple_700"
                 app:civ_border_width="2dp"
-
                 app:layout_constraintEnd_toEndOf="@+id/layout_image"
                 app:layout_constraintHorizontal_bias="0.108"
                 app:layout_constraintStart_toStartOf="@+id/layout_image"

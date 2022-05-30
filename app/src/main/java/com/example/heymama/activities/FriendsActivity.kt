@@ -27,7 +27,6 @@ class FriendsActivity : AppCompatActivity() {
     private lateinit var storageReference: StorageReference
     private lateinit var database: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
-
     private lateinit var recyclerViewFriends: RecyclerView
     private lateinit var friendsArraylist: ArrayList<User>
     private lateinit var adapterFriends: UserAdapter
@@ -125,11 +124,13 @@ class FriendsActivity : AppCompatActivity() {
             val docs = value!!.documents
             if (docs.isEmpty()) {
                 friendsArraylist.clear()
+                adapterFriends.notifyDataSetChanged()
                 Toast.makeText(this, "No has agregado a nadie...", Toast.LENGTH_SHORT).show()
             } else {
                 friendsRef.get().addOnSuccessListener { documents ->
                     for (document in documents) {
                         friend = document.toObject(FriendRequest::class.java)
+                        //Comprobamos el uid del usuario agregado
                         if(friend.friend_send_uid == uid) {
                             uidFriend = friend.friend_receive_uid
                         } else if (friend.friend_receive_uid == uid) {

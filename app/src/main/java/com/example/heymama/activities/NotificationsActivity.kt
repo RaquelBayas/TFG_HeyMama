@@ -3,7 +3,6 @@ package com.example.heymama.activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.adapters.NotificationsAdapter
@@ -17,6 +16,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.ArrayList
 
@@ -85,11 +85,14 @@ class NotificationsActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 notificationsArraylist.clear()
                 snapshot.children.iterator().forEach {
                     val notification = it.getValue(Notification::class.java)
-                    notificationsArraylist.add(notification!!)
-                    adapterNotifications.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
-                        override fun onItemClicked(position: Int) {
-                        }
-                    })
+                    if(notification?.uid != auth.uid.toString()) {
+                        notificationsArraylist.add(notification!!)
+                        adapterNotifications.setOnItemRecyclerViewListener(object :
+                            ItemRecyclerViewListener {
+                            override fun onItemClicked(position: Int) {
+                            }
+                        })
+                    }
                 }
                 adapterNotifications.notifyDataSetChanged()
                 if(notificationsArraylist.size > 1) {
@@ -105,8 +108,46 @@ class NotificationsActivity : AppCompatActivity(), ItemRecyclerViewListener {
      * Este método permite obtener las notificaciones de las consultas recibidas.
      */
     private fun getNotificationsConsultas() {
-        //notificationsArraylist.clear()
-        database.reference.child("NotificationsConsultas").get().addOnSuccessListener { it ->
+        notificationsArraylist.clear()
+        database.reference.child("NotificationsConsultas").addValueEventListener(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                notificationsArraylist.clear()
+                snapshot.children.iterator().forEach {
+
+                    if(it.exists()){
+                    val notification = it.getValue(Notification::class.java)
+                    val idconsulta = notification!!.idpost
+                    firestore.collection("Consultas").addSnapshotListener { value, error ->
+                        value!!.documents.iterator().forEach {
+                            it.reference.collection("Consultas").whereEqualTo("id",idconsulta).addSnapshotListener { value, error ->
+                                value!!.documents.iterator().forEach {
+                                    if(it.exists()){
+                                        val consulta = it.toObject(Consulta::class.java)
+                                        if(consulta != null) {
+                                            if(consulta.userID != auth.uid.toString()) {
+                                                notificationsArraylist.add(notification!!)
+
+                                            }
+                                            if(notificationsArraylist.size>1){
+                                                notificationsArraylist.sort()
+                                            }
+                                            adapterNotifications.notifyDataSetChanged()
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                    }}
+
+
+                    //adapterNotifications.notifyDataSetChanged()
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+        /*database.reference.child("NotificationsConsultas").get().addOnSuccessListener { it ->
             if(it.exists()) {
                 it.children.iterator().forEach {
                     val notification = it.getValue(Notification::class.java)
@@ -117,16 +158,19 @@ class NotificationsActivity : AppCompatActivity(), ItemRecyclerViewListener {
                                 value!!.documents.iterator().forEach {
                                     val consulta = it.toObject(Consulta::class.java)
                                     if(consulta != null) {
-                                        notificationsArraylist.add(notification!!)
-                                        adapterNotifications.notifyDataSetChanged()
+                                        if(consulta.userID != auth.uid.toString()) {
+                                            notificationsArraylist.add(notification!!)
+                                            adapterNotifications.notifyDataSetChanged()
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
+
             }
-        }
+        }*/
     }
 
 }

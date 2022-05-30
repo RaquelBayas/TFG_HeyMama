@@ -84,14 +84,15 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
             val docs = value!!.data
             with(holder) {
                 name_post.text = docs!!["name"].toString()
-                storageReference = firebaseStore.getReference("Usuarios/"+post_tl.userId+"/images/perfil")
-                GlideApp.with(context)
+                //storageReference = firebaseStore.getReference("Usuarios/"+post_tl.userId+"/images/perfil")
+                image(holder.photo_post,post_tl.userId)
+                /*GlideApp.with(context)
                     .load(storageReference)
                     .error(R.drawable.wallpaper_profile)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
                     .into(holder.photo_post)
-
+                */
                 photo_post.setOnClickListener {
                     postTimelineListener.onItemClicked(position)
                 }
@@ -122,6 +123,24 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
         changeButtonColors(holder, post_tl)
     }
 
+    private fun image(photoPost: ImageView, userId: String) {
+        var photoRef = database.reference.child("Usuarios").child(userId).child("profilePhoto")
+        photoRef.addValueEventListener(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if(snapshot.exists() && snapshot.value != ""){
+                    storageReference = firebaseStore.getReference(snapshot.value.toString())
+                    GlideApp.with(context)
+                        .load(storageReference)
+                        .error(R.drawable.wallpaper_profile)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(true)
+                        .into(photoPost)
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+    }
     /**
      * Este método permite añadir un like en un post.
      * @param post_tl PostTimeline : Post
@@ -191,7 +210,7 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
         val timeline = firestore.collection("Timeline").orderBy("date", Query.Direction.ASCENDING)
         timeline.get().addOnCompleteListener {
             if(it.isSuccessful) {
-                firestore.collection("Timeline")
+                /*firestore.collection("Timeline")
                     .document(post_tl.postId.toString() )
                     .collection("Likes").document(auth.uid.toString())
                     .addSnapshotListener { value, error ->
@@ -203,7 +222,7 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
                         } else {
                             holder.likeButton.setButtonDrawable(R.drawable.ic_corazon)
                         }
-                    }
+                    }*/
                 firestore.collection("Likes").document(auth.uid.toString()).collection("Likes").document(post_tl.postId.toString())
                     .addSnapshotListener { value, error ->
                         if (error != null) {

@@ -79,8 +79,10 @@ class ForosActivity : AppCompatActivity(){
             .addValueEventListener(object :
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val user: User? = snapshot.getValue(User::class.java)
-                    rol = user!!.rol.toString()
+                    if(snapshot.exists()) {
+                        val user: User? = snapshot.getValue(User::class.java)
+                        rol = user!!.rol.toString()
+                    }
                 }
 
                 override fun onCancelled(error: DatabaseError) {

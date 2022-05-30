@@ -70,9 +70,10 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
         friendsIds = arrayListOf()
         postsTLArraylist = arrayListOf()
         adapterPostsTL = PostTimelineAdapter(applicationContext,postsTLArraylist,this)
-        recyclerViewTimeline.adapter = adapterPostsTL
+        adapterPostsTL.setHasStableIds(false)
         recyclerViewTimeline.setHasFixedSize(false)
         recyclerViewTimeline.recycledViewPool.setMaxRecycledViews(0,0)
+        recyclerViewTimeline.adapter = adapterPostsTL
     }
 
     /**
@@ -83,17 +84,19 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
         val reference = database.reference.child("Usuarios").child(auth.uid.toString()).child("rol")
         reference.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                rol = snapshot.value.toString()
-                if(rol == "Admin"){
-                    getCommentsTLAdmin()
-                } else {
-                    getCommentsTL()
-                }
-                binding.swipeRefreshTL.setOnRefreshListener {
-                    if(rol == "Admin"){
+                if(snapshot.exists()) {
+                    rol = snapshot.value.toString()
+                    if (rol == "Admin") {
                         getCommentsTLAdmin()
                     } else {
                         getCommentsTL()
+                    }
+                    binding.swipeRefreshTL.setOnRefreshListener {
+                        if (rol == "Admin") {
+                            getCommentsTLAdmin()
+                        } else {
+                            getCommentsTL()
+                        }
                     }
                 }
             }
@@ -161,38 +164,31 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
          * Comprobamos si el usuario tiene amigos:
          *
          */
-
+        friendsIds.add(auth.uid.toString())
         firestore.collection("Friendship").document(auth.uid.toString()).collection("Friends").get().addOnSuccessListener { it ->
             val documents = it.documents
-            friendsIds.add(auth.uid.toString())
+
             if(documents.isEmpty()){
-                firestore.collection("Usuarios").whereEqualTo("protected",false).addSnapshotListener { value, error ->
-                    /*value!!.documents.iterator().forEach {
-                        if(it.id != auth.uid.toString()) {
-                        friendsIds.add(it.id)}
-                    }*/
-                    friendsIds.iterator().forEach {
-                        firestore.collection("Timeline").whereEqualTo("userId",it).addSnapshotListener { snapshots, e ->
-                            if (e!= null) {
-                                return@addSnapshotListener
-                            }
-                            for (dc in snapshots!!.documentChanges) {
-                                when (dc.type) {
-                                    DocumentChange.Type.ADDED -> postsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
-                                    DocumentChange.Type.REMOVED -> postsTLArraylist.remove(dc.document.toObject(PostTimeline::class.java))
-                                }
-                            }
-                            if(postsTLArraylist.size > 1) {
-                                postsTLArraylist.sort()
-                            }
-                            adapterPostsTL.notifyDataSetChanged()
-                            adapterPostsTL.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
-                                override fun onItemClicked(position: Int) {
-                                    Log.i("TimelineActivity","Item number: $position")
-                                }
-                            })
+                postsTLArraylist.clear()
+                firestore.collection("Timeline").whereEqualTo("userId",auth.uid.toString()).addSnapshotListener { snapshots, e ->
+                    if (e!= null) {
+                        return@addSnapshotListener
+                    }
+                    for (dc in snapshots!!.documentChanges) {
+                        when (dc.type) {
+                            DocumentChange.Type.ADDED -> postsTLArraylist.add(dc.document.toObject(PostTimeline::class.java))
+                            DocumentChange.Type.REMOVED -> postsTLArraylist.remove(dc.document.toObject(PostTimeline::class.java))
                         }
                     }
+                    if(postsTLArraylist.size > 1) {
+                        postsTLArraylist.sort()
+                    }
+                    adapterPostsTL.notifyDataSetChanged()
+                    adapterPostsTL.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
+                        override fun onItemClicked(position: Int) {
+                            Log.i("TimelineActivity","Item number: $position")
+                        }
+                    })
                 }
             } else {
                 documents.iterator().forEach {
