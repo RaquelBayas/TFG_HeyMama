@@ -15,24 +15,42 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.heymama.GlideApp
 import com.example.heymama.R
 import com.example.heymama.activities.PerfilActivity
+import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
-class UserAdapter(private val context: Context, private var usersList: ArrayList<User>, private var uid: String) : RecyclerView.Adapter<UserAdapter.Holder>() {
+class UserAdapter(private val context: Context, private var usersList: ArrayList<User>, private var uid: String,
+                  private val usersListener: ItemRecyclerViewListener
+) : RecyclerView.Adapter<UserAdapter.Holder>() {
     private lateinit var firebaseStore: FirebaseStorage
     private lateinit var storageReference: StorageReference
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
     private lateinit var uidFriend: String
+    private lateinit var listener: ItemRecyclerViewListener
 
     inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var txt_nombre_amigo: TextView = itemView.findViewById(R.id.txt_nombre_amigo)
         var txt_user_amigo: TextView = itemView.findViewById(R.id.txt_user_amigo)
         var img_amigos: ImageView = itemView.findViewById(R.id.img_amigos)
         var btn_menu_friends: Button = itemView.findViewById(R.id.btn_menu_friends)
+        var verified: ImageView = itemView.findViewById(R.id.verified)
+
+        init {
+            itemView.setOnClickListener {
+                Log.i("UserAdapter",listener.onItemClicked(adapterPosition).toString())
+            }
+        }
+    }
+
+    /**
+     * @param listener ItemRecyclerViewListener
+     */
+    fun setOnItemRecyclerViewListener(listener: ItemRecyclerViewListener) {
+        this.listener = listener
     }
 
     fun filterList(list: ArrayList<User>) {
@@ -62,8 +80,8 @@ class UserAdapter(private val context: Context, private var usersList: ArrayList
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
                 .into(img_amigos)
-            img_amigos.setOnClickListener {
-                visitFriend(usersList[position].id.toString())
+            if(usersList[position].rol == "Profesional") {
+                holder.verified.visibility = View.VISIBLE
             }
         }
 
@@ -75,16 +93,6 @@ class UserAdapter(private val context: Context, private var usersList: ArrayList
      */
     override fun getItemCount(): Int {
         return usersList.size
-    }
-
-    /**
-     * Este método permite al usuario acceder y visitar el perfil de otro.
-     */
-    private fun visitFriend(uid:String) {
-        val intent = Intent(context, PerfilActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        intent.putExtra("UserUID",uid)
-        this.context.startActivity(intent)
     }
 
     /**

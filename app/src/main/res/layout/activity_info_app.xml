@@ -30,17 +30,17 @@
             <ImageView
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/ic_help"
+                android:src="@drawable/ic_policy"
                 />
             <TextView
-                android:id="@+id/txt_tutorial"
+                android:id="@+id/txt_politicas"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:fontFamily="@font/alegreya"
                 android:layout_marginLeft="10dp"
                 android:textColor="@color/gray"
                 android:textSize="28sp"
-                android:text="@string/tutorial" />
+                android:text="@string/politicas" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"

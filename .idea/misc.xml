@@ -27,6 +27,7 @@
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_notifications.xml" value="0.22763157894736843" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_offline.xml" value="0.1707236842105263" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_online.xml" value="0.1707236842105263" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_policy.xml" value="0.11907894736842105" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_politicas.xml" value="0.1707236842105263" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_send.xml" value="0.22179487179487178" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/drawable/ic_send_tl.xml" value="0.24027777777777778" />
@@ -109,13 +110,14 @@
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/fragment_mis_consultas.xml" value="0.16052631578947368" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/fragment_mood.xml" value="0.2" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/fragment_notifications.xml" value="0.21403508771929824" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/fragment_politicas.xml" value="0.16052631578947368" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/fragment_registro_mood.xml" value="0.264" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/fragment_requests.xml" value="0.1" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/fragment_search_friends.xml" value="0.16052631578947368" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/fragment_solicitudes.xml" value="0.1287568306010929" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/fragment_sub_foro.xml" value="0.2" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/fragment_timeline.xml" value="0.16799999999999998" />
-        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/fragment_tutorial.xml" value="0.21403508771929824" />
+        <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/fragment_tutorial.xml" value="0.16" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/fragment_version_app.xml" value="0.2" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/item_chat_left.xml" value="0.2" />
         <entry key="..\:/Programs/AndroidProjects/app/src/main/res/layout/item_chat_right.xml" value="0.264" />

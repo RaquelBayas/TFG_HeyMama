@@ -25,11 +25,9 @@ class RespuestaConsultaActivity : AppCompatActivity() {
     private lateinit var tema_consulta : String
     private lateinit var id_user_consulta : String
     private lateinit var consulta : String
-
     private lateinit var txt_respuesta_consulta: TextView
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
-
     private lateinit var recyclerView: RecyclerView
     private lateinit var consultasArraylist: ArrayList<Consulta>
     private lateinit var respuestasArraylist: ArrayList<Consulta>
@@ -54,7 +52,6 @@ class RespuestaConsultaActivity : AppCompatActivity() {
         //respuestaConsultaAdapter = RespuestaConsultaAdapter(this,consultasArraylist,respuestasArraylist)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.setHasFixedSize(true)
-
 
         val intent = intent
         if (intent.hasExtra("id_consulta") && intent.hasExtra("tema_consulta") && intent.hasExtra("id_user_consulta") && intent.hasExtra("consulta")) {
@@ -116,7 +113,7 @@ class RespuestaConsultaActivity : AppCompatActivity() {
     }
 
     /**
-     *
+     * Este método permite enviar una respuesta a la consulta.
      */
     private fun sendReply() {
         val ref = firestore.collection("Consultas").document(tema_consulta).collection("Consultas").document(id_consulta)
@@ -124,7 +121,6 @@ class RespuestaConsultaActivity : AppCompatActivity() {
         val respuesta = Consulta(ref.id,auth.uid.toString(),tema_consulta,txt_respuesta_consulta.text.toString(), Date())
         try {
             ref.set(respuesta)
-            Toast.makeText(this,"Respuesta enviada correctamente",Toast.LENGTH_SHORT).show()
             txt_respuesta_consulta.text = ""
         } catch(e: Exception) {
             print(e.message)

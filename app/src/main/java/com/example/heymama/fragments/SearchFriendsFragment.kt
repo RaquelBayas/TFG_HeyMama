@@ -1,5 +1,6 @@
 package com.example.heymama.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -9,8 +10,10 @@ import android.view.ViewGroup
 import android.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.heymama.activities.PerfilActivity
 import com.example.heymama.adapters.ListaUsuariosAdapter
 import com.example.heymama.databinding.FragmentSearchFriendsBinding
+import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -18,7 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.util.ArrayList
 
 
-class SearchFriendsFragment : Fragment() {
+class SearchFriendsFragment : Fragment(), ItemRecyclerViewListener {
 
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
@@ -48,10 +51,19 @@ class SearchFriendsFragment : Fragment() {
         uid = data!!["uid"].toString()
 
         recyclerView = binding!!.recyclerViewSearchFriends
-        adapter = ListaUsuariosAdapter(requireContext().applicationContext,listaUsuariosArraylist)
+        adapter = ListaUsuariosAdapter(requireContext().applicationContext,listaUsuariosArraylist,this)
         recyclerView.adapter = adapter
+        adapter.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
+            override fun onItemClicked(position: Int) {
+                val intent = Intent(requireContext().applicationContext, PerfilActivity::class.java)
+                intent.putExtra("UserUID",listaUsuariosArraylist[position].id)
+                startActivity(intent)
+                Log.i("SearchFriendsFragment","Item number: $position")
+            }
+        })
         searchView()
         searchFriends()
+
         return binding!!.root
     }
 
@@ -85,9 +97,9 @@ class SearchFriendsFragment : Fragment() {
         listaUsuariosArraylist.clear()
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.setHasFixedSize(true)
-
         val reference = database.reference.child("Usuarios")
         reference.get().addOnSuccessListener {
+            listaUsuariosArraylist.clear()
             it.children.iterator().forEach { va ->
                 if(va.exists()) {
                     val user = va.getValue(User::class.java)

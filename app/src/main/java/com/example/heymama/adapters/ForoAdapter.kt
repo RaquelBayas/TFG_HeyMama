@@ -1,5 +1,6 @@
 package com.example.heymama.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,6 +45,8 @@ class ForoAdapter(private var foroArrayList: ArrayList<Post>, private val foroIt
         val tema_post: Post = foroArrayList[position]
         if(tema_post.protected == "Público") {
             getDataUser(tema_post.userID, holder)
+        } else {
+            holder.user_foro.visibility = View.INVISIBLE
         }
         holder.titulo_foro.text = tema_post.title
         holder.titulo_foro.setOnClickListener{

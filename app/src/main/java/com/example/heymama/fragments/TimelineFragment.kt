@@ -83,6 +83,14 @@ class TimelineFragment : Fragment(), ItemRecyclerViewListener {
                 } else {
                     checkFriend()
                 }
+                binding.swipeRefreshTLFragment.setOnRefreshListener {
+                    if(snapshot.value == false) {
+                        tabs!!.visibility = View.VISIBLE
+                        loadPostsTL()
+                    } else {
+                        checkFriend()
+                    }
+                }
             }
             override fun onCancelled(error: DatabaseError) {
             }
@@ -118,6 +126,9 @@ class TimelineFragment : Fragment(), ItemRecyclerViewListener {
      * Este método permite cargar los posts de la timeline.
      */
     private fun loadPostsTL() {
+        if(binding.swipeRefreshTLFragment.isRefreshing){
+            binding.swipeRefreshTLFragment.isRefreshing = false
+        }
         postsTLArraylist.clear()
         firestore.collection("Timeline").whereEqualTo("userId",uid).addSnapshotListener { snapshots, e ->
             if (e!= null) {
@@ -136,7 +147,6 @@ class TimelineFragment : Fragment(), ItemRecyclerViewListener {
             adapterPostsTL.notifyDataSetChanged()
             if(postsTLArraylist.size > 1) {
             postsTLArraylist.sort()}
-            Log.i("TIMELINEFRAGMENT",postsTLArraylist.toString())
 
             adapterPostsTL.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
                 override fun onItemClicked(position: Int) {

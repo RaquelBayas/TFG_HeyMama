@@ -52,7 +52,7 @@ class ListaUsuariosActivity : AppCompatActivity(), ItemRecyclerViewListener {
             it.children.iterator().forEach { data ->
                 val user = data.getValue(User::class.java)
                 listaUsuariosArraylist.add(user!!)
-                adapter = ListaUsuariosAdapter(applicationContext,listaUsuariosArraylist)
+                adapter = ListaUsuariosAdapter(applicationContext,listaUsuariosArraylist,this)
                 recyclerView.adapter = adapter
             }
         }

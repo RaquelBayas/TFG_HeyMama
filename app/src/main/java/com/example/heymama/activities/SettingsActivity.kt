@@ -79,30 +79,33 @@ class SettingsActivity : AppCompatActivity() {
             if(password.text.isEmpty()) {
                 return@setPositiveButton
             } else {
-                deleteUserMood(uid)
-                deleteUserPosts(uid)
-                deleteUserLikes(uid)
-                deleteUserFriends(uid)
-                deleteForos(uid)
-                deleteUserChats(uid)
-                database.reference.child("Usuarios").child(uid).child("rol").get().addOnSuccessListener {
-                    if(it.value == "Profesional") {
-                        deleteUserArticulos(uid)
-                    }
-                }
-                deleteChatList(uid)
-                deleteUserConsultas(uid)
-                deleteUserFriendRequests(uid)
-                deleteNotifications(uid)
-                deleteUserPhotos(uid)
                 val credential : AuthCredential = EmailAuthProvider.getCredential(currentUser.email!!,password.text.toString())
                 currentUser.reauthenticate(credential).addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-
+                        deleteUserMood(uid)
+                        deleteUserPosts(uid)
+                        deleteUserLikes(uid)
+                        deleteUserFriends(uid)
+                        deleteForos(uid)
+                        deleteUserChats(uid)
+                        database.reference.child("Usuarios").child(uid).child("rol").get().addOnSuccessListener {
+                            if(it.value == "Profesional") {
+                                deleteUserArticulos(uid)
+                            }
+                        }
+                        deleteChatList(uid)
+                        deleteUserConsultas(uid)
+                        deleteUserFriendRequests(uid)
+                        deleteNotifications(uid)
+                        deleteUserPhotos(uid)
                         val username = binding.settingsUsername.text.toString()
                         database.reference.child("Usernames").child(username).removeValue()
                         database.reference.child("Usuarios").child(uid).removeValue()
-                        firestore.collection("Usuarios").document(uid).delete()
+                        firestore.collection("Usuarios").document(uid).delete().addOnSuccessListener {
+                            Log.i("firestore-user","ok")
+                        }.addOnFailureListener {
+                            Log.e("firestore-user",it.toString())
+                        }
                         database.reference.child("Tokens").child(uid).removeValue()
                         deleteAccount()
                     }
@@ -422,7 +425,7 @@ class SettingsActivity : AppCompatActivity() {
                 logOut()
             } else {
                 Toast.makeText(this,"Se ha producido un error.",Toast.LENGTH_SHORT).show()
-                Log.e("SettingsActivity",task.exception.toString())
+                Log.e("DeleteAccount-exception",task.exception.toString())
             }
         }
     }
@@ -438,20 +441,16 @@ class SettingsActivity : AppCompatActivity() {
         database.reference.child("NotificationsConsultas").equalTo("uid",userId).ref.removeValue().addOnSuccessListener {
             Log.i("deleteNotifications","Notificaciones Consultas eliminadas")
         }
-        database.reference.child("NotificationsTL").addValueEventListener(object:ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                snapshot.children.iterator().forEach {
-                    if(it.value == userId) {
+        var notiRef = database.reference.child("NotificationsTL")
+        notiRef.get().addOnCompleteListener {
+            it.result.children.iterator().forEach {
+                it.children.iterator().forEach {
+                    if(it.child("uid").value == userId) {
                         it.ref.removeValue()
-                        Log.i("deleteNotifications","Notificaciones eliminadas")
                     }
                 }
-
             }
-
-            override fun onCancelled(error: DatabaseError) {
-            }
-        })
+        }
     }
 
     /**
@@ -460,28 +459,28 @@ class SettingsActivity : AppCompatActivity() {
      */
     private fun deleteForos(userId: String) {
         val temasForos = arrayListOf("Depresión","Embarazo","Posparto","Otros")
-        for(temaForo in temasForos) {
-            firestore.collection("Foros").document("SubForos").collection(temaForo).whereEqualTo("userID",userId)
-                .addSnapshotListener { value, error ->
-                    if(error != null) {
-                        Log.e("SettingsActivity",error.toString())
-                        return@addSnapshotListener
-                    }
-                    for(doc in value!!.documents) {
-                        doc.reference.collection("Comentarios").addSnapshotListener { value, error ->
-                            if(error != null) {
-                                Log.e("SettingsActivity",error.toString())
-                            }
-                            for (doc in value!!.documents) {
-                                doc.reference.delete()
+        firestore.collection("Foros").document("SubForos").addSnapshotListener { value, error ->
+            temasForos.iterator().forEach {
+                value!!.reference.collection(it).whereEqualTo("userID",userId).addSnapshotListener { value, error ->
+                    value!!.documents.iterator().forEach {
+                        it.reference.collection("Comentarios").addSnapshotListener { value, error ->
+                            value!!.documents.iterator().forEach { it.reference.delete() }
+                            it.reference.delete().addOnSuccessListener {
+                                Log.i("deleteForos","OK")
+                            }.addOnFailureListener {
+                                Log.i("deleteForos",it.toString())
                             }
                         }
-                        doc.reference.delete()
                     }
                 }
+            }
         }
     }
 
+    /**
+     * Este método elimina las consultas del usuario
+     * @param userId String: UID del usuario
+     */
     private fun deleteUserConsultas(userId: String) {
         val arrayTemas = arrayListOf("Embarazo","Familia","Parto","Posparto","Otros")
         for(tema in arrayTemas) {
@@ -498,25 +497,39 @@ class SettingsActivity : AppCompatActivity() {
                         value!!.documents.iterator().forEach { it.reference.delete() }
                     }
                     it.reference.delete()
+                    Log.i("deleteUserConsultas","OK")
                 }
             }
         }
     }
 
-
+    /**
+     * Este método elimina los chats del usuario.
+     * @param userId String : UID del usuario
+     */
     private fun deleteUserChats(userId: String) {
-        database.reference.child("ChatList").child(userId).removeValue().addOnCompleteListener {
-            if(it.isSuccessful) {
-                Log.i("DeleteUserChats","Ok")
-            } else {
-                Log.i("DeleteUserChats","no")
+        var chatsRef = database.reference.child("Chats")
+        var chatListRef = database.reference.child("ChatList")
+        chatListRef.child(userId).addValueEventListener(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if(snapshot.exists()){
+                    snapshot.children.iterator().forEach {
+                        chatListRef.child(it.key.toString()).child(userId).removeValue()
+                    }
+                    Log.i("deleteUserChatList", "Chats eliminados")
+                }
             }
-        }
-        database.reference.child("Chats").child(userId).child("Messages").addValueEventListener(object:ValueEventListener{
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+        var chats = chatsRef.child(userId).child("Messages")
+        chats.addValueEventListener(object:ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if(snapshot.exists()) {
-                    snapshot.children.iterator().forEach { it.ref.removeValue().addOnSuccessListener {
-                        Log.i("deleteUserChats","Chats eliminados")
+                    snapshot.children.iterator().forEach {
+                        chatsRef.child(it.key.toString()).child("Messages").child(userId).removeValue()
+                        it.ref.removeValue().addOnSuccessListener {
+                        Log.i("deleteUserChats","OK")
                     } }
                 }
             }
@@ -534,9 +547,9 @@ class SettingsActivity : AppCompatActivity() {
         firestore.collection("Mood").document(userId).collection("Historial").addSnapshotListener { value, error ->
             value!!.documents.iterator().forEach {
                 it.reference.delete().addOnSuccessListener {
-                    Log.i("deleteUserMood","Mood eliminados")
+                    Log.i("deleteUserMood","OK")
                 }.addOnFailureListener {
-                    Log.i("deleteusermood",it.toString())
+                    Log.i("deleteUserMood",it.toString())
                 }
             }
         }
@@ -547,28 +560,24 @@ class SettingsActivity : AppCompatActivity() {
      * @param userId String : UID del usuario
      */
     private fun deleteUserPosts(userId: String) {
-        firestore.collection("Timeline").whereEqualTo("userId",userId).addSnapshotListener { value, error ->
+        var postsRef = firestore.collection("Timeline").whereEqualTo("userId",userId)
+        postsRef.addSnapshotListener { value, error ->
             value?.documents?.iterator()?.forEach {
-                it.reference.delete().addOnCompleteListener {
-                    if(it.isSuccessful) {
-                        Log.i("deleteUserPosts","ok")
-                    } else {
-                        Log.i("deleteUserPosts","No")
-                    }
+                it.reference.collection("Replies").addSnapshotListener { value, error ->
+                    value!!.documents.iterator().forEach { it.reference.delete() }
                 }
+                it.reference.delete().addOnSuccessListener {
+                    Log.i("deleteUserPosts","OK")
+                }.addOnFailureListener { Log.e("deleteUserPosts",it.toString()) }
             }
         }
         firestore.collection("Timeline").addSnapshotListener { value, error ->
             value!!.documents.iterator().forEach {
                 it.reference.collection("Replies").whereEqualTo("userId",userId).addSnapshotListener { value, error ->
                     value!!.documents.iterator().forEach { posts ->
-                        posts.reference.delete().addOnCompleteListener {
-                            if(it.isSuccessful) {
-                                Log.i("deleteUserPosts","ok1")
-                            } else {
-                                Log.i("deleteUserPosts","No1")
-                            }
-                        }
+                        posts.reference.delete().addOnSuccessListener {
+                            Log.i("deleteUserPosts","OK-2")
+                        }.addOnFailureListener { Log.e("deleteUserPosts",it.toString()) }
                     }
                 }
             }
@@ -583,12 +592,12 @@ class SettingsActivity : AppCompatActivity() {
         var perfilRef = firebaseStore.getReference("Usuarios/$userId/images/perfil")
         perfilRef.downloadUrl.addOnSuccessListener {
             perfilRef.delete()
-            Log.i("deleteUserPhotos","Ok")
+            Log.i("deleteUserPhotos","OK")
         }.addOnFailureListener {
             Log.e("deleteUserPhotos",it.toString())
         }
         var layoutRef = firebaseStore.getReference("Usuarios/$userId/images/layout")
-        layoutRef.downloadUrl.addOnSuccessListener {
+        layoutRef.downloadUrl.addOnSuccessListener {Log.i("deleteUserPhotoLayou","Ok")
         }.addOnFailureListener {
             Log.e("deleteUserPhotos",it.toString())
         }
@@ -605,12 +614,12 @@ class SettingsActivity : AppCompatActivity() {
                 return@addSnapshotListener
             }
             value!!.documents.iterator().forEach {
-                firestore.collection("Timeline").document(it.id).collection("Likes").document(userId).delete()
+                firestore.collection("PostsLiked").document(it.id).collection("Users").document(userId).delete()
                 it.reference.delete().addOnCompleteListener {
                     if(it.isSuccessful) {
-                        Log.i("deleteUserLikes","ok")
+                        Log.i("deleteUserLikes","OK")
                     } else {
-                        Log.i("deleteUserLikes","No")
+                        Log.i("deleteUserLikes",it.toString())
                     }
                 }
             }
@@ -628,15 +637,13 @@ class SettingsActivity : AppCompatActivity() {
                 snapshot.children.forEach {
                     it.ref.removeValue().addOnCompleteListener {
                         if(it.isSuccessful) {
-                            Log.i("deleteChatlist","ok")
+                            Log.i("deleteChatlist","OK")
                         } else {
-                            Log.i("deleteChatlist","No")
+                            Log.i("deleteChatlist",it.toString())
                         }
                     }
-                    Log.i("DELETE-CHATLIST",it.toString())
                 }
             }
-
             override fun onCancelled(error: DatabaseError) {
             }
         })
@@ -651,9 +658,9 @@ class SettingsActivity : AppCompatActivity() {
             if(value!!.documents.isNotEmpty()){
             value!!.documents.iterator().forEach { it.reference.delete().addOnCompleteListener {
                 if(it.isSuccessful) {
-                    Log.i("deleteuserarticulos","ok")
+                    Log.i("deleteUserArticulos","OK")
                 } else {
-                    Log.i("deleteuserarticulos","No")
+                    Log.i("deleteUserArticulos",it.toString())
                 }
             } } }
         }
@@ -668,14 +675,14 @@ class SettingsActivity : AppCompatActivity() {
         reference.document(userId).collection("FriendRequest").addSnapshotListener { value, error ->
             value!!.documents.iterator().forEach {
                 reference.document(it.id).collection("FriendRequest").document(userId).delete().addOnSuccessListener {
-                    Log.i("DeleteUserFriendRequest",it.toString())
+                    Log.i("deleteUserFriendRequest","OK")
                 }.addOnFailureListener {
-                    Log.i("deleteuserrequest",it.toString())
+                    Log.i("deleteUserFriendRequest",it.toString())
                 }
                 it.reference.delete().addOnSuccessListener {
-                    Log.i("deleteUserFriendRequest","Solicitudes eliminadas")
+                    Log.i("deleteUserFriendRequest","OK-2")
                 }.addOnFailureListener {
-                    Log.i("deleteuserrequest",it.toString())
+                    Log.i("deleteUserFriendRequest",it.toString())
                 }
             }
         }
@@ -689,19 +696,19 @@ class SettingsActivity : AppCompatActivity() {
         val reference = firestore.collection("Friendship")
         reference.document(userId).collection("Friends").addSnapshotListener { value, error ->
             if(error != null) {
-                Log.e("SettingsActivity",error.toString())
+                Log.e("deleteUserFriends-error",error.toString())
                 return@addSnapshotListener
             }
             value!!.documents.iterator().forEach {
                 reference.document(it.id).collection("Friends").document(userId).delete().addOnSuccessListener {
-                    Log.i("deleteUserFriends","Amigos 1 eliminados")
+                    Log.i("deleteUserFriends","OK")
                 }.addOnFailureListener {
-                    Log.i("deleteuserfriends",it.toString())
+                    Log.i("deleteUserFriends",it.toString())
                 }
                 it.reference.delete().addOnSuccessListener {
-                    Log.i("deleteUserFriends","Amigos eliminados")
+                    Log.i("deleteUserFriends","OK-2")
                 }.addOnFailureListener {
-                    Log.i("deleteuserfriends",it.toString())
+                    Log.i("deleteUserFriends",it.toString())
                 }
             }
         }

@@ -79,9 +79,11 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private fun getDataUser(){
         database.reference.child("Usuarios").child(auth.uid.toString()).addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                var user : User? = snapshot.getValue(User::class.java)
-                rol = user!!.rol.toString()
-                getSpinner()
+                if(snapshot.exists()) {
+                    var user: User? = snapshot.getValue(User::class.java)
+                    rol = user!!.rol.toString()
+                    getSpinner()
+                }
             }
             override fun onCancelled(error: DatabaseError) {
             }
@@ -184,7 +186,6 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
                         val tema_consulta = consultasArraylist[position].tema.toString()
                         val id_user_consulta = consultasArraylist[position].userID.toString()
                         val consulta = consultasArraylist[position].consulta.toString()
-
                         open(id_consulta,tema_consulta,id_user_consulta,consulta)
                     }
                 })

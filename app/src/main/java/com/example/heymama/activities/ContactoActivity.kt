@@ -9,6 +9,7 @@ import com.example.heymama.*
 import com.example.heymama.databinding.ActivityContactoBinding
 import com.example.heymama.models.Consulta
 import com.example.heymama.models.Notification
+import com.google.common.io.Resources
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
@@ -93,13 +94,17 @@ class ContactoActivity : AppCompatActivity() {
         val user : String = auth.uid.toString()
         val ref = firestore.collection("Consultas").document(txt_tema).collection("Consultas").document()
         val consulta = Consulta(ref.id,user,txt_tema,txt_consulta.text.toString(),Date())
-        if(txt_consulta.text.isNotEmpty()) {
+        if(txt_consulta.text.isNotEmpty() && (txt_tema!= "Elige un tema")) {
             ref.set(consulta)
             val notifRef = database.reference.child("NotificationsConsultas")
             val notification = Notification(user,"",ref.id,txt_consulta.text.toString(),"ha realizado una consulta",Date())
             notifRef.push().setValue(notification)
             Toast.makeText(this,"Consulta enviada correctamente",Toast.LENGTH_SHORT).show()
             txt_consulta.setText("")
+        } else if(txt_consulta.text.isEmpty()){
+            Toast.makeText(this,"Escribe el contenido de tu consulta.",Toast.LENGTH_SHORT).show()
+        } else if(txt_tema == "Elige un tema") {
+            Toast.makeText(this, "Selecciona el tema de tu consulta.",Toast.LENGTH_SHORT).show()
         } else {
             Utils.showErrorToast(this)
         }

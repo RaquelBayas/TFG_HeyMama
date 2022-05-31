@@ -24,8 +24,8 @@
     <Spinner
         android:id="@+id/spinnerConsultas_prof"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.10"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.05"
         android:layout_margin="10dp"
         android:background="@drawable/spinner_consultas"
         >

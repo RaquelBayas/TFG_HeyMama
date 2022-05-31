@@ -12,8 +12,6 @@
         android:id="@+id/btn_usuario"
         android:layout_width="295dp"
         android:layout_height="50dp"
-        android:layout_marginStart="135dp"
-        android:layout_marginEnd="188dp"
         android:background="@drawable/edittext_pink_home"
         android:fontFamily="@font/alegreya"
         android:text="@string/usuario"
@@ -25,15 +23,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.367"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.499" />
+        app:layout_constraintTop_toBottomOf="@+id/txt_registeras"
+        app:layout_constraintVertical_bias="0.110000014" />
 
     <Button
         android:id="@+id/btn_profesional"
         android:layout_width="295dp"
         android:layout_height="50dp"
-        android:layout_marginStart="135dp"
-        android:layout_marginEnd="188dp"
         android:background="@drawable/edittext_pink_home"
         android:fontFamily="@font/alegreya"
         android:text="@string/profesional"
@@ -45,52 +41,50 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.367"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.632" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_usuario"
+        app:layout_constraintVertical_bias="0.07999998" />
 
     <ImageView
         android:id="@+id/imageView7"
         android:layout_width="119dp"
         android:layout_height="107dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/txt_title2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.106"
+        app:layout_constraintHorizontal_bias="0.14"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.062"
+        app:layout_constraintVertical_bias="0.19999999"
         app:srcCompat="@drawable/iconohome" />
 
     <TextView
         android:id="@+id/txt_title2"
-        android:layout_width="252dp"
-        android:layout_height="82dp"
-        android:layout_marginStart="138dp"
-        android:layout_marginTop="116dp"
-        android:layout_marginEnd="215dp"
-        android:fontFamily="@font/alegreya"
-        android:text="Hey, mama!"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/corben_bold"
+        android:text="@string/app_name"
         android:textColor="@color/wine_1"
-        android:textSize="48sp"
+        android:textSize="50sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.134"
+        app:layout_constraintHorizontal_bias="0.58"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.16000003" />
 
     <TextView
         android:id="@+id/txt_registeras"
         android:layout_width="237dp"
         android:layout_height="34dp"
-        android:layout_marginStart="138dp"
-        android:layout_marginTop="252dp"
-        android:layout_marginEnd="215dp"
         android:fontFamily="@font/alegreya"
         android:text="Registrarse como..."
         android:textColor="@color/wine_1"
         android:textSize="28sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.441"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/txt_title2"
+        app:layout_constraintVertical_bias="0.060000002" />
 </androidx.constraintlayout.widget.ConstraintLayout>

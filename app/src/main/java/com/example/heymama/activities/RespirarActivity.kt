@@ -8,12 +8,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.example.heymama.R
 import com.example.heymama.databinding.ActivityRespirarBinding
-import com.example.heymama.interfaces.Utils
 import com.github.florent37.viewanimator.AnimationListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-class RespirarActivity : AppCompatActivity(), Utils {
+class RespirarActivity : AppCompatActivity() {
 
     private lateinit var txt_exhalar: TextView
     private lateinit var btn_empezar_respirar: Button

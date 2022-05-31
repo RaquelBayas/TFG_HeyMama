@@ -71,7 +71,7 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
                     user_post.text = docs["username"].toString()
                     idUser = docs["id"].toString()
                     comment_post.text = post_tl.comment
-                    GlideApp.with(context)
+                    GlideApp.with(context.applicationContext)
                         .load(refPhoto)
                         .error(R.drawable.wallpaper_profile)
                         .diskCacheStrategy(DiskCacheStrategy.NONE)

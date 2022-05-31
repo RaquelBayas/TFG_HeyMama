@@ -20,6 +20,7 @@
             android:background="@drawable/item_right"
             android:gravity="center"
             android:padding="10dp"
+            android:autoLink="all"
             android:fontFamily="@font/open_sans"
             android:text="Message"
             android:textSize="16sp" />

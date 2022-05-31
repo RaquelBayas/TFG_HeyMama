@@ -3,7 +3,6 @@ package com.example.heymama.activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.EditText
-import android.widget.Toast
 import com.example.heymama.Utils
 import com.example.heymama.databinding.ActivityPreguntaBinding
 import com.example.heymama.models.Post
@@ -27,7 +26,6 @@ class PreguntaActivity : AppCompatActivity() {
     private lateinit var txt_titulo_foro: EditText
 
     /**
-     *
      * @param savedInstanceState Bundle
      */
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,7 +77,6 @@ class PreguntaActivity : AppCompatActivity() {
         if(txt_titulo_foro.text.isNotEmpty() && txt_descripcion_foro.text.isNotEmpty() && (publico.isChecked || privado.isChecked)) {
             val post = Post(id_ref,txt_titulo_foro.text.toString(),txt_descripcion_foro.text.toString(),user.uid,protected, Date())
             addPost(post,ref)
-            Utils.showToast(this,"Correcto.")
             finish()
         } else {
             Utils.showToast(this,"Rellena la información.")

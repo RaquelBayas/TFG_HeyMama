@@ -18,6 +18,7 @@
             android:background="@drawable/item_left"
             android:gravity="center"
             android:padding="10dp"
+            android:autoLink="all"
             android:id="@+id/txt_message_chat"
             android:text="Message"
             android:fontFamily="@font/open_sans"

@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.heymama.R
 
-class TutorialFragment : Fragment() {
+class PoliticasFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,6 +19,6 @@ class TutorialFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tutorial, container, false)
+        return inflater.inflate(R.layout.fragment_politicas, container, false)
     }
 }

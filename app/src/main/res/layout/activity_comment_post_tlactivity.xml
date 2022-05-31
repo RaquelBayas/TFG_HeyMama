@@ -88,6 +88,8 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
+            android:inputType="text|textMultiLine"
+            android:autoLink="all"
             android:background="@android:color/transparent"
             android:fontFamily="@font/open_sans"
             android:hint="@string/comentario"

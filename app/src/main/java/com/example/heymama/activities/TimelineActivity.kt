@@ -155,19 +155,16 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private fun getCommentsTL() {
         postsTLArraylist.clear()
         friendsIds.clear()
-
         if(binding.swipeRefreshTL.isRefreshing){
             binding.swipeRefreshTL.isRefreshing = false
         }
 
         /**
-         * Comprobamos si el usuario tiene amigos:
-         *
+         * Se muestran únicamente los posts del usuario en caso de no tener amigos, caso contrario, los de este y sus amigos.
          */
         friendsIds.add(auth.uid.toString())
         firestore.collection("Friendship").document(auth.uid.toString()).collection("Friends").get().addOnSuccessListener { it ->
             val documents = it.documents
-
             if(documents.isEmpty()){
                 postsTLArraylist.clear()
                 firestore.collection("Timeline").whereEqualTo("userId",auth.uid.toString()).addSnapshotListener { snapshots, e ->

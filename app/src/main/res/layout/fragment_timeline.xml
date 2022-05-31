@@ -5,11 +5,16 @@
     android:layout_height="match_parent"
     tools:context=".fragments.TimelineFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView_perfil"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshTLFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/rectangle_purple"
-        />
+        android:layout_height="match_parent">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView_perfil"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/rectangle_purple"
+            />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </FrameLayout>

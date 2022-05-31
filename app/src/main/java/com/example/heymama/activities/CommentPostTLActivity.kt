@@ -3,6 +3,7 @@ package com.example.heymama.activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -68,7 +69,10 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
         getPostTLInfo()
 
         binding.btnSendPosttl.setOnClickListener{
-            add_comment_to_posttl(uid,binding.edtCommentPosttl.text.toString())
+            if(binding.edtCommentPosttl.text.isEmpty()) {
+                Toast.makeText(this,"Escribe un comentario",Toast.LENGTH_SHORT).show()
+            } else {
+            add_comment_to_posttl(uid,binding.edtCommentPosttl.text.toString())}
         }
 
         getCommentsPostTL()
@@ -130,6 +134,7 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
             val notificationRef = database.reference.child("NotificationsTL").child(iduser)
             val notification = Notification(uid,"",idpost,edt_comment,"ha comentado en tu post",Date())
             notificationRef.push().setValue(notification)
+            binding.edtCommentPosttl.setText("")
         }.addOnFailureListener {
             Log.i("CommentPostTLActivity","No se ha podido añadir el comentario.")
         }

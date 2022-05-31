@@ -6,7 +6,6 @@ import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
@@ -18,7 +17,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.heymama.GlideApp
 import com.example.heymama.R
 import com.example.heymama.databinding.ActivityHomeBinding
-import com.example.heymama.interfaces.Utils
 import com.example.heymama.models.Mood
 import com.example.heymama.models.MoodType
 import com.google.android.gms.tasks.OnCompleteListener
@@ -33,7 +31,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, Utils {
+class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase

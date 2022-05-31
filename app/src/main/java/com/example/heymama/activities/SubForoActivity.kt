@@ -16,7 +16,7 @@ import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
 
-class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.example.heymama.interfaces.Utils{
+class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener{
 
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
@@ -28,7 +28,6 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
     private lateinit var foroName: String
     private lateinit var binding: ActivitySubForoBinding
     /**
-     *
      * @constructor
      * @param savedInstanceState Bundle
      */
@@ -39,9 +38,7 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
 
         val intent = intent
         foroName = intent.getStringExtra("ForoName").toString()
-
-        dataBase = FirebaseDatabase.getInstance()
-        auth = FirebaseAuth.getInstance()
+        initFirebase()
         initRecycler()
         getTemasData(foroName)
 
@@ -54,6 +51,15 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
             startActivity(intent)
         }
         searchView()
+    }
+
+    /**
+     * Este método inicializa los objetos de Firebase
+     */
+    private fun initFirebase() {
+        firestore = FirebaseFirestore.getInstance()
+        dataBase = FirebaseDatabase.getInstance()
+        auth = FirebaseAuth.getInstance()
     }
 
     /**
@@ -102,13 +108,11 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener, com.examp
      * @param foroName String : Nombre del foro seleccionado.
      */
     private fun getTemasData(foroName: String?) {
+        temasArraylist.clear()
+        idTemasArrayList.clear()
         if(binding.swipeRefreshTL.isRefreshing) {
             binding.swipeRefreshTL.isRefreshing = false
         }
-        temasArraylist.clear()
-        idTemasArrayList.clear()
-        firestore = FirebaseFirestore.getInstance()
-
         firestore.collection("Foros").document("SubForos").collection(foroName.toString())
             .addSnapshotListener { snapshots, e ->
                 if (e != null) {

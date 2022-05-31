@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.adapters.PostTimelineAdapter
@@ -56,7 +55,8 @@ class LikesFragment : Fragment(), ItemRecyclerViewListener {
         if(uid == auth.uid.toString()) {
             loadPostsTL()
         } else {
-            checkFriend()
+            loadPostsTL()
+        //checkFriend()
         }
 
         return binding.root
@@ -84,6 +84,7 @@ class LikesFragment : Fragment(), ItemRecyclerViewListener {
         firestore.collection("Friendship").document(auth.uid.toString()).collection("Friends").get()
             .addOnSuccessListener { it ->
                 val documents = it.documents
+
                 if(documents.isNotEmpty()) {
                     documents.iterator().forEach(){it ->
                         if(it["friend_send_uid"] == uid || it["friend_receive_uid"] == uid) {
@@ -112,10 +113,13 @@ class LikesFragment : Fragment(), ItemRecyclerViewListener {
         val likesReference = firestore.collection("Likes").document(uid).collection("Likes")
         likesReference.addSnapshotListener { value, error ->
             val docs  = value!!.documents
+            Log.i("LIKES-FR-1",docs.toString())
             if(docs.isEmpty()){
+                Log.i("LIKES-FR-2",docs.toString())
                 likesArraylist.clear()
                 adapterLikes.notifyDataSetChanged()
             } else {
+                Log.i("LIKES-FR-3",docs.toString())
                 likesArraylist.clear()
                 docs.iterator().forEach {
                     timelineReference.whereEqualTo("postId",it.id).addSnapshotListener { value, error ->
@@ -124,14 +128,14 @@ class LikesFragment : Fragment(), ItemRecyclerViewListener {
                                 DocumentChange.Type.ADDED -> {
                                     val post = doc.document.toObject(PostTimeline::class.java)
                                     database.reference.child("Usuarios").child(post.userId.toString()).child("protected").get().addOnSuccessListener {
-                                        if(it.value == false || uid == post.userId.toString()) {
+                                        if(it.value == false) {
                                             likesArraylist.add(post)
                                             adapterLikes.notifyDataSetChanged()
                                         } else{
                                             //Se visualizan los posts de los perfiles privados que tenemos agregados.
                                             firestore.collection("Friendship").document(auth.uid.toString()).collection("Friends").document(post.userId.toString())
                                                 .addSnapshotListener { value, error ->
-                                                    if(value!!.exists()) {
+                                                    if((value!!.exists()) || (uid == auth.uid.toString()) || (post.userId.toString() == auth.uid.toString())) {
                                                         likesArraylist.add(post)
                                                         adapterLikes.notifyDataSetChanged()
                                                     }
@@ -150,6 +154,9 @@ class LikesFragment : Fragment(), ItemRecyclerViewListener {
                                     likesReference.document(doc.document.id).delete()
                                 }
                             }
+                        }
+                        if(likesArraylist.size>1){
+                            likesArraylist.sort()
                         }
                         adapterLikes.notifyDataSetChanged()
                         adapterLikes.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {

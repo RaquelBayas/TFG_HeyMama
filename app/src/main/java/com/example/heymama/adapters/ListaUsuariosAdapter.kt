@@ -15,6 +15,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.heymama.GlideApp
 import com.example.heymama.R
 import com.example.heymama.activities.PerfilActivity
+import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -22,7 +23,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
-class ListaUsuariosAdapter(private val context: Context, private var listaUsuarios: ArrayList<User>
+class ListaUsuariosAdapter(private val context: Context, private var listaUsuarios: ArrayList<User>,private val usersListener: ItemRecyclerViewListener
 ) : RecyclerView.Adapter<ListaUsuariosAdapter.Holder>() {
 
     private lateinit var auth: FirebaseAuth
@@ -32,10 +33,11 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storageReference: StorageReference
     private lateinit var rol: String
+    private lateinit var listener: ItemRecyclerViewListener
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListaUsuariosAdapter.Holder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.tema_friend,parent,false)
-        return ListaUsuariosAdapter.Holder(view)
+        return Holder(view)
     }
 
     override fun onBindViewHolder(holder: ListaUsuariosAdapter.Holder, position: Int) {
@@ -50,6 +52,13 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
         getUsuarios(holder,position)
         getDataUser(holder,position)
 
+    }
+
+    /**
+     * @param listener ItemRecyclerViewListener
+     */
+    fun setOnItemRecyclerViewListener(listener: ItemRecyclerViewListener) {
+        this.listener = listener
     }
 
     private fun getDataUser(holder: Holder, position: Int) {
@@ -68,7 +77,6 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
                 }
             }
             override fun onCancelled(error: DatabaseError) {
-                //TO DO("Not yet implemented")
             }
         })
     }
@@ -99,7 +107,7 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
            database.getReference("Usuarios/$userId").removeValue()
         }
         database.getReference("Usernames/"+user.username).removeValue()
-        database.getReference("Chats/"+userId+"/Messages").addValueEventListener(object: ValueEventListener{
+        database.getReference("Chats/$userId/Messages").addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 snapshot.children.iterator().forEach {
                     it.ref.removeValue()
@@ -125,15 +133,24 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
         deleteUserPhotos(userId)
     }
 
+    /**
+     * Este método permite eliminar un chat iniciado con otro usuario
+     * @param userId String: UID del usuario del chat
+     */
     private fun deleteChatList(userId: String) {
         val ref = database.reference.child("ChatList")
         ref.child(userId).addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 snapshot.children.forEach {
-                    Log.i("DELETE-CHATLIST",it.toString())
+                    it.ref.removeValue().addOnCompleteListener {
+                        if(it.isSuccessful) {
+                            Log.i("deleteChatlist","OK")
+                        } else {
+                            Log.i("deleteChatlist",it.toString())
+                        }
+                    }
                 }
             }
-
             override fun onCancelled(error: DatabaseError) {
             }
         })
@@ -147,7 +164,16 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
         val reference = firestore.collection("Friendship")
         reference.document(userId).collection("FriendRequest").addSnapshotListener { value, error ->
             value!!.documents.iterator().forEach {
-                reference.document(it.id).collection("FriendRequest").document(userId).delete()
+                reference.document(it.id).collection("FriendRequest").document(userId).delete().addOnSuccessListener {
+                    Log.i("deleteUserFriendRequest","OK")
+                }.addOnFailureListener {
+                    Log.i("deleteUserFriendRequest",it.toString())
+                }
+                it.reference.delete().addOnSuccessListener {
+                    Log.i("deleteUserFriendRequest","OK-2")
+                }.addOnFailureListener {
+                    Log.i("deleteUserFriendRequest",it.toString())
+                }
             }
         }
     }
@@ -157,15 +183,32 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
      * @param userId String : UID del usuario
      */
     private fun deleteUserChats(userId: String) {
-        database.reference.child("ChatList").child(userId).removeValue()
-        database.reference.child("Chats").child(userId).child("Messages").addValueEventListener(object:ValueEventListener{
+        var chatsRef = database.reference.child("Chats")
+        var chatListRef = database.reference.child("ChatList")
+        chatListRef.child(userId).addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                if(snapshot.exists()) {
-                    snapshot.children.iterator().forEach { it.ref.removeValue() }
+                if(snapshot.exists()){
+                    snapshot.children.iterator().forEach {
+                        chatListRef.child(it.key.toString()).child(userId).removeValue()
+                    }
+                    Log.i("deleteUserChatList", "Chats eliminados")
                 }
             }
             override fun onCancelled(error: DatabaseError) {
-                Log.e("ListaUsuariosAdapter",error.toString())
+            }
+        })
+        var chats = chatsRef.child(userId).child("Messages")
+        chats.addValueEventListener(object:ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if(snapshot.exists()) {
+                    snapshot.children.iterator().forEach {
+                        chatsRef.child(it.key.toString()).child("Messages").child(userId).removeValue()
+                        it.ref.removeValue().addOnSuccessListener {
+                            Log.i("deleteUserChats","OK")
+                        } }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
             }
         })
     }
@@ -175,16 +218,24 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
      * @param userId String : UID del usuario
      */
     private fun deleteUserPosts(userId: String) {
-        firestore.collection("Timeline").whereEqualTo("userId",userId).addSnapshotListener { value, error ->
-            value!!.documents.iterator().forEach {
-                it.reference.delete()
+        var postsRef = firestore.collection("Timeline").whereEqualTo("userId",userId)
+        postsRef.addSnapshotListener { value, error ->
+            value?.documents?.iterator()?.forEach {
+                it.reference.collection("Replies").addSnapshotListener { value, error ->
+                    value!!.documents.iterator().forEach { it.reference.delete() }
+                }
+                it.reference.delete().addOnSuccessListener {
+                    Log.i("deleteUserPosts","OK")
+                }.addOnFailureListener { Log.e("deleteUserPosts",it.toString()) }
             }
         }
         firestore.collection("Timeline").addSnapshotListener { value, error ->
             value!!.documents.iterator().forEach {
                 it.reference.collection("Replies").whereEqualTo("userId",userId).addSnapshotListener { value, error ->
                     value!!.documents.iterator().forEach { posts ->
-                        posts.reference.delete()
+                        posts.reference.delete().addOnSuccessListener {
+                            Log.i("deleteUserPosts","OK-2")
+                        }.addOnFailureListener { Log.e("deleteUserPosts",it.toString()) }
                     }
                 }
             }
@@ -198,7 +249,11 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
     private fun deleteUserMood(userId: String) {
         firestore.collection("Mood").document(userId).collection("Historial").addSnapshotListener { value, error ->
             value!!.documents.iterator().forEach {
-                it.reference.delete()
+                it.reference.delete().addOnSuccessListener {
+                    Log.i("deleteUserMood","OK")
+                }.addOnFailureListener {
+                    Log.i("deleteUserMood",it.toString())
+                }
             }
         }
     }
@@ -208,26 +263,22 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
      * @param userId String : UID del usuario
      */
     private fun deleteUserForos(userId: String){
-        var temasForos = arrayListOf("Depresión","Embarazo","Posparto","Otros")
-        for(temaForo in temasForos) {
-            firestore.collection("Foros").document("SubForos").collection(temaForo).whereEqualTo("userID",userId)
-                .addSnapshotListener { value, error ->
-                    if(error != null) {
-                        Log.e("SettingsActivity",error.toString())
-                        return@addSnapshotListener
-                    }
-                    for(doc in value!!.documents) {
-                        doc.reference.collection("Comentarios").addSnapshotListener { value, error ->
-                            if(error != null) {
-                                Log.e("SettingsActivity",error.toString())
-                            }
-                            for (doc in value!!.documents) {
-                                doc.reference.delete()
+        val temasForos = arrayListOf("Depresión","Embarazo","Posparto","Otros")
+        firestore.collection("Foros").document("SubForos").addSnapshotListener { value, error ->
+            temasForos.iterator().forEach {
+                value!!.reference.collection(it).whereEqualTo("userID",userId).addSnapshotListener { value, error ->
+                    value!!.documents.iterator().forEach {
+                        it.reference.collection("Comentarios").addSnapshotListener { value, error ->
+                            value!!.documents.iterator().forEach { it.reference.delete() }
+                            it.reference.delete().addOnSuccessListener {
+                                Log.i("deleteForos","OK")
+                            }.addOnFailureListener {
+                                Log.i("deleteForos",it.toString())
                             }
                         }
-                        doc.reference.delete()
                     }
                 }
+            }
         }
     }
 
@@ -236,11 +287,29 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
      * @param userId String : UID del usuario
      */
     private fun deleteNotifications(userId: String) {
-        database.reference.child("NotificationsTL").child(userId).removeValue()
-        database.reference.child("NotificationsConsultas").equalTo("uid",userId).ref.removeValue()
+        database.reference.child("NotificationsTL").child(userId).removeValue().addOnSuccessListener {
+            Log.i("deleteNotifications","Notificaciones TL eliminadas")
+        }
+        database.reference.child("NotificationsConsultas").equalTo("uid",userId).ref.removeValue().addOnSuccessListener {
+            Log.i("deleteNotifications","Notificaciones Consultas eliminadas")
+        }
+        var notiRef = database.reference.child("NotificationsTL")
+        notiRef.get().addOnCompleteListener {
+            it.result.children.iterator().forEach {
+                it.children.iterator().forEach {
+                    if(it.child("uid").value == userId) {
+                        it.ref.removeValue()
+                    }
+                }
+            }
+        }
     }
 
 
+    /**
+     * Este método elimina las consultas del usuario
+     * @param userId String: UID del usuario
+     */
     private fun deleteUserConsultas(userId: String) {
         val arrayTemas = arrayListOf("Embarazo","Familia","Parto","Posparto","Otros")
         for(tema in arrayTemas) {
@@ -257,6 +326,7 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
                         value!!.documents.iterator().forEach { it.reference.delete() }
                     }
                     it.reference.delete()
+                    Log.i("deleteUserConsultas","OK")
                 }
             }
         }
@@ -277,13 +347,17 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
      * @param userId String : UID del usuario
      */
     private fun deleteUserPhotos(userId: String) {
-        firebaseStore.getReference("Usuarios/$userId/images/perfil").delete().addOnSuccessListener {
+        var perfilRef = firebaseStore.getReference("Usuarios/$userId/images/perfil")
+        perfilRef.downloadUrl.addOnSuccessListener {
+            perfilRef.delete()
+            Log.i("deleteUserPhotos","OK")
         }.addOnFailureListener {
-            Log.e("SettingsActivity",it.toString())
+            Log.e("deleteUserPhotos",it.toString())
         }
-        firebaseStore.getReference("Usuarios/$userId/images/layout").delete().addOnSuccessListener {
+        var layoutRef = firebaseStore.getReference("Usuarios/$userId/images/layout")
+        layoutRef.downloadUrl.addOnSuccessListener {Log.i("deleteUserPhotoLayou","Ok")
         }.addOnFailureListener {
-            Log.e("SettingsActivity",it.toString())
+            Log.e("deleteUserPhotos",it.toString())
         }
     }
 
@@ -293,9 +367,19 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
      */
     private fun deleteUserLikes(userId: String) {
         firestore.collection("Likes").document(userId).collection("Likes").addSnapshotListener { value, error ->
+            if(error != null) {
+                Log.e("deleteUserLikes",error.toString())
+                return@addSnapshotListener
+            }
             value!!.documents.iterator().forEach {
-                firestore.collection("Timeline").document(it.id).collection("Likes").document(userId).delete()
-                it.reference.delete()
+                firestore.collection("PostsLiked").document(it.id).collection("Users").document(userId).delete()
+                it.reference.delete().addOnCompleteListener {
+                    if(it.isSuccessful) {
+                        Log.i("deleteUserLikes","OK")
+                    } else {
+                        Log.i("deleteUserLikes",it.toString())
+                    }
+                }
             }
         }
 
@@ -306,11 +390,23 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
      * @param userId String : UID del usuario
      */
     private fun deleteUserFriends(userId: String){
-        var reference = firestore.collection("Friendship")
+        val reference = firestore.collection("Friendship")
         reference.document(userId).collection("Friends").addSnapshotListener { value, error ->
+            if(error != null) {
+                Log.e("deleteUserFriends-error",error.toString())
+                return@addSnapshotListener
+            }
             value!!.documents.iterator().forEach {
-                reference.document(it.id).collection("Friends").document(userId).delete()
-                it.reference.delete()
+                reference.document(it.id).collection("Friends").document(userId).delete().addOnSuccessListener {
+                    Log.i("deleteUserFriends","OK")
+                }.addOnFailureListener {
+                    Log.i("deleteUserFriends",it.toString())
+                }
+                it.reference.delete().addOnSuccessListener {
+                    Log.i("deleteUserFriends","OK-2")
+                }.addOnFailureListener {
+                    Log.i("deleteUserFriends",it.toString())
+                }
             }
         }
         reference.document(userId).delete()
@@ -330,13 +426,6 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
                 .skipMemoryCache(true)
                 .into(img_user)
 
-            img_user.setOnClickListener {
-                val intent = Intent(context, PerfilActivity::class.java)
-                intent.putExtra("UserUID", uid)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                context.startActivity(intent)
-            }
-
             if(user.rol == "Profesional") {
                 holder.verified.visibility = View.VISIBLE
             }
@@ -349,12 +438,18 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
         return listaUsuarios.size
     }
 
-    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView){
+    inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView){
         var txt_nombre_user: TextView = itemView.findViewById(R.id.txt_nombre_amigo)
         var txt_username_user: TextView = itemView.findViewById(R.id.txt_user_amigo)
         var img_user: ImageView = itemView.findViewById(R.id.img_amigos)
         var btn_menu_user: Button = itemView.findViewById(R.id.btn_menu_friends)
         var verified: ImageView = itemView.findViewById(R.id.verified)
+
+        init {
+            itemView.setOnClickListener {
+                Log.i("ListaUsuariosAdapter",listener.onItemClicked(adapterPosition).toString())
+            }
+        }
     }
 
 }

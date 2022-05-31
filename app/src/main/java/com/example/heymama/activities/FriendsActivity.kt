@@ -1,13 +1,16 @@
 package com.example.heymama.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heymama.adapters.UserAdapter
 import com.example.heymama.databinding.ActivityFriendsBinding
+import com.example.heymama.interfaces.ItemRecyclerViewListener
 import com.example.heymama.models.FriendRequest
 import com.example.heymama.models.User
 import com.google.firebase.auth.FirebaseAuth
@@ -19,7 +22,7 @@ import com.google.firebase.storage.StorageReference
 import java.util.*
 import kotlin.collections.ArrayList
 
-class FriendsActivity : AppCompatActivity() {
+class FriendsActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var firebaseStore: FirebaseStorage
@@ -52,6 +55,7 @@ class FriendsActivity : AppCompatActivity() {
         initRecycler()
         getFriends()
         searchView()
+        binding.swipeRefreshFriends.setOnRefreshListener { getFriends() }
     }
 
     /**
@@ -75,8 +79,16 @@ class FriendsActivity : AppCompatActivity() {
         recyclerViewFriends.layoutManager = LinearLayoutManager(this)
         recyclerViewFriends.setHasFixedSize(true)
         friendsArraylist = arrayListOf()
-        adapterFriends =  UserAdapter(applicationContext,friendsArraylist,uid)
+        adapterFriends =  UserAdapter(applicationContext,friendsArraylist,uid,this)
         recyclerViewFriends.adapter = adapterFriends
+        adapterFriends.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
+            override fun onItemClicked(position: Int) {
+                val intent = Intent(applicationContext, PerfilActivity::class.java)
+                intent.putExtra("UserUID",friendsArraylist[position].id)
+                startActivity(intent)
+                Log.i("TimelineActivity","Item number: $position")
+            }
+        })
     }
 
     /**
@@ -113,6 +125,10 @@ class FriendsActivity : AppCompatActivity() {
      *  Método para obtener los amigos agregados.
      */
     private fun getFriends() {
+        if(binding.swipeRefreshFriends.isRefreshing){
+            binding.swipeRefreshFriends.isRefreshing = false
+        }
+
         friendsArraylist.clear()
         var friend = FriendRequest()
         var uidFriend = ""
@@ -143,6 +159,7 @@ class FriendsActivity : AppCompatActivity() {
                                 friendsArraylist.add(user!!)
                             }
                             adapterFriends.notifyDataSetChanged()
+
                         }
                     }
                 }

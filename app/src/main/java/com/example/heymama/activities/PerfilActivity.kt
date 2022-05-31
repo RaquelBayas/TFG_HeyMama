@@ -19,7 +19,6 @@ import com.example.heymama.fragments.LikesFragment
 import com.example.heymama.fragments.TimelineFragment
 import com.example.heymama.fragments.ViewPagerAdapter
 import com.example.heymama.interfaces.ItemRecyclerViewListener
-import com.example.heymama.interfaces.Utils
 import com.example.heymama.models.FriendRequest
 import com.example.heymama.models.User
 import com.google.firebase.auth.FirebaseAuth
@@ -31,7 +30,7 @@ import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 
 
-class PerfilActivity : AppCompatActivity(), Utils, ItemRecyclerViewListener {
+class PerfilActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var currentUserUID: String

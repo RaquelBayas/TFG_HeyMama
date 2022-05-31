@@ -8,7 +8,6 @@
     tools:context=".activities.ChatActivity">
 
     <LinearLayout
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     <androidx.appcompat.widget.Toolbar
@@ -125,9 +124,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
-                        android:fontFamily="@font/baloo"
+                        android:fontFamily="@font/open_sans"
+                        android:inputType="text|textMultiLine"
                         android:gravity="start"
-                        android:hint="\n Type here... \n"
+                        android:autoLink="all"
+                        android:hint="\n Escribe un mensaje... \n"
                         android:paddingStart="1dp"
                         android:paddingEnd="1dp"
                         android:textSize="16sp"
