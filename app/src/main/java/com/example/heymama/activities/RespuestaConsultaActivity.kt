@@ -1,16 +1,10 @@
 package com.example.heymama.activities
 
-import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
 import android.widget.*
-import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.heymama.R
 import com.example.heymama.adapters.RespuestaConsultaAdapter
 import com.example.heymama.databinding.ActivityRespuestaConsultaBinding
 import com.example.heymama.models.Consulta

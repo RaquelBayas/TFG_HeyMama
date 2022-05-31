@@ -99,6 +99,7 @@ class SettingsActivity : AppCompatActivity() {
                         deleteNotifications(uid)
                         deleteUserPhotos(uid)
                         val username = binding.settingsUsername.text.toString()
+                        database.reference.child("Tokens").child(uid).removeValue()
                         database.reference.child("Usernames").child(username).removeValue()
                         database.reference.child("Usuarios").child(uid).removeValue()
                         firestore.collection("Usuarios").document(uid).delete().addOnSuccessListener {
@@ -106,7 +107,7 @@ class SettingsActivity : AppCompatActivity() {
                         }.addOnFailureListener {
                             Log.e("firestore-user",it.toString())
                         }
-                        database.reference.child("Tokens").child(uid).removeValue()
+
                         deleteAccount()
                     }
                 }
@@ -473,6 +474,16 @@ class SettingsActivity : AppCompatActivity() {
                         }
                     }
                 }
+                value!!.reference.collection(it).addSnapshotListener { value, error ->
+                    value!!.documents.iterator().forEach{
+                        it.reference.collection("Comentarios").whereEqualTo("userID",userId)
+                        .addSnapshotListener { value, error ->
+                            value!!.documents.iterator().forEach {
+                                it.reference.delete()
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -499,6 +510,12 @@ class SettingsActivity : AppCompatActivity() {
                     it.reference.delete()
                     Log.i("deleteUserConsultas","OK")
                 }
+            }
+        }
+        arrayTemas.iterator().forEach {
+            firestore.collection("Consultas").document(it).collection("Consultas").addSnapshotListener { value, error ->
+                value!!.documents.iterator().forEach { it.reference.collection("Respuestas").whereEqualTo("userID",userId)
+                    .addSnapshotListener { value, error ->  value!!.documents.iterator().forEach { it.reference.delete() } }}
             }
         }
     }

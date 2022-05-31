@@ -151,7 +151,7 @@ class Login : AppCompatActivity() {
                         }
                     }
                     if(!snapshot.child(auth.uid.toString()).exists()) {
-                        Utils.showToast(this@Login,"Tu cuenta ha sido bloqueada")
+                        Utils.showToast(this@Login,"Tu cuenta ha sido inhabilitada. Crea una nueva cuenta.")
                     }
                 }
             }

@@ -33,7 +33,7 @@
     <TextView
         android:id="@+id/appname"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="186dp"
         android:fontFamily="@font/corben_bold"
         android:text="@string/app_name"
         android:textColor="@color/wine_1"
@@ -41,10 +41,9 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.52"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.172" />
+        app:layout_constraintTop_toTopOf="@+id/imageView4"
+        app:layout_constraintVertical_bias="0.100000024" />
 
     <TextView
         android:id="@+id/txt_recordar_contraseña"
@@ -67,12 +66,10 @@
         android:id="@+id/imageView4"
         android:layout_width="119dp"
         android:layout_height="107dp"
-        app:layout_constraintBottom_toBottomOf="@+id/appname"
         app:layout_constraintEnd_toEndOf="@+id/appname"
-        app:layout_constraintHorizontal_bias="0.14"
+        app:layout_constraintHorizontal_bias="0.13"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.13999999"
         app:srcCompat="@drawable/iconohome" />
 
     <com.google.android.material.textfield.TextInputLayout

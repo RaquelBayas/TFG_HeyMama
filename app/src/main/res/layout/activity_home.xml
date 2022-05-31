@@ -29,7 +29,8 @@
                 android:layout_marginTop="70dp"
                 android:fontFamily="@font/alegreya"
                 android:textColor="@color/fonts"
-                android:textSize="26sp" />
+                android:textSize="26sp"
+                tools:text="Bienvenida Raquel" />
 
             <TextView
                 android:id="@+id/txt_howdoyoufeel"

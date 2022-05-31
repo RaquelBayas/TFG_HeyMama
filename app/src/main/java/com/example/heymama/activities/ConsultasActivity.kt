@@ -71,6 +71,17 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
         adapter = ConsultaAdapter(this, consultasArraylist, this)
         adapter.setHasStableIds(true)
         recyclerView.adapter = adapter
+        adapter.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
+            override fun onItemClicked(position: Int) {
+
+                val id_consulta = consultasArraylist[position].id.toString()
+                val tema_consulta = consultasArraylist[position].tema.toString()
+                val id_user_consulta = consultasArraylist[position].userID.toString()
+                val consulta = consultasArraylist[position].consulta.toString()
+                open(id_consulta,tema_consulta,id_user_consulta,consulta)
+            }
+        })
+
     }
 
     /**
@@ -134,21 +145,7 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     }
                 }
                 consultasArraylist.sort()
-                adapter = ConsultaAdapter(this, consultasArraylist, this)
-                adapter.setHasStableIds(true)
                 adapter.notifyDataSetChanged()
-
-                adapter.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
-                    override fun onItemClicked(position: Int) {
-                        val id_consulta = consultasArraylist[position].id.toString()
-                        val tema_consulta = consultasArraylist[position].tema.toString()
-                        val id_user_consulta = consultasArraylist[position].userID.toString()
-                        val consulta = consultasArraylist[position].consulta.toString()
-                        open(id_consulta,tema_consulta,id_user_consulta,consulta)
-                    }
-                })
-                recyclerView.adapter = adapter
-                recyclerView.setHasFixedSize(true)
             }
     }
 
@@ -175,22 +172,7 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 if(consultasArraylist.size > 1) {
                     consultasArraylist.sort()
                 }
-                adapter = ConsultaAdapter(this, consultasArraylist, this)
-                adapter.setHasStableIds(true)
                 adapter.notifyDataSetChanged()
-
-                adapter.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
-                    override fun onItemClicked(position: Int) {
-                        Toast.makeText(this@ConsultasActivity,"Item number: $position",Toast.LENGTH_SHORT).show()
-                        val id_consulta = consultasArraylist[position].id.toString()
-                        val tema_consulta = consultasArraylist[position].tema.toString()
-                        val id_user_consulta = consultasArraylist[position].userID.toString()
-                        val consulta = consultasArraylist[position].consulta.toString()
-                        open(id_consulta,tema_consulta,id_user_consulta,consulta)
-                    }
-                })
-                recyclerView.adapter = adapter
-                recyclerView.setHasFixedSize(true)
             }
     }
 
@@ -202,7 +184,7 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
      * @param consulta String : Texto de la consulta.
      */
     private fun open(id_consulta: String,tema_consulta: String,id_user_consulta: String, consulta: String) {
-        val intent = Intent(this, RespuestaConsultaActivity::class.java)
+        val intent = Intent(applicationContext, RespuestaConsultaActivity::class.java)
         intent.putExtra("id_consulta",id_consulta)
         intent.putExtra("tema_consulta",tema_consulta)
         intent.putExtra("id_user_consulta",id_user_consulta)

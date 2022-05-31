@@ -68,6 +68,14 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
         firestore = FirebaseFirestore.getInstance()
 
         val post_tl: PostTimeline = postsTimelineList[position]
+        database.reference.child("Usuarios").child(auth.uid.toString()).child("rol").get().addOnSuccessListener {
+            if(it.value == "Admin") {
+                holder.btn_menu_post_tl.visibility = View.VISIBLE
+                holder.btn_menu_post_tl.setOnClickListener {
+                    menuBtnPostTL(holder,post_tl)
+                }
+            }
+        }
         if(post_tl.userId!! == auth.uid){
             holder.btn_menu_post_tl.visibility = View.VISIBLE
             holder.btn_menu_post_tl.setOnClickListener {

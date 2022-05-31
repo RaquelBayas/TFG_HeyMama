@@ -46,12 +46,10 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
         firebaseStore = FirebaseStorage.getInstance()
         storageReference = firebaseStore.reference
         database = FirebaseDatabase.getInstance()
-
         dataBaseReference = database.getReference("Usuarios")
 
         getUsuarios(holder,position)
         getDataUser(holder,position)
-
     }
 
     /**
@@ -278,6 +276,16 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
                         }
                     }
                 }
+                value!!.reference.collection(it).addSnapshotListener { value, error ->
+                    value!!.documents.iterator().forEach{
+                        it.reference.collection("Comentarios").whereEqualTo("userID",userId)
+                            .addSnapshotListener { value, error ->
+                                value!!.documents.iterator().forEach {
+                                    it.reference.delete()
+                                }
+                            }
+                    }
+                }
             }
         }
     }
@@ -328,6 +336,12 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
                     it.reference.delete()
                     Log.i("deleteUserConsultas","OK")
                 }
+            }
+        }
+        arrayTemas.iterator().forEach {
+            firestore.collection("Consultas").document(it).collection("Consultas").addSnapshotListener { value, error ->
+                value!!.documents.iterator().forEach { it.reference.collection("Respuestas").whereEqualTo("userID",userId)
+                    .addSnapshotListener { value, error ->  value!!.documents.iterator().forEach { it.reference.delete() } }}
             }
         }
     }

@@ -2,7 +2,6 @@ package com.example.heymama.adapters
 
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -77,48 +76,57 @@ class CommentsPostTLAdapter(private val context: Context, private val idpost_ori
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .skipMemoryCache(true)
                         .into(holder.photo_post)
-                    var timestamp = post_tl.timestamp
+                    val timestamp = post_tl.timestamp
                     val dateFormat = SimpleDateFormat("dd/MM/yy \n  HH:mm")
                     time_post.text = dateFormat.format(timestamp)
                 }
             }
         }
+        database.reference.child("Usuarios").child(auth.uid.toString()).child("rol").get().addOnSuccessListener {
+            if(it.value == "Admin") {
+                menuComment(holder,post_tl)
+            }
+        }
 
         if(post_tl.userId!! == auth.uid) {
-            holder.btn_comment_menu_post_tl.visibility = View.VISIBLE
-            holder.btn_comment_menu_post_tl.setOnClickListener {
-                val popupMenu: PopupMenu = PopupMenu(context, holder.btn_comment_menu_post_tl)
-                popupMenu.menuInflater.inflate(R.menu.post_tl_menu, popupMenu.menu)
-                popupMenu.show()
+            menuComment(holder,post_tl)
+        }
+    }
 
-                popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
-                    when(it.itemId) {
-                        R.id.eliminar_post_tl -> {
-                            firestore.collection("Timeline").document(idpost_origin).collection("Replies").document(post_tl.postId.toString()).delete()
-                            database.reference.child("NotificationsTL").child(iduser_origin).orderByChild("textpost").addValueEventListener(object:ValueEventListener {
-                                override fun onDataChange(snapshot: DataSnapshot) {
-                                    if(snapshot.exists()) {
-                                        snapshot.children.iterator().forEach { datasnapshot ->
-                                            if(datasnapshot.exists()) {
-                                                datasnapshot.children.iterator().forEach {
-                                                    if(it.exists()) {
-                                                        if (it.value.toString() == post_tl.comment.toString()) {
-                                                            datasnapshot.ref.removeValue()
-                                                        }
+    private fun menuComment(holder: HolderForo, post_tl: PostTimeline) {
+        holder.btn_comment_menu_post_tl.visibility = View.VISIBLE
+        holder.btn_comment_menu_post_tl.setOnClickListener {
+            val popupMenu: PopupMenu = PopupMenu(context, holder.btn_comment_menu_post_tl)
+            popupMenu.menuInflater.inflate(R.menu.post_tl_menu, popupMenu.menu)
+            popupMenu.show()
+
+            popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
+                when(it.itemId) {
+                    R.id.eliminar_post_tl -> {
+                        firestore.collection("Timeline").document(idpost_origin).collection("Replies").document(post_tl.postId.toString()).delete()
+                        database.reference.child("NotificationsTL").child(iduser_origin).orderByChild("textpost").addValueEventListener(object:ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                if(snapshot.exists()) {
+                                    snapshot.children.iterator().forEach { datasnapshot ->
+                                        if(datasnapshot.exists()) {
+                                            datasnapshot.children.iterator().forEach {
+                                                if(it.exists()) {
+                                                    if (it.value.toString() == post_tl.comment.toString()) {
+                                                        datasnapshot.ref.removeValue()
                                                     }
                                                 }
                                             }
                                         }
                                     }
                                 }
-                                override fun onCancelled(error: DatabaseError) {
-                                }
-                            })
-                        }
+                            }
+                            override fun onCancelled(error: DatabaseError) {
+                            }
+                        })
                     }
-                    true
-                })
-            }
+                }
+                true
+            })
         }
     }
 

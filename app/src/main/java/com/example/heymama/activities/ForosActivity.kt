@@ -40,7 +40,7 @@ class ForosActivity : AppCompatActivity(){
         database = FirebaseDatabase.getInstance()
         auth = FirebaseAuth.getInstance()
         user = auth.currentUser!!
-        firebaseStore = FirebaseStorage.getInstance("gs://heymama-8e2df.appspot.com")
+        firebaseStore = FirebaseStorage.getInstance()
 
         getDataUser()
         initForos()

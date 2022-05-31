@@ -1,6 +1,7 @@
 package com.example.heymama.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,14 @@ class InfoArticleAdapter(private val context: Context, private var articleArrayL
 ) : RecyclerView.Adapter<InfoArticleAdapter.HolderArticle>() {
 
     private lateinit var dataBase: FirebaseDatabase
+    private lateinit var listener: ItemRecyclerViewListener
+
+    /**
+     * @param listener ItemRecyclerViewListener
+     */
+    fun setOnItemRecyclerViewListener(listener: ItemRecyclerViewListener) {
+        this.listener = listener
+    }
 
     fun filterList(list: ArrayList<Article>) {
         this.articleArrayList = list
@@ -61,5 +70,10 @@ class InfoArticleAdapter(private val context: Context, private var articleArrayL
     inner class HolderArticle(itemView: View) : RecyclerView.ViewHolder(itemView){
         var titulo_article: TextView = itemView.findViewById(R.id.titulo_article)
         var autor_article: TextView = itemView.findViewById(R.id.autor_article)
+        init {
+            itemView.setOnClickListener {
+                Log.i("InfoArticleAdapter",listener.onItemClicked(adapterPosition).toString())
+            }
+        }
     }
 }

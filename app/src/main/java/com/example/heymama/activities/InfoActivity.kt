@@ -43,7 +43,7 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
         val intent = intent
         rol = intent.getStringExtra("Rol")!!
-
+        initFirebase()
         if ((rol == "Profesional") || (rol == "Admin")) {
             btn_add_article = binding.btnAddArticle
             btn_add_article.visibility = View.VISIBLE
@@ -53,8 +53,6 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 startActivity(intent)
             }
         }
-
-        initFirebase()
         initRecycler()
         getArticlesData()
         searchView()
@@ -67,6 +65,7 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
     private fun initFirebase() {
         dataBase = FirebaseDatabase.getInstance()
         auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
     }
 
     /**
@@ -80,6 +79,19 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
         idArticlesArrayList = arrayListOf()
         adapter = InfoArticleAdapter(this,articlesArraylist,this)
         recyclerView.adapter = adapter
+        adapter.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
+            override fun onItemClicked(position: Int) {
+                val intent = Intent(applicationContext, ArticleActivity::class.java)
+                intent.putExtra("Rol",rol)
+                intent.putExtra("ID_Article", idArticlesArrayList[position])
+                intent.putExtra("Title_Article", articlesArraylist[position].title)
+                intent.putExtra("Description_Article", articlesArraylist[position].article)
+                intent.putExtra("Professional_Article", articlesArraylist[position].professionalID)
+                intent.putParcelableArrayListExtra("ArticlesArraylist",articlesArraylist)
+                startActivity(intent)
+                Log.i("TimelineActivity","Item number: $position")
+            }
+        })
     }
 
     /**
@@ -91,8 +103,6 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
         if(binding.swipeRefreshTL.isRefreshing) {
             binding.swipeRefreshTL.isRefreshing = false
         }
-
-        firestore = FirebaseFirestore.getInstance()
 
         firestore.collection("Artículos").addSnapshotListener { snapshots, error ->
             if (error != null) {
@@ -144,20 +154,4 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
         }
         adapter.filterList(articleSearchArrayList)
     }
-
-    /**
-     * Este método permite seleccionar un artículo
-     * @param position Int
-     */
-    override fun onItemClicked(position: Int) {
-        val intent = Intent(this, ArticleActivity::class.java)
-        intent.putExtra("Rol",rol)
-        intent.putExtra("ID_Article", idArticlesArrayList[position])
-        intent.putExtra("Title_Article", articlesArraylist[position].title)
-        intent.putExtra("Description_Article", articlesArraylist[position].article)
-        intent.putExtra("Professional_Article", articlesArraylist[position].professionalID)
-        intent.putParcelableArrayListExtra("ArticlesArraylist",articlesArraylist)
-        startActivity(intent)
-    }
-
 }

@@ -37,10 +37,12 @@ class ListaUsuariosActivity : AppCompatActivity(), ItemRecyclerViewListener {
         user = auth.currentUser!!
         uid = auth.uid.toString()
 
+        listaUsuariosArraylist = arrayListOf()
         recyclerView = binding.recyclerViewListaUsuarios
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.setHasFixedSize(true)
-        listaUsuariosArraylist = arrayListOf()
+        adapter = ListaUsuariosAdapter(applicationContext,listaUsuariosArraylist,this)
+        recyclerView.adapter = adapter
 
         getUsuarios()
     }
@@ -52,9 +54,8 @@ class ListaUsuariosActivity : AppCompatActivity(), ItemRecyclerViewListener {
             it.children.iterator().forEach { data ->
                 val user = data.getValue(User::class.java)
                 listaUsuariosArraylist.add(user!!)
-                adapter = ListaUsuariosAdapter(applicationContext,listaUsuariosArraylist,this)
-                recyclerView.adapter = adapter
             }
+            adapter.notifyDataSetChanged()
         }
     }
 
