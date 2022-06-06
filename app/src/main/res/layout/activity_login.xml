@@ -80,6 +80,8 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="40dp"
         app:passwordToggleEnabled="true"
+        app:boxStrokeWidth="0dp"
+        app:boxStrokeWidthFocused="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txt_email2">
@@ -89,6 +91,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/edittext_white"
+            app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
             android:ems="10"
             android:fontFamily="@font/open_sans"
             android:gravity="start|center"
@@ -105,7 +109,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnAcceder"
         android:layout_width="match_parent"
         android:layout_height="50dp"

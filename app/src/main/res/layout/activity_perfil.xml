@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_menu_layout"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
@@ -29,7 +29,7 @@
                 android:backgroundTint="@color/pink"
                 android:background="@drawable/ic_more"
                 app:layout_constraintEnd_toEndOf="@+id/layout_image"
-                app:layout_constraintTop_toTopOf="parent"></Button>
+                app:layout_constraintTop_toTopOf="parent"></androidx.appcompat.widget.AppCompatButton>
 
             <ImageView
                 android:id="@+id/layout_image"
@@ -48,6 +48,7 @@
                 android:layout_width="124dp"
                 android:layout_height="124dp"
                 android:layout_marginTop="52dp"
+                android:src="@drawable/wallpaper_profile"
                 app:civ_border_color="@color/purple_700"
                 app:civ_border_width="2dp"
                 app:layout_constraintEnd_toEndOf="@+id/layout_image"
@@ -125,7 +126,7 @@
             android:layout_marginEnd="20dp"
             android:orientation="horizontal">
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_amigos"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -136,7 +137,7 @@
                 android:text="@string/amigos"
                 android:textSize="18sp" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_mensajes"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -162,10 +163,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/rectangle_purple"
-
                 app:tabInlineLabel="true"
                 app:tabMode="fixed"
-
                 app:tabTextColor="@color/black"
                 >
                 <com.google.android.material.tabs.TabItem

@@ -28,23 +28,27 @@
         app:layout_constraintStart_toEndOf="@+id/img_solicitud"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_aceptar_solicitud"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
-        android:fontFamily="@font/montserrat_bold"
+        android:fontFamily="@font/baloo"
         android:text="@string/aceptar"
+        android:background="@drawable/rectangle_edit_article"
+        android:backgroundTint="@color/rectangle_purple"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/img_solicitud" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_rechazar_solicitud"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
-        android:fontFamily="@font/montserrat_bold"
+        android:fontFamily="@font/baloo"
         android:text="@string/rechazar"
+        android:background="@drawable/rectangle_edit_article"
+        android:backgroundTint="#DFC5C5C5"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btn_aceptar_solicitud" />
 
@@ -52,8 +56,8 @@
         android:id="@+id/txt_user_solicitud"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
         android:fontFamily="@font/montserrat"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/btn_aceptar_solicitud"

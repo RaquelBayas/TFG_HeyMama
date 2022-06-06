@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:270790232136:android:4b671ed5876e84f684307d",
         "android_client_info": {
-          "package_name": "com.example.heymama"
+          "package_name": "app.example.heymama"
         }
       },
       "oauth_client": [

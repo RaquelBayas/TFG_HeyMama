@@ -26,7 +26,6 @@
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:layout_marginTop="10dp"
-            android:hint="Name"
             android:fontFamily="@font/alegreya_black"
             />
     </LinearLayout>
@@ -53,7 +52,6 @@
             android:textSize="18sp"
             android:layout_marginTop="10dp"
             android:layout_marginRight="20dp"
-            android:hint="Name"
             android:fontFamily="@font/alegreya_black"
             />
     </LinearLayout>
@@ -80,7 +78,6 @@
             android:textSize="18sp"
             android:layout_marginTop="10dp"
             android:layout_marginRight="20dp"
-            android:hint="Name"
             android:fontFamily="@font/alegreya_black"
             />
     </LinearLayout>

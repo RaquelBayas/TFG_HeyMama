@@ -43,7 +43,7 @@
 
                 android:orientation="horizontal">
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_mis_consultas"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -53,7 +53,7 @@
                     android:text="@string/misConsultas"
                     android:textColor="@color/white">
 
-                </Button>
+                </androidx.appcompat.widget.AppCompatButton>
                 <Spinner
                     android:id="@+id/spinnerConsultas"
                     android:layout_width="0dp"
@@ -62,7 +62,7 @@
                     android:layout_weight="1"
                     android:background="@drawable/spinner_consultas"
                     tools:ignore="SpeakableTextPresentCheck" />
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_send_consulta"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -74,7 +74,7 @@
                     android:background="@drawable/btn_enviar_consulta"
                     >
 
-                </Button>
+                </androidx.appcompat.widget.AppCompatButton>
             </LinearLayout>
 
 

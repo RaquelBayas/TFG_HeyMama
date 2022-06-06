@@ -2,6 +2,7 @@
 <androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:forceDarkAllowed="false"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -107,7 +108,7 @@
                 android:layout_weight="0.5"
                 android:orientation="vertical">
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_foros_home"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -122,7 +123,7 @@
                     android:textColor="@color/fonts"
                     android:textSize="30sp" />
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_info_home"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"

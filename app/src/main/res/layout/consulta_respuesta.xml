@@ -58,7 +58,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.16000003" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:visibility="invisible"

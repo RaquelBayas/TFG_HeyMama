@@ -37,11 +37,10 @@
 
     <ImageView
         android:id="@+id/img_chat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:maxWidth="300dp"
-
+        android:layout_width="300dp"
+        android:layout_gravity="left"
         android:adjustViewBounds="true"
+        android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
         android:src="@drawable/profile_picture"
