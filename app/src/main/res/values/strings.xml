@@ -140,6 +140,7 @@
     <string name="navigation_drawer_close">Close</string>
 
     <string name="listaUsuarios">Lista de usuarios</string>
+    <string name="usuariosregistrados">Lista completa de los usuarios registrados en la app</string>
 
     <!-- Políticas de privacidad -->
     <string name="policy_1st">

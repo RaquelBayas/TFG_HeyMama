@@ -11,18 +11,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <com.google.android.material.appbar.AppBarLayout
+        <include
+            layout="@layout/app_bar_home"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fitsSystemWindows="true">
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar_main"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/white"/>
-        </com.google.android.material.appbar.AppBarLayout>
-
+            android:layout_height="wrap_content" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -67,13 +59,17 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/alegreya"
-                    android:textSize="20sp"
                     android:layout_margin="10dp"
+                    android:fontFamily="@font/alegreya"
+                    android:text="@string/usuariosregistrados"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="20dp"
+                    android:textSize="20sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/txt_listaUsuarios">
+                    app:layout_constraintTop_toBottomOf="@+id/txt_listaUsuarios"
+                    app:layout_constraintVertical_bias="0.19">
 
                 </TextView>
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -179,6 +175,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
+            app:itemIconTint="@color/gray"
             app:labelVisibilityMode="unlabeled"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
