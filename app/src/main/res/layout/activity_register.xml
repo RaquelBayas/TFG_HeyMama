@@ -25,7 +25,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 >
-
                 <ImageView
                     android:id="@+id/imageView3"
                     android:layout_width="100dp"
@@ -228,7 +227,7 @@
                     android:id="@+id/txtCheckBox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Acepto los términos y política de privacidad."
+                    android:text=""
                     android:fontFamily="@font/open_sans"
                     android:textColor="@color/gray"
                     android:layout_gravity="center"/>

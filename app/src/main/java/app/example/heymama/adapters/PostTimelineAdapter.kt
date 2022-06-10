@@ -57,7 +57,8 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
     }
 
     /**
-     *
+     * @param holder Holder
+     * @param position Int
      */
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder:Holder, position: Int) {
@@ -77,10 +78,11 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
             }
         }
         if(post_tl.userId!! == auth.uid){
-            holder.btn_menu_post_tl.visibility = View.VISIBLE
             holder.btn_menu_post_tl.setOnClickListener {
                 menuBtnPostTL(holder,post_tl)
             }
+        } else {
+            holder.btn_menu_post_tl.setOnClickListener { menuReportPostTL(holder,post_tl) }
         }
 
         firestore.collection("Usuarios").document(post_tl.userId).addSnapshotListener { value, error ->
@@ -188,7 +190,6 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
         val popupMenu = PopupMenu(context,holder.btn_menu_post_tl)
         popupMenu.menuInflater.inflate(R.menu.post_tl_menu,popupMenu.menu)
         popupMenu.show()
-
         popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
             when(it.itemId) {
                 R.id.eliminar_post_tl -> {
@@ -200,6 +201,30 @@ class PostTimelineAdapter(private val context: Context, private val postsTimelin
                             }
                         }
                     })
+                }
+            }
+            true
+        })
+    }
+
+    /**
+     * Este método muestra un menú en el post con la opción 'Reportar'
+     * @param holder Holder
+     * @param post_tl PostTimeline
+     */
+    private fun menuReportPostTL(holder: Holder, post_tl: PostTimeline) {
+        val popupMenu = PopupMenu(context,holder.btn_menu_post_tl)
+        popupMenu.menuInflater.inflate(R.menu.post_tl_report_menu,popupMenu.menu)
+        popupMenu.show()
+        popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.reportar_post_tl -> {
+                    val id = hashMapOf("postId" to post_tl.postId.toString())
+                    val data = hashMapOf("postId" to post_tl.postId.toString(),
+                    "userId" to auth.uid.toString(), "timestamp" to Date())
+                    val ref = firestore.collection("PostsReported").document(post_tl.postId.toString())
+                    ref.set(id)
+                    ref.collection("ReportedBy").document(auth.uid.toString()).set(data)
                 }
             }
             true

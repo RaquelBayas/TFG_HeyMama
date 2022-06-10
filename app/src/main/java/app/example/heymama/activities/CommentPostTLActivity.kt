@@ -3,6 +3,8 @@ package app.example.heymama.activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,14 +14,21 @@ import app.example.heymama.GlideApp
 import app.example.heymama.R
 import app.example.heymama.Utils
 import app.example.heymama.adapters.CommentsPostTLAdapter
+import app.example.heymama.adapters.ReportsAdapter
 import app.example.heymama.databinding.ActivityCommentPostTlactivityBinding
 import app.example.heymama.interfaces.ItemRecyclerViewListener
 import app.example.heymama.models.Notification
 import app.example.heymama.models.PostTimeline
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import de.hdodenhof.circleimageview.CircleImageView
@@ -58,7 +67,7 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
         iduser = intent.getStringExtra("iduser").toString()
         nameuser = intent.getStringExtra("name").toString()
         textpost = intent.getStringExtra("comment").toString()
-
+        Log.i("COMMENTPOST",textpost  + " - " + idpost + " - " + iduser + " - "+ nameuser)
         initFirebase()
         initRecycler()
         initPictures()
@@ -79,6 +88,20 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
         getCommentsPostTL()
         binding.swipeRefreshTLComments.setOnRefreshListener {
             getCommentsPostTL()
+        }
+
+        database.reference.child("Usuarios").child(auth.uid.toString()).child("rol").addListenerForSingleValueEvent(object:ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                Log.i("ROL",snapshot.value.toString())
+                if(snapshot.exists() && snapshot.value.toString() == "Admin") {
+                    binding.btnMenuPostTl.visibility = View.VISIBLE
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+        binding.btnMenuPostTl.setOnClickListener {
+            menuBtnPostTL(idpost)
         }
     }
 
@@ -117,6 +140,49 @@ class CommentPostTLActivity : AppCompatActivity(), ItemRecyclerViewListener {
         commentsPostsTLArraylist = arrayListOf()
         adapterCommentsPostsTL = CommentsPostTLAdapter(this, idpost, iduser, commentsPostsTLArraylist, this)
         recyclerViewCommentsTimeline.adapter = adapterCommentsPostsTL
+    }
+
+    /**
+     * Este método permite añadir un popupMenu a cada post de la timeline.
+     * Cuenta con la opción 'eliminar' para borrar el post seleccionado.
+     * @param postId String
+     */
+    private fun menuBtnPostTL(postId: String) {
+        val popupMenu = PopupMenu(this,binding.btnMenuPostTl)
+        popupMenu.menuInflater.inflate(R.menu.post_tl_menu,popupMenu.menu)
+        popupMenu.show()
+        popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.eliminar_post_tl -> {
+                    firestore.collection("Timeline").document(postId).delete()
+                    firestore.collection("Timeline").addSnapshotListener { value, error ->
+                        value!!.documents.iterator().forEach {doc ->
+                            doc.reference.collection("Replies").whereEqualTo("postId",postId).addSnapshotListener { value, error ->
+                                value!!.documents.iterator().forEach { it.reference.delete()
+
+                                    Log.i("IDPOST",doc.id) }
+                            }
+
+                        }
+                    }
+                    val reportsRef = firestore.collection("PostsReported").document(idpost)
+                    reportsRef.collection("ReportedBy").addSnapshotListener { value, error ->
+                        if(value!!.documents.isNotEmpty()) {
+                            value.documents.iterator().forEach { it.reference.delete() }
+                        }
+                        reportsRef.delete()
+                    }
+                    firestore.collection("Timeline").document(postId).collection("Likes").get().addOnCompleteListener { p0 ->
+                        for (doc in p0.result) {
+                            firestore.collection("Timeline").document(postId).collection("Likes")
+                                .document(doc.id).delete()
+                        }
+                    }
+                    finish()
+                }
+            }
+            true
+        })
     }
 
     /**

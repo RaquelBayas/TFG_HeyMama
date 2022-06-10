@@ -3,7 +3,6 @@ package app.example.heymama.activities
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -11,7 +10,6 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import app.example.heymama.R
 import app.example.heymama.databinding.ActivityArticleBinding
@@ -51,14 +49,10 @@ class ArticleActivity : AppCompatActivity() {
         professional_article = intent.getStringExtra("Professional_Article")!!
         articlesArraylist = intent.getParcelableArrayListExtra<Article>("ArticlesArraylist")!!
 
-        //getArticle(id_article)
-
         txt_title_article = binding.txtTitleArticle
         txt_description_article = binding.txtDescriptionArticle
         txt_description_article.text = description_article
-
-        txt_title_article.text = title_article
-        txt_description_article.text = description_article
+        getArticle(id_article)
 
         val rol = intent.getStringExtra("Rol")
         if (rol == "Profesional" || rol == "Admin") {
@@ -67,6 +61,11 @@ class ArticleActivity : AppCompatActivity() {
             setSupportActionBar(toolbar)
         }
     }
+
+    /**
+     * Este método obtiene la información del artículo: título y contenido
+     * @param idArticle String
+     */
     private fun getArticle(idArticle: String) {
         firestore.collection("Artículos").document(idArticle).get().addOnSuccessListener {
             txt_description_article.text = it["article"].toString()
@@ -78,7 +77,7 @@ class ArticleActivity : AppCompatActivity() {
      * @param firestore FirebaseFirestore
      * @param articlesArraylist ArrayList<Article>
      */
-    private fun deleteArticle(firestore: FirebaseFirestore, articlesArraylist: ArrayList<Article>) {
+    private fun deleteArticle(firestore: FirebaseFirestore) {
         firestore.collection("Artículos").whereEqualTo("title",title_article).whereEqualTo("professionalID",professional_article).get().addOnSuccessListener {
             for (document in it.documents) {
                 firestore.collection("Artículos").document(document.id).delete()
@@ -98,7 +97,7 @@ class ArticleActivity : AppCompatActivity() {
                 view.dismiss()
             }
             .setPositiveButton("Eliminar") { view, _ ->
-                deleteArticle(firestore,articlesArraylist)
+                deleteArticle(firestore)
                 Toast.makeText(this,"Artículo eliminado",Toast.LENGTH_SHORT).show()
                 view.dismiss()
                 finish()
@@ -125,19 +124,22 @@ class ArticleActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.editar -> {
-                Log.i("ARTICLE-ACT","editar")
                 val intent = Intent(this,LayoutArticleActivity::class.java)
                 intent.putExtra("type","1") // 1 EDITAR ARTÍCULO
                 intent.putExtra("edit_title_article",title_article)
                 intent.putExtra("edit_description_article",description_article)
                 intent.putExtra("edit_id_article",id_article)
                 this.startActivity(intent)
-                finish()
             }
             R.id.eliminar -> {
                 delete_alertDialog()
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getArticle(id_article)
     }
 }

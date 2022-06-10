@@ -1,9 +1,18 @@
 package app.example.heymama.activities
 
 import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.TextPaint
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
+import android.text.style.ForegroundColorSpan
 import android.util.Patterns
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.core.widget.doOnTextChanged
 import app.example.heymama.R
@@ -12,6 +21,7 @@ import app.example.heymama.databinding.ActivityRegisterBinding
 import app.example.heymama.fragments.PoliticasFragment
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
+import com.google.common.io.Resources
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.SignInMethodQueryResult
@@ -49,10 +59,24 @@ class RegisterActivity : AppCompatActivity() {
         focusEmail()
         focusPassword()
         focusName()
-        binding.txtCheckBox.setOnClickListener {
-            val fragment = PoliticasFragment()
-            supportFragmentManager.beginTransaction().replace(R.id.activityRegister,fragment).addToBackStack(null).commit()
+
+        val spannableString = SpannableString("Acepto la política de privacidad.")
+        val clickableSpan = object : ClickableSpan() {
+            override fun onClick(p0: View) {
+                val fragment = PoliticasFragment()
+                supportFragmentManager.beginTransaction().replace(R.id.activityRegister,fragment).addToBackStack(null).commit()
+            }
+
+            override fun updateDrawState(ds: TextPaint) {
+                super.updateDrawState(ds)
+                ds.color = Color.BLUE
+                ds.isUnderlineText = false
+            }
         }
+        spannableString.setSpan(clickableSpan,10,32,Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
+        binding.txtCheckBox.text = spannableString
+        binding.txtCheckBox.movementMethod = LinkMovementMethod.getInstance()
+
         binding.btnCrearCuenta.setOnClickListener {
             validate()
         }
@@ -121,7 +145,7 @@ class RegisterActivity : AppCompatActivity() {
         binding.txtPassword.doOnTextChanged { text, start, before, count ->
             val password = binding.txtPassword.text.toString()
             if(password == null || password.length < 7){
-                binding.passwordLayout.helperText = "Contraseña inválida"
+                binding.passwordLayout.helperText = "Contraseña inválida. Mínimo 7 caracteres."
             }else{
                 binding.passwordLayout.helperText = null
             }
@@ -131,6 +155,8 @@ class RegisterActivity : AppCompatActivity() {
     private fun focusEmail() {
         binding.txt0Email.setOnFocusChangeListener { view, focused ->
             if(!focused) {
+                binding.email0Layout.helperText = validEmail()
+            } else {
                 binding.email0Layout.helperText = validEmail()
             }
         }

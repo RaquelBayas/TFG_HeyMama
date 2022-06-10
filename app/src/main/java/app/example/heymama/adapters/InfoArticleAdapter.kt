@@ -11,11 +11,13 @@ import app.example.heymama.R
 import app.example.heymama.interfaces.ItemRecyclerViewListener
 import app.example.heymama.models.Article
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 
 class InfoArticleAdapter(private val context: Context, private var articleArrayList: ArrayList<Article>, private val articleItemListener: ItemRecyclerViewListener
 ) : RecyclerView.Adapter<InfoArticleAdapter.HolderArticle>() {
 
     private lateinit var dataBase: FirebaseDatabase
+    private lateinit var firestore: FirebaseFirestore
     private lateinit var listener: ItemRecyclerViewListener
 
     /**
@@ -45,9 +47,14 @@ class InfoArticleAdapter(private val context: Context, private var articleArrayL
      */
     override fun onBindViewHolder(holder: HolderArticle, position: Int) {
         dataBase = FirebaseDatabase.getInstance()
+        firestore = FirebaseFirestore.getInstance()
 
         val tema_article_info: Article = articleArrayList[position]
-        holder.titulo_article.text = tema_article_info.title
+        firestore.collection("Artículos").document(tema_article_info.idArticle.toString()).addSnapshotListener { value, error ->
+            if(value!!.exists()) {
+                holder.titulo_article.text = value["title"].toString()
+            }
+        }
 
         dataBase.reference.child("Usuarios").child(tema_article_info.professionalID.toString()).get().addOnSuccessListener {
             if(it.exists()) {

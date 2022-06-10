@@ -138,7 +138,6 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
             adapterPostsTL.notifyDataSetChanged()
             adapterPostsTL.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
                 override fun onItemClicked(position: Int) {
-                    Toast.makeText(this@TimelineActivity,"Item number: $position",Toast.LENGTH_SHORT).show()
                 }
             })
         }

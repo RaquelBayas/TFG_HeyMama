@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.SearchView
-import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.example.heymama.R
@@ -29,7 +28,6 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var articlesArraylist: ArrayList<Article>
-    private lateinit var idArticlesArrayList: ArrayList<String>
     private lateinit var adapter: InfoArticleAdapter
 
     private lateinit var rol: String
@@ -54,6 +52,7 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
             }
         }
         initRecycler()
+        articlesArraylist.clear()
         getArticlesData()
         searchView()
 
@@ -79,7 +78,6 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
         recyclerView.layoutManager = GridLayoutManager(this,2)
         recyclerView.setHasFixedSize(false)
         articlesArraylist = arrayListOf()
-        idArticlesArrayList = arrayListOf()
         adapter = InfoArticleAdapter(this,articlesArraylist,this)
         adapter.setHasStableIds(false)
         recyclerView.adapter = adapter
@@ -103,7 +101,7 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
      */
     private fun getArticlesData() {
         articlesArraylist.clear()
-        idArticlesArrayList.clear()
+
         if(binding.swipeRefreshTL.isRefreshing) {
             binding.swipeRefreshTL.isRefreshing = false
         }
@@ -113,16 +111,21 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 Log.e("InfoActivity", error.toString())
                 return@addSnapshotListener
             }
+
             for (dc in snapshots!!.documentChanges) {
                 when (dc.type) {
                     DocumentChange.Type.ADDED -> {
-                        articlesArraylist.add(dc.document.toObject(Article::class.java))
-                        idArticlesArrayList.add(dc.document.reference.id)
+                        if(!articlesArraylist.contains(dc.document.toObject(Article::class.java))) {
+                        articlesArraylist.add(dc.document.toObject(Article::class.java))}
                     }
-                    //DocumentChange.Type.MODIFIED -> articlesArraylist.add(dc.document.toObject(Article::class.java))
+                    DocumentChange.Type.MODIFIED -> {
+                        //articlesArraylist.add(dc.document.toObject(Article::class.java))
+                        adapter.notifyDataSetChanged()
+                    }
                     DocumentChange.Type.REMOVED -> articlesArraylist.remove(dc.document.toObject(Article::class.java))
                 }
             }
+            Log.i("ARTICLESARRAY",articlesArraylist.toString())
             if(articlesArraylist.size>1) {
                 articlesArraylist.sort()
             }
@@ -157,5 +160,11 @@ class InfoActivity : AppCompatActivity(), ItemRecyclerViewListener {
             }
         }
         adapter.filterList(articleSearchArrayList)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        //update whatever your list
+        adapter.notifyDataSetChanged()
     }
 }

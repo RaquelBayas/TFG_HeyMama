@@ -124,10 +124,8 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener {
 
     /**
      * Obtener el rol del usuario y el nombre
-     *
      */
     private fun getDataUser(){
-        Log.i("GETDATAUSER",userID)
         database.reference.child("Usuarios").child(userID).addValueEventListener(object:
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {

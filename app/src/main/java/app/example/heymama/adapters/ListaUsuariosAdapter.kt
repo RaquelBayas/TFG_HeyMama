@@ -146,6 +146,7 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
         deleteUserMood(userId)
         deleteNotifications(userId)
         deleteUserPosts(userId)
+        deleteUserPostsReported(userId)
         deleteUserPhotos(userId)
     }
 
@@ -258,6 +259,20 @@ class ListaUsuariosAdapter(private val context: Context, private var listaUsuari
         }
     }
 
+    /**
+     * Este método elimina las denuncias realizadas por el usuario.
+     * @param userId String : UID del usuario
+     */
+    private fun deleteUserPostsReported(userId: String) {
+        firestore.collection("PostsReported").addSnapshotListener { value, error ->
+            if(value!!.documents.isNotEmpty()){
+                value.documents.iterator().forEach {
+                    it.reference.collection("ReportedBy").addSnapshotListener { value, error ->
+                        value!!.documents.iterator().forEach { if(it.id == userId) it.reference.delete() }
+                    } }
+            }
+        }
+    }
     /**
      * Este método elimina los registros de estado.
      * @param userId String : UID del usuario

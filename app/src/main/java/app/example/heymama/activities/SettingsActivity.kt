@@ -19,8 +19,6 @@ import com.google.firebase.auth.*
 import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.google.protobuf.Value
-
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -111,6 +109,8 @@ class SettingsActivity : AppCompatActivity() {
                             deleteUserFriendRequests(uid)
                             deleteNotifications(uid)
                             deleteUserPhotos(uid)
+                            deleteUserReportedPosts(uid)
+
                             val username = binding.settingsUsername.text.toString()
                             database.reference.child("Tokens").child(uid).removeValue()
                             database.reference.child("Usernames").child(username).removeValue()
@@ -286,23 +286,26 @@ class SettingsActivity : AppCompatActivity() {
         builder.setPositiveButton("Confirmar"){ dialogInterface : DialogInterface, _ ->
             if(old_password.text.isNotEmpty() && new_password.text.isNotEmpty() && confirm_new_password.text.isNotEmpty()) {
                 if(new_password.text.toString().equals(confirm_new_password.text.toString())) {
-                    Toast.makeText(this,"Contraseñas iguales",Toast.LENGTH_SHORT).show()
+                    if(new_password.text.toString().length >= 7) {
                     val credential : AuthCredential = EmailAuthProvider.getCredential(currentUser.email!!,old_password.text.toString())
                     currentUser.reauthenticate(credential).addOnCompleteListener { task ->
                         if(task.isSuccessful) {
                             currentUser.updatePassword(new_password.text.toString()).addOnCompleteListener { task ->
                                 if(task.isSuccessful) {
-                                    Toast.makeText(this,"Contraseña actualizada correctamente",Toast.LENGTH_SHORT).show()
+                                    Utils.showToast(this,"Contraseña actualizada correctamente")
                                 } else {
-                                    Toast.makeText(this,"No se ha podido actualizar la contraseña",Toast.LENGTH_SHORT).show()
+                                    Utils.showToast(this,"No se ha podido actualizar la contraseña")
                                 }
                             }
                         } else {
-                            Toast.makeText(this,"Contraseña actual incorrecta",Toast.LENGTH_SHORT).show()
+                            Utils.showToast(this,"Contraseña actual incorrecta")
                         }
                     }
+                    } else {
+                        Utils.showToast(this,"La nueva contraseña debe tener más de 7 caracteres")
+                    }
                 } else {
-                    Toast.makeText(this,"No coincide la nueva contraseña",Toast.LENGTH_SHORT).show()
+                    Utils.showToast(this,"No coincide la nueva contraseña")
                 }
             }
         }
@@ -361,7 +364,7 @@ class SettingsActivity : AppCompatActivity() {
                                         firestore.collection("Usuarios").document(uid).update("email",new_email.text.toString())
                                         Toast.makeText(applicationContext,R.string.email_updated,Toast.LENGTH_SHORT).show()
                                     }.addOnFailureListener{
-                                        Toast.makeText(applicationContext,"Se ha producido un error",Toast.LENGTH_SHORT).show()
+                                        Utils.showToast(applicationContext,"Se ha producido un error")
                                         Log.e("SettingsActivity",it.toString())
                                     }
                                 }
@@ -417,7 +420,7 @@ class SettingsActivity : AppCompatActivity() {
                         usernames_ref.child(old_username.text.toString()).removeValue()
                         usernames_ref.child(new_username.text.toString()).setValue(auth.currentUser!!.email)
                     } else {
-                        Toast.makeText(this,"Ya existe un usuario con este nombre de usuario",Toast.LENGTH_SHORT).show()
+                        Utils.showToast(this,"Ya existe un usuario con este nombre de usuario")
                         return@addOnSuccessListener
                     }
                 }
@@ -435,11 +438,11 @@ class SettingsActivity : AppCompatActivity() {
     private fun deleteAccount() {
         currentUser.delete().addOnCompleteListener { task ->
             if(task.isSuccessful) {
-                Toast.makeText(this,"Cuenta eliminada correctamente",Toast.LENGTH_SHORT).show()
+                Utils.showToast(this,"Cuenta eliminada correctamente")
                 Log.i("DeleteAccount","Cuenta eliminada correctamente")
                 logOut()
             } else {
-                Toast.makeText(this,"Se ha producido un error.",Toast.LENGTH_SHORT).show()
+                Utils.showToast(this,"Se ha producido un error.")
                 Log.e("DeleteAccount-exception",task.exception.toString())
             }
         }
@@ -615,6 +618,20 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    /***
+     * Este método elimina las denuncias realizadas por el usuario.
+     * @param userId String : UID del usuario
+     */
+    private fun deleteUserReportedPosts(userId: String) {
+        firestore.collection("PostsReported").addSnapshotListener { value, error ->
+            if(value!!.documents.isNotEmpty()){
+                value.documents.iterator().forEach {
+                    it.reference.collection("ReportedBy").addSnapshotListener { value, error ->
+                        value!!.documents.iterator().forEach { if(it.id == userId) it.reference.delete() }
+                    } }
+            }
+        }
+    }
     /**
      * Este método elimina las fotos del usuario (perfil,layout).
      * @param userId String : UID del usuario

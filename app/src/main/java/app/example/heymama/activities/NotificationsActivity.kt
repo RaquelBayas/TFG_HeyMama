@@ -3,8 +3,10 @@ package app.example.heymama.activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import app.example.heymama.R
 import app.example.heymama.adapters.NotificationsAdapter
 import app.example.heymama.databinding.ActivityNotificationsBinding
 import app.example.heymama.interfaces.ItemRecyclerViewListener
@@ -16,7 +18,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.ArrayList
 
@@ -45,6 +46,9 @@ class NotificationsActivity : AppCompatActivity(), ItemRecyclerViewListener {
         getUserData()
     }
 
+    /**
+     * Este método permite inicializar el recyclerview, el adapter y el arraylist de notificaciones
+     */
     private fun initRecycler() {
         recyclerViewNotifications = binding.recyclerViewNotifications
         recyclerViewNotifications.layoutManager = LinearLayoutManager(this)
@@ -67,7 +71,6 @@ class NotificationsActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     }
                 }
             }
-
             override fun onCancelled(error: DatabaseError) {
             }
         })
@@ -78,7 +81,6 @@ class NotificationsActivity : AppCompatActivity(), ItemRecyclerViewListener {
      * por el usuario en la timeline.
      */
     private fun getNotificationsTL() {
-
         val ref = database.reference.child("NotificationsTL").child(uid)
         ref.addValueEventListener(object:ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -87,9 +89,10 @@ class NotificationsActivity : AppCompatActivity(), ItemRecyclerViewListener {
                     val notification = it.getValue(Notification::class.java)
                     if(notification?.uid != auth.uid.toString()) {
                         notificationsArraylist.add(notification!!)
-                        adapterNotifications.setOnItemRecyclerViewListener(object :
-                            ItemRecyclerViewListener {
-                            override fun onItemClicked(position: Int) {
+                        adapterNotifications.setOnItemRecyclerViewListener(object:ItemRecyclerViewListener {
+                            override fun onItemLongClicked(position: Int) {
+                                super.onItemLongClicked(position)
+                               deleteNotification(notificationsArraylist[position])
                             }
                         })
                     }
@@ -102,6 +105,53 @@ class NotificationsActivity : AppCompatActivity(), ItemRecyclerViewListener {
             override fun onCancelled(error: DatabaseError) {
             }
         })
+    }
+
+    /**
+     * Este método permite eliminar una notificación
+     * @param notification Notification
+     */
+    private fun deleteNotification(notification: Notification){
+        val dialog = AlertDialog.Builder(this, R.style.AlertDialogTheme)
+            .setTitle(R.string.eliminar)
+            .setMessage("¿Deseas eliminar la notificación?")
+            .setNegativeButton("Cancelar") { view, _ ->
+                view.dismiss()
+            }
+            .setPositiveButton("Eliminar") { view, _ ->
+                if(notification.type == "ha comentado en tu post") {
+                    database.reference.child("NotificationsTL").addValueEventListener(object: ValueEventListener{
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            snapshot.children.iterator().forEach {
+                                it.children.iterator().forEach {
+                                    val notif = it.getValue(Notification::class.java)
+                                    if(notif == notification) {
+                                        it.ref.removeValue()
+                                        adapterNotifications.notifyDataSetChanged()
+                                    }
+                                    Log.i("DELETENOTIF",notif.toString())
+                                }
+                            }
+                        }
+                        override fun onCancelled(error: DatabaseError) {
+                        }
+                    })
+                } else {
+                    database.reference.child("NotificationsConsultas").addValueEventListener(object:ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            val notif = snapshot.getValue(Notification::class.java)
+                            if(notif == notification) {
+                                snapshot.ref.removeValue()
+                                adapterNotifications.notifyDataSetChanged()
+                            }
+                        }
+                        override fun onCancelled(error: DatabaseError) {
+                        }
+                    })
+                }
+            }
+            .create()
+        dialog.show()
     }
 
     /**

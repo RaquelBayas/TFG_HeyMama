@@ -10,13 +10,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingStart="20dp"
-        android:paddingTop="20dp"
+        android:paddingStart="0dp"
+        android:paddingTop="15dp"
         android:layout_marginTop="10dp"
-
         android:background="@drawable/posts_timeline"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="1dp">
+
+        <Button
+            android:id="@+id/btn_menu_post_tl"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@drawable/ic_more"
+            android:rotation="90"
+            android:visibility="invisible" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/img_comment_posttl_0"
@@ -43,13 +50,12 @@
                 android:id="@+id/txt_comment_posttl"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:autoLink="all"
                 android:fontFamily="@font/montserrat_bold"
                 android:textSize="16sp"
                 />
         </LinearLayout>
-
 
 
     </LinearLayout>

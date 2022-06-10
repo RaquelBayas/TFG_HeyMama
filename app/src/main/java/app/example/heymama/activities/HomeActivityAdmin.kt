@@ -113,13 +113,16 @@ class HomeActivityAdmin : AppCompatActivity(), NavigationView.OnNavigationItemSe
         bottomNavigationView = binding.bottomNavigationView
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when(item.itemId) {
-                R.id.nav_bottom_item_foros -> startActivity(Intent(this,ForosActivity::class.java))
+                R.id.nav_bottom_item_foros -> startActivity(Intent(this,ReportsActivity::class.java))
                 R.id.nav_bottom_item_ajustes -> startActivity(Intent(this,SettingsActivity::class.java))
             }
             return@setOnNavigationItemSelectedListener false
         }
     }
 
+    /**
+     * Este método cierra la sesión del usuario
+     */
     private fun logOut() {
         prefs.editor?.clear()
         prefs.editor?.commit()
@@ -141,6 +144,7 @@ class HomeActivityAdmin : AppCompatActivity(), NavigationView.OnNavigationItemSe
                 val intent = Intent(this, PerfilActivity::class.java)
                 startActivity(intent)
             }
+            R.id.nav_item_notifications -> startActivity(Intent(this,NotificationsActivity::class.java))
             R.id.nav_item_solicitudes -> {
                 if (!Utils.isNetworkAvailable(this)) {
                     Utils.alertDialogInternet(this)
@@ -154,6 +158,9 @@ class HomeActivityAdmin : AppCompatActivity(), NavigationView.OnNavigationItemSe
         return true
     }
 
+    /**
+     * Este método obtiene el nombre del usuario
+     */
     private fun getUserName() {
         database.reference.child("Usuarios").child(auth.uid.toString()).child("name").addValueEventListener(object:
             ValueEventListener {

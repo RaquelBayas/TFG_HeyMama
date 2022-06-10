@@ -3,7 +3,6 @@ package app.example.heymama.activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.EditText
-import android.widget.Toast
 import app.example.heymama.Utils
 import app.example.heymama.databinding.ActivityLayoutArticleBinding
 import app.example.heymama.models.Article

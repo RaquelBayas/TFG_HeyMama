@@ -84,6 +84,7 @@ class CommentsForoAdapter(private val commentsForoArrayList: ArrayList<Comment>,
 
     /**
      * ViewHolder
+     * @param itemView View
      */
     inner class HolderForo(itemView: View) : RecyclerView.ViewHolder(itemView){
         val comment_foro: TextView = itemView.findViewById(R.id.textView8)

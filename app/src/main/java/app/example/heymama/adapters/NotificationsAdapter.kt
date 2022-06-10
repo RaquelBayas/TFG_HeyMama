@@ -74,7 +74,6 @@ class NotificationsAdapter(private val context: Context, private val notificatio
                 firestore.collection("Timeline").document(notificationsList[position].idpost.toString()).addSnapshotListener { value, error ->
                     comment.text = value!!["comment"].toString()
                 }
-
                 comment.setOnClickListener {
                     getComment(notificationsList[position].idpost.toString(),comment.text.toString())
                     comment(name.text.toString(),comment.text.toString(),notificationsList[position].idpost.toString(),auth.uid.toString()) }
@@ -95,6 +94,8 @@ class NotificationsAdapter(private val context: Context, private val notificatio
 
     /**
      * Este método permite obtener el comentario
+     * @param idpost String
+     * @param comment String
      */
     private fun getComment(idpost: String,comment: String) {
         firestore.collection("Timeline").document(idpost).addSnapshotListener { value, error ->
@@ -154,7 +155,6 @@ class NotificationsAdapter(private val context: Context, private val notificatio
         intent.putExtra("idpost",idpost)
         intent.putExtra("iduser",iduser)
         context.startActivity(intent)
-
     }
 
     /**
@@ -166,11 +166,22 @@ class NotificationsAdapter(private val context: Context, private val notificatio
 
     /**
      * ViewHolder
+     * @param itemView View
      */
     inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var name : TextView = itemView.findViewById(R.id.txt_user_notification)
         var comment : TextView = itemView.findViewById(R.id.txt_post_notification)
         var type: TextView = itemView.findViewById(R.id.txt_type_notification)
+
+        init {
+            itemView.setOnClickListener {
+                Log.i("NotificationsAdapter",listener.onItemClicked(adapterPosition).toString())
+            }
+            itemView.setOnLongClickListener {
+                Log.i("NotificationsAdapter",listener.onItemLongClicked(adapterPosition).toString())
+                return@setOnLongClickListener true
+            }
+        }
     }
 
 }

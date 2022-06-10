@@ -2,9 +2,6 @@ package app.example.heymama.interfaces;
 
 import app.example.heymama.MyResponse;
 import app.example.heymama.Sender;
-
-import app.example.heymama.MyResponse;
-import app.example.heymama.Sender;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Headers;
