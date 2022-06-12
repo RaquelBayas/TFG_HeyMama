@@ -254,9 +254,9 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener {
         if(binding.swipeRefreshTL.isRefreshing) {
             binding.swipeRefreshTL.isRefreshing = false
         }
-
         firestore = FirebaseFirestore.getInstance()
-        firestore.collection("Foros").document("SubForos").collection(foroName).document(id).collection("Comentarios")
+        firestore.collection("Foros").document("SubForos")
+            .collection(foroName).document(id).collection("Comentarios")
             .addSnapshotListener { snapshots, e ->
                 if (e!= null) {
                     return@addSnapshotListener
@@ -264,7 +264,6 @@ class TemaForoActivity : AppCompatActivity(), ItemRecyclerViewListener {
                 for (dc in snapshots!!.documentChanges) {
                     when (dc.type) {
                         DocumentChange.Type.ADDED -> commentsArraylist.add(dc.document.toObject(Comment::class.java))
-                        //DocumentChange.Type.MODIFIED -> commentsArraylist.add(dc.document.toObject(Comment::class.java))
                         DocumentChange.Type.REMOVED -> commentsArraylist.remove(dc.document.toObject(Comment::class.java))
                     }
                 }

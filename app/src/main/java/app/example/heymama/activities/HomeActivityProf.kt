@@ -6,7 +6,6 @@ import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
@@ -43,9 +42,7 @@ class HomeActivityProf : AppCompatActivity(),NavigationView.OnNavigationItemSele
     private lateinit var storageReference: StorageReference
     private lateinit var txt_name_nav_header: TextView
     /**
-     *
      * @param savedInstanceState Bundle
-     *
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

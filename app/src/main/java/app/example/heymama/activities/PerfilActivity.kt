@@ -355,7 +355,7 @@ class PerfilActivity : AppCompatActivity(), ItemRecyclerViewListener {
      * @param uid String : UID del usuario que ha enviado la solicitud.
      */
     private fun rechazar_solicitud(uid: String) {
-        var friendship_reference = firestore.collection("Friendship")
+        val friendship_reference = firestore.collection("Friendship")
         friendship_reference.document(currentUserUID).collection("FriendRequest")
             .document(uid).delete()
 
@@ -368,8 +368,8 @@ class PerfilActivity : AppCompatActivity(), ItemRecyclerViewListener {
      * Este método permite enviar una solicitud de amistad a otro usuario.
      */
     fun sendFriendRequest() {
-        var friendRequest_send = FriendRequest(uid,currentUserUID,"send")
-        var friendRequest_receive = FriendRequest(uid,currentUserUID,"receive")
+        val friendRequest_send = FriendRequest(uid,currentUserUID,"send")
+        val friendRequest_receive = FriendRequest(uid,currentUserUID,"receive")
 
         firestore.collection("Friendship").document(currentUserUID).collection("FriendRequest")
             .document(uid).set(friendRequest_send)
@@ -396,7 +396,7 @@ class PerfilActivity : AppCompatActivity(), ItemRecyclerViewListener {
      * @param image ImageView
      */
     private fun glidePicture(uid: String, path:String, image:ImageView) {
-        storageReference = firebaseStore.getReference("/Usuarios/"+uid+"/images/"+path)
+        storageReference = firebaseStore.getReference("/Usuarios/$uid/images/$path")
         GlideApp.with(applicationContext)
             .load(storageReference)
             .error(R.drawable.wallpaper_profile)
@@ -499,7 +499,7 @@ class PerfilActivity : AppCompatActivity(), ItemRecyclerViewListener {
      */
     override fun onPause() {
         super.onPause()
-        app.example.heymama.Utils.updateStatus("offline")
+        Utils.updateStatus("offline")
     }
 
     /**
@@ -507,7 +507,7 @@ class PerfilActivity : AppCompatActivity(), ItemRecyclerViewListener {
      */
     override fun onStart() {
         super.onStart()
-        app.example.heymama.Utils.updateStatus("online")
+        Utils.updateStatus("online")
     }
 
     /**
@@ -515,6 +515,6 @@ class PerfilActivity : AppCompatActivity(), ItemRecyclerViewListener {
      */
     override fun onResume() {
         super.onResume()
-        app.example.heymama.Utils.updateStatus("online")
+        Utils.updateStatus("online")
     }
 }

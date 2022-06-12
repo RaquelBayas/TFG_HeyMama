@@ -150,8 +150,8 @@ class TimelineActivity : AppCompatActivity(), ItemRecyclerViewListener {
      * @param uid String : UID del usuario.
      */
     private fun add_comment_tl(edt_comment:String, uid:String) {
-        var doctlfb = firestore.collection("Timeline").document()
-        var doc_id = doctlfb.id
+        val doctlfb = firestore.collection("Timeline").document()
+        val doc_id = doctlfb.id
         val comment = PostTimeline(doc_id,uid,Date(),edt_comment,0,0)
         doctlfb.set(comment)
     }

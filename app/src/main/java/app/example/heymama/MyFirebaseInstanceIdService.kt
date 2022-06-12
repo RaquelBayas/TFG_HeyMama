@@ -1,6 +1,5 @@
 package app.example.heymama
 
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.messaging.FirebaseMessaging
@@ -19,6 +18,9 @@ class MyFirebaseInstanceIdService: FirebaseMessagingService(){
         }
     }
 
+    /**
+     * @param newToken String
+     */
     private fun updateToken(newToken: String){
         val firebaseUser = FirebaseAuth.getInstance().currentUser
         val ref = FirebaseDatabase.getInstance().getReference("Tokens")

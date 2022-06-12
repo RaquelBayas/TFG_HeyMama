@@ -22,9 +22,7 @@ class MoodActivity : AppCompatActivity() {
     private lateinit var pieEntries: ArrayList<PieEntry>
     private lateinit var binding: ActivityMoodBinding
     /**
-     *
      * @param savedInstanceState Bundle
-     *
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +36,8 @@ class MoodActivity : AppCompatActivity() {
 
         binding.btnConsultarRegistro.setOnClickListener {
             val fragment = RegistroMoodFragment()
-            supportFragmentManager.beginTransaction().replace(R.id.moodActivity,fragment).addToBackStack(null).commit()
+            supportFragmentManager.beginTransaction().replace(R.id.moodActivity,fragment)
+                .addToBackStack(null).commit()
         }
     }
 

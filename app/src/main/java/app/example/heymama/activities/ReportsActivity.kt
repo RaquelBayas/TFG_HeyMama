@@ -37,12 +37,18 @@ class ReportsActivity : AppCompatActivity(), ItemRecyclerViewListener {
         getReports()
     }
 
+    /**
+     * Este método permite inicializar los objetos de Firebase
+     */
     private fun initFirebase() {
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
         firestore = FirebaseFirestore.getInstance()
     }
 
+    /**
+     * Este método permite inicializar el recyclerview, el adapter y el arraylist de denuncias
+     */
     private fun initRecycler() {
         recyclerView = binding.recyclerViewReports
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -57,6 +63,12 @@ class ReportsActivity : AppCompatActivity(), ItemRecyclerViewListener {
         })
     }
 
+    /**
+     * Este método permite obtener la información del post que ha denunciado el usuario
+     * y permite abrir el post.
+     * Analiza si el post pertenece a la colleción Timeline, o es un comentario realizado en un post de la TL.
+     * @param position Int
+     */
     private fun getDataReport(position: Int) {
         val report = reportsArrayList[position]
         val intent = Intent(applicationContext, CommentPostTLActivity::class.java)

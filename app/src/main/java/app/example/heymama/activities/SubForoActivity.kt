@@ -124,7 +124,6 @@ class SubForoActivity : AppCompatActivity(), ItemRecyclerViewListener{
                             temasArraylist.add(dc.document.toObject(Post::class.java))
                             idTemasArrayList.add(dc.document.reference.path)
                         }
-                        //DocumentChange.Type.MODIFIED -> temasArraylist.add(dc.document.toObject(Post::class.java))
                         DocumentChange.Type.REMOVED -> temasArraylist.remove(dc.document.toObject(Post::class.java))
                     }
                 }

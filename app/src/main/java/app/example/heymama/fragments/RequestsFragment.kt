@@ -12,7 +12,7 @@ import app.example.heymama.databinding.FragmentRequestsBinding
 import app.example.heymama.models.FriendRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
+
 
 class RequestsFragment : Fragment() {
     private lateinit var auth: FirebaseAuth

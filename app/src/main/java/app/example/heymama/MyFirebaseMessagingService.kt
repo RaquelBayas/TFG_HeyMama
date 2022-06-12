@@ -20,6 +20,9 @@ import app.example.heymama.activities.ChatActivity
 
 class MyFirebaseMessagingService: FirebaseMessagingService() {
 
+    /**
+     * @param remoteMessage RemoteMessage
+     */
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
@@ -40,6 +43,10 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
         }
     }
 
+    /**
+     *
+     * @param remoteMessage RemoteMessage
+     */
     @RequiresApi(Build.VERSION_CODES.O)
     private fun sendNotification(remoteMessage: RemoteMessage) {
         val user = remoteMessage.data["user"]

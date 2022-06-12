@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import app.example.heymama.R
 import app.example.heymama.databinding.FragmentPoliticasBinding
 
 class PoliticasFragment : Fragment() {
@@ -30,6 +29,9 @@ class PoliticasFragment : Fragment() {
         return binding.root
     }
 
+    /**
+     * Este método permite que el webView cargue la página web indicada
+     */
     private fun policy() {
         webView = binding.webView
         webView.loadUrl("https://sites.google.com/view/heymamaapp/inicio")

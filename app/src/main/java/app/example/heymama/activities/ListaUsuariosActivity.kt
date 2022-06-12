@@ -36,6 +36,9 @@ class ListaUsuariosActivity : AppCompatActivity(), ItemRecyclerViewListener {
         getUsuarios()
     }
 
+    /**
+     * Este método permite inicializar los objetos de Firebase
+     */
     private fun initFirebase(){
         database = FirebaseDatabase.getInstance()
         auth = FirebaseAuth.getInstance()
@@ -44,6 +47,9 @@ class ListaUsuariosActivity : AppCompatActivity(), ItemRecyclerViewListener {
         uid = auth.uid.toString()
     }
 
+    /**
+     * Este método permite inicializar el recyclerview, el adapter y el arraylist de usuarios
+     */
     private fun initRecycler() {
         listaUsuariosArraylist = arrayListOf()
         recyclerView = binding.recyclerViewListaUsuarios
@@ -53,6 +59,10 @@ class ListaUsuariosActivity : AppCompatActivity(), ItemRecyclerViewListener {
         recyclerView.adapter = adapter
     }
 
+    /**
+     * Este método carga los usuarios de la base de datos Realtime Database en el arraylist y
+     * el adapter los muestra en el recyclerview
+     */
     private fun getUsuarios() {
         listaUsuariosArraylist.clear()
         val reference = database.reference.child("Usuarios")

@@ -71,7 +71,6 @@ class ConsultasActivity : AppCompatActivity(), ItemRecyclerViewListener {
         recyclerView.adapter = adapter
         adapter.setOnItemRecyclerViewListener(object: ItemRecyclerViewListener {
             override fun onItemClicked(position: Int) {
-
                 val id_consulta = consultasArraylist[position].id.toString()
                 val tema_consulta = consultasArraylist[position].tema.toString()
                 val id_user_consulta = consultasArraylist[position].userID.toString()

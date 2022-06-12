@@ -159,7 +159,6 @@ class FriendsActivity : AppCompatActivity(), ItemRecyclerViewListener {
                                 friendsArraylist.add(user!!)
                             }
                             adapterFriends.notifyDataSetChanged()
-
                         }
                     }
                 }

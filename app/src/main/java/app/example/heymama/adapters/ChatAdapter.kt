@@ -38,6 +38,13 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
         this.listener = listener
     }
 
+    /**
+     * Este método crea una vista diferente para cada mensaje del chat:
+     * Si el usuario ha enviado un mensaje, este aparecerá a la derecha
+     * Si el usuario ha recibido el mensaje, este aparecerá a la izquierda
+     * @param parent ViewGroup
+     * @param viewType Int
+     * */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == MESSAGE_RIGHT_SENDER) {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_chat_right,parent,false)
@@ -48,6 +55,10 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
         }
     }
 
+    /**
+     * @param holder RecyclerView.ViewHolder
+     * @param position Int
+     */
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         database = FirebaseDatabase.getInstance()
         auth = FirebaseAuth.getInstance()
@@ -119,7 +130,9 @@ class ChatAdapter(private val context: Context, private val chatArrayList: Array
     }
 
     /**
-     *
+     * Este método carga una vista diferente dependiendo de si el mensaje lo ha enviado el usuario autentificado
+     * o la persona con la que habla en el chat
+     *@param position Int
      */
     override fun getItemViewType(position: Int): Int {
         firebaseUser = FirebaseAuth.getInstance().currentUser

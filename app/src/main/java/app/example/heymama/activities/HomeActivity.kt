@@ -11,8 +11,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -35,7 +33,6 @@ import java.util.*
 
 
 class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-
     private lateinit var auth: FirebaseAuth
     private lateinit var dataBase: FirebaseDatabase
     private lateinit var dataBaseReference: DatabaseReference
@@ -49,14 +46,11 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var prefs: PreferencesManager
     private lateinit var binding: ActivityHomeBinding
+
     /**
-     *
-     * @constructor
      * @param savedInstanceState Bundle
-     *
      */
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         prefs = PreferencesManager(this)
@@ -255,9 +249,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     /**
-     *
      * @param newConfig Configuration
-     *
      */
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -265,7 +257,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     /**
-     *
      * @param item MenuItem
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -289,7 +280,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      */
     override fun onPause() {
         super.onPause()
-        app.example.heymama.Utils.updateStatus("offline")
+        Utils.updateStatus("offline")
     }
 
     /**
@@ -297,7 +288,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      */
     override fun onResume() {
         super.onResume()
-        app.example.heymama.Utils.updateStatus("online")
+        Utils.updateStatus("online")
     }
 
 }
